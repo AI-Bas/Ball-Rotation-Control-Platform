@@ -1,0 +1,13 @@
+{
+    "timestamp": "2025-06-27T14:00:02.315451",
+    "tests": {
+        "Comprehensive Connection": "failed"
+    },
+    "errors": [
+        {
+            "test": "comprehensive_connection",
+            "error": "Roboclaw.ReadError() missing 1 required positional argument: 'address'",
+            "timestamp": "2025-06-27T14:01:26.398963"
+        }
+    ]
+}

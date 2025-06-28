@@ -1,0 +1,516 @@
+{
+    "timestamp": "2025-06-27T15:55:08.682455",
+    "controllers": {
+        "rc1": {
+            "connected": true,
+            "address": null,
+            "communication_mode": "USB",
+            "settings": {
+                "address": null,
+                "timestamp": "2025-06-27T15:55:08.682455",
+                "velocity_pid": {},
+                "position_pid": {},
+                "voltage_limits": {},
+                "current_limits": {},
+                "acceleration": {},
+                "encoder_settings": {},
+                "pwm_settings": {},
+                "deadband": {},
+                "pin_functions": {},
+                "configuration": {},
+                "encoder_counts": {},
+                "status_monitoring": {}
+            },
+            "errors": [],
+            "reference_differences": {
+                "deadband.max": {
+                    "reference": 0,
+                    "current": null,
+                    "type": "missing",
+                    "description": "Maximum deadband value",
+                    "units": ""
+                },
+                "deadband.units": {
+                    "reference": "raw values",
+                    "current": null,
+                    "type": "missing"
+                },
+                "deadband.description": {
+                    "reference": "Analog input deadband settings",
+                    "current": null,
+                    "type": "missing"
+                },
+                "deadband.min": {
+                    "reference": 0,
+                    "current": null,
+                    "type": "missing",
+                    "description": "Minimum deadband value",
+                    "units": ""
+                },
+                "timestamp": {
+                    "reference": null,
+                    "current": "2025-06-27T15:55:08.682455",
+                    "type": "extra"
+                },
+                "encoder_counts.motor1": {
+                    "reference": 0,
+                    "current": null,
+                    "type": "missing",
+                    "description": "Current encoder count for motor 1",
+                    "units": ""
+                },
+                "encoder_counts.units": {
+                    "reference": "encoder counts",
+                    "current": null,
+                    "type": "missing"
+                },
+                "encoder_counts.description": {
+                    "reference": "Current encoder count values for each motor",
+                    "current": null,
+                    "type": "missing"
+                },
+                "encoder_counts.motor2": {
+                    "reference": 0,
+                    "current": null,
+                    "type": "missing",
+                    "description": "Current encoder count for motor 2",
+                    "units": ""
+                },
+                "encoder_settings.motor1": {
+                    "reference": 0,
+                    "current": null,
+                    "type": "missing",
+                    "description": "Encoder mode for motor 1 (0=Quadrature, 1=Single, 2=Single with direction, 3=Single with direction inverted)",
+                    "units": ""
+                },
+                "encoder_settings.units": {
+                    "reference": "mode values (0-3)",
+                    "current": null,
+                    "type": "missing"
+                },
+                "encoder_settings.description": {
+                    "reference": "Encoder configuration for each motor",
+                    "current": null,
+                    "type": "missing"
+                },
+                "encoder_settings.motor2": {
+                    "reference": 0,
+                    "current": null,
+                    "type": "missing",
+                    "description": "Encoder mode for motor 2 (0=Quadrature, 1=Single, 2=Single with direction, 3=Single with direction inverted)",
+                    "units": ""
+                },
+                "status_monitoring.main_voltage": {
+                    "reference": {
+                        "description": "Current main battery voltage (0.1V units)",
+                        "read_only": true
+                    },
+                    "current": null,
+                    "type": "missing"
+                },
+                "status_monitoring.motor1_speed": {
+                    "reference": {
+                        "description": "Current motor 1 speed (QPPS)",
+                        "read_only": true
+                    },
+                    "current": null,
+                    "type": "missing"
+                },
+                "status_monitoring.motor2_speed": {
+                    "reference": {
+                        "description": "Current motor 2 speed (QPPS)",
+                        "read_only": true
+                    },
+                    "current": null,
+                    "type": "missing"
+                },
+                "status_monitoring.motor1_position": {
+                    "reference": {
+                        "description": "Current motor 1 position (encoder counts)",
+                        "read_only": true
+                    },
+                    "current": null,
+                    "type": "missing"
+                },
+                "status_monitoring.units": {
+                    "reference": "various",
+                    "current": null,
+                    "type": "missing"
+                },
+                "status_monitoring.logic_voltage": {
+                    "reference": {
+                        "description": "Current logic battery voltage (0.1V units)",
+                        "read_only": true
+                    },
+                    "current": null,
+                    "type": "missing"
+                },
+                "status_monitoring.temperature": {
+                    "reference": {
+                        "description": "Current temperature (0.1\u00c2\u00b0C units)",
+                        "read_only": true
+                    },
+                    "current": null,
+                    "type": "missing"
+                },
+                "status_monitoring.motor1_current": {
+                    "reference": {
+                        "description": "Current motor 1 current (0.1A units)",
+                        "read_only": true
+                    },
+                    "current": null,
+                    "type": "missing"
+                },
+                "status_monitoring.motor2_current": {
+                    "reference": {
+                        "description": "Current motor 2 current (0.1A units)",
+                        "read_only": true
+                    },
+                    "current": null,
+                    "type": "missing"
+                },
+                "status_monitoring.error_status": {
+                    "reference": {
+                        "description": "Current error status (bit flags)",
+                        "read_only": true
+                    },
+                    "current": null,
+                    "type": "missing"
+                },
+                "status_monitoring.motor2_position": {
+                    "reference": {
+                        "description": "Current motor 2 position (encoder counts)",
+                        "read_only": true
+                    },
+                    "current": null,
+                    "type": "missing"
+                },
+                "status_monitoring.description": {
+                    "reference": "Real-time status values (read-only)",
+                    "current": null,
+                    "type": "missing"
+                },
+                "address": {
+                    "reference": null,
+                    "current": null,
+                    "type": "extra"
+                },
+                "configuration.config": {
+                    "reference": 0,
+                    "current": null,
+                    "type": "missing",
+                    "description": "Configuration flags (bit 0=Packet serial mode, bit 1=RC mode, bit 2=Analog mode, etc.)",
+                    "units": ""
+                },
+                "configuration.units": {
+                    "reference": "bit flags",
+                    "current": null,
+                    "type": "missing"
+                },
+                "configuration.description": {
+                    "reference": "General configuration settings",
+                    "current": null,
+                    "type": "missing"
+                },
+                "position_pid.motor1": {
+                    "reference": {
+                        "kp": {
+                            "default": 1024,
+                            "description": "Proportional gain",
+                            "actual_default": 1.0
+                        },
+                        "ki": {
+                            "default": 512,
+                            "description": "Integral gain",
+                            "actual_default": 0.5
+                        },
+                        "kd": {
+                            "default": 256,
+                            "description": "Derivative gain",
+                            "actual_default": 0.25
+                        },
+                        "kimax": {
+                            "default": 156,
+                            "description": "Maximum integral windup",
+                            "actual_default": 156
+                        },
+                        "deadzone": {
+                            "default": 0,
+                            "description": "Position deadzone",
+                            "actual_default": 0
+                        },
+                        "min": {
+                            "default": 0,
+                            "description": "Minimum position",
+                            "actual_default": 0
+                        },
+                        "max": {
+                            "default": 50000,
+                            "description": "Maximum position",
+                            "actual_default": 50000
+                        }
+                    },
+                    "current": null,
+                    "type": "missing"
+                },
+                "position_pid.units": {
+                    "reference": "scaled values (divide by 1024 for actual values)",
+                    "current": null,
+                    "type": "missing"
+                },
+                "position_pid.description": {
+                    "reference": "Position PID control parameters for each motor",
+                    "current": null,
+                    "type": "missing"
+                },
+                "position_pid.motor2": {
+                    "reference": {
+                        "kp": {
+                            "default": 1024,
+                            "description": "Proportional gain",
+                            "actual_default": 1.0
+                        },
+                        "ki": {
+                            "default": 512,
+                            "description": "Integral gain",
+                            "actual_default": 0.5
+                        },
+                        "kd": {
+                            "default": 256,
+                            "description": "Derivative gain",
+                            "actual_default": 0.25
+                        },
+                        "kimax": {
+                            "default": 156,
+                            "description": "Maximum integral windup",
+                            "actual_default": 156
+                        },
+                        "deadzone": {
+                            "default": 0,
+                            "description": "Position deadzone",
+                            "actual_default": 0
+                        },
+                        "min": {
+                            "default": 0,
+                            "description": "Minimum position",
+                            "actual_default": 0
+                        },
+                        "max": {
+                            "default": 50000,
+                            "description": "Maximum position",
+                            "actual_default": 50000
+                        }
+                    },
+                    "current": null,
+                    "type": "missing"
+                },
+                "pwm_settings.units": {
+                    "reference": "mode values (0-1)",
+                    "current": null,
+                    "type": "missing"
+                },
+                "pwm_settings.description": {
+                    "reference": "PWM mode configuration",
+                    "current": null,
+                    "type": "missing"
+                },
+                "pwm_settings.pwm_mode": {
+                    "reference": 0,
+                    "current": null,
+                    "type": "missing",
+                    "description": "PWM mode (0=Sign magnitude, 1=Locked antiphase)",
+                    "units": ""
+                },
+                "acceleration.motor1": {
+                    "reference": 100000,
+                    "current": null,
+                    "type": "missing",
+                    "description": "Default acceleration for motor 1",
+                    "units": ""
+                },
+                "acceleration.units": {
+                    "reference": "steps per second squared",
+                    "current": null,
+                    "type": "missing"
+                },
+                "acceleration.description": {
+                    "reference": "Default acceleration values for each motor",
+                    "current": null,
+                    "type": "missing"
+                },
+                "acceleration.motor2": {
+                    "reference": 100000,
+                    "current": null,
+                    "type": "missing",
+                    "description": "Default acceleration for motor 2",
+                    "units": ""
+                },
+                "velocity_pid.motor1": {
+                    "reference": {
+                        "p": {
+                            "default": 65536,
+                            "description": "Proportional gain",
+                            "actual_default": 1.0
+                        },
+                        "i": {
+                            "default": 32768,
+                            "description": "Integral gain",
+                            "actual_default": 0.5
+                        },
+                        "d": {
+                            "default": 16384,
+                            "description": "Derivative gain",
+                            "actual_default": 0.25
+                        },
+                        "qpps": {
+                            "default": 44000,
+                            "description": "Quadrature pulses per second",
+                            "actual_default": 44000
+                        }
+                    },
+                    "current": null,
+                    "type": "missing"
+                },
+                "velocity_pid.units": {
+                    "reference": "scaled values (divide by 65536 for actual values)",
+                    "current": null,
+                    "type": "missing"
+                },
+                "velocity_pid.description": {
+                    "reference": "Velocity PID control parameters for each motor",
+                    "current": null,
+                    "type": "missing"
+                },
+                "velocity_pid.motor2": {
+                    "reference": {
+                        "p": {
+                            "default": 65536,
+                            "description": "Proportional gain",
+                            "actual_default": 1.0
+                        },
+                        "i": {
+                            "default": 32768,
+                            "description": "Integral gain",
+                            "actual_default": 0.5
+                        },
+                        "d": {
+                            "default": 16384,
+                            "description": "Derivative gain",
+                            "actual_default": 0.25
+                        },
+                        "qpps": {
+                            "default": 44000,
+                            "description": "Quadrature pulses per second",
+                            "actual_default": 44000
+                        }
+                    },
+                    "current": null,
+                    "type": "missing"
+                },
+                "pin_functions.s4_mode": {
+                    "reference": 2,
+                    "current": null,
+                    "type": "missing",
+                    "description": "S4 pin function (0=Disabled, 1=E-Stop, 2=Voltage clamp, 3=User switch)",
+                    "units": ""
+                },
+                "pin_functions.s5_mode": {
+                    "reference": 2,
+                    "current": null,
+                    "type": "missing",
+                    "description": "S5 pin function (0=Disabled, 1=E-Stop, 2=Voltage clamp, 3=User switch)",
+                    "units": ""
+                },
+                "pin_functions.units": {
+                    "reference": "function codes",
+                    "current": null,
+                    "type": "missing"
+                },
+                "pin_functions.description": {
+                    "reference": "Pin function configuration for S3, S4, S5 pins",
+                    "current": null,
+                    "type": "missing"
+                },
+                "pin_functions.s3_mode": {
+                    "reference": 1,
+                    "current": null,
+                    "type": "missing",
+                    "description": "S3 pin function (0=Disabled, 1=E-Stop, 2=Voltage clamp, 3=User switch)",
+                    "units": ""
+                },
+                "voltage_limits.logic_battery": {
+                    "reference": {
+                        "min": {
+                            "default": 60,
+                            "description": "Minimum logic battery voltage",
+                            "actual_default": 6.0
+                        },
+                        "max": {
+                            "default": 300,
+                            "description": "Maximum logic battery voltage",
+                            "actual_default": 30.0
+                        }
+                    },
+                    "current": null,
+                    "type": "missing"
+                },
+                "voltage_limits.units": {
+                    "reference": "0.1V increments (divide by 10 for actual voltage)",
+                    "current": null,
+                    "type": "missing"
+                },
+                "voltage_limits.main_battery": {
+                    "reference": {
+                        "min": {
+                            "default": 60,
+                            "description": "Minimum main battery voltage",
+                            "actual_default": 6.0
+                        },
+                        "max": {
+                            "default": 300,
+                            "description": "Maximum main battery voltage",
+                            "actual_default": 30.0
+                        }
+                    },
+                    "current": null,
+                    "type": "missing"
+                },
+                "voltage_limits.description": {
+                    "reference": "Battery voltage limits for main and logic circuits",
+                    "current": null,
+                    "type": "missing"
+                },
+                "current_limits.motor1": {
+                    "reference": 600,
+                    "current": null,
+                    "type": "missing",
+                    "description": "Maximum current for motor 1",
+                    "units": ""
+                },
+                "current_limits.units": {
+                    "reference": "0.1A increments (divide by 10 for actual current)",
+                    "current": null,
+                    "type": "missing"
+                },
+                "current_limits.description": {
+                    "reference": "Maximum current limits for each motor",
+                    "current": null,
+                    "type": "missing"
+                },
+                "current_limits.motor2": {
+                    "reference": 600,
+                    "current": null,
+                    "type": "missing",
+                    "description": "Maximum current for motor 2",
+                    "units": ""
+                }
+            }
+        }
+    },
+    "summary": {
+        "total_controllers": 1,
+        "connected_controllers": 1,
+        "errors_found": 0,
+        "settings_differences": 57
+    }
+}

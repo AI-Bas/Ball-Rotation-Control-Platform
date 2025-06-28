@@ -1,0 +1,2 @@
+# This file ensures the roboclaw_settings_backup directory is maintained in version control
+# RoboClaw settings backup files will be stored here during testing 
