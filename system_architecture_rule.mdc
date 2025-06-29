@@ -1,0 +1,98 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# System Architecture Maintenance Rule
+
+## ALWAYS FOLLOW THIS RULE WHEN EDITING CODE
+
+### 1. Single Source of Truth Principle
+- **system_design_architecture.yaml** is the ONLY authoritative source for:
+  - Design structure and goals
+  - Module functionality and dependencies
+  - Structured code implementation details
+  - System conventions and standards
+  - Physics and motion control concepts
+  - Default values and configuration references
+
+### 2. AI Agent Facilitation Requirements
+- Structure MUST enable AI (Cursor) agents to:
+  - Review and edit all code and dependencies
+  - Generate visual graphs of system, modules, dependencies, and data structures
+  - Use tags, labels, descriptions, and comments for context
+  - Understand relationships between components
+  - Navigate the codebase efficiently
+
+### 3. Structured Content Organization
+- **Clear sections** with defined content criteria and categories
+- **Minimize duplication** - reference rather than repeat information
+- **Straightforward incremental updates** during development
+- **Non-code information** (physics, design guidelines, goals, conventions) in summarized form
+- **Explicit context and connections** between modules
+- **Minimal explicit details** that change frequently
+- **Default constants only** in YAML, current values referenced in platform_config.json
+
+### 4. Update Process for Every Code Change
+After every edit, read and update the following documentation files in order:
+
+1. **system_design_architecture.yaml** - Update with every relevant change to:
+   - Module implementation details
+   - Interdependent modules, classes, functions, and files
+   - Use tags or comments for AI agent navigation
+   - Maintain overview and consistency for future development
+   - Include default values only, refer specific configurations to platform_config.json
+   - Ensure correct labels and references match updated code
+
+2. **platform_config.json** - Verify correct labels and references in updated code
+
+3. **README.md** - Update with correct references to updated content:
+   - Only relevant information for users
+   - Refer to system_design_architecture.yaml for implementation details
+   - Refer to platform_config.json for specific variables and constants
+   - Avoid duplication of statements
+
+4. **venv_requirements.txt** - Ensure virtual environment refers to any new dependencies with correct versions
+
+### 5. YAML Structure Requirements
+- **Hierarchical organization** with clear module relationships
+- **Tags and labels** for automated graph generation
+- **File and script references** with explicit paths
+- **Dependency mapping** with direction and type
+- **Data structure definitions** with formats and constraints
+- **Interface specifications** with input/output requirements
+
+### 6. Documentation Consolidation
+- **Consolidate duplicate entries** across all documentation
+- **Maintain consistency** between YAML, JSON, and code
+- **Update timestamps** for tracking changes
+- **Version control** for major architectural changes
+
+### 7. AI Agent Context
+- **Explicit module boundaries** and responsibilities
+- **Clear dependency chains** and data flow
+- **Interface contracts** and expected behaviors
+- **Error handling patterns** and recovery mechanisms
+- **Configuration management** and validation rules
+
+### 8. Graph Generation Support
+- **DOT format compatibility** for system visualization
+- **UML diagram generation** from YAML structure
+- **Dependency graphs** with relationship types
+- **Data flow diagrams** with transformation points
+- **Module hierarchy trees** with inheritance and composition
+
+### 9. Change Tracking
+- **Incremental updates** with change descriptions
+- **Impact analysis** for dependent modules
+- **Backward compatibility** considerations
+- **Migration paths** for breaking changes
+
+### 10. Quality Assurance
+- **Consistency validation** across all documentation
+- **Reference integrity** between files and modules
+- **Completeness checking** for required information
+- **Accuracy verification** against actual code implementation
+
+## ENFORCEMENT
+This rule MUST be followed for every code edit. The system_design_architecture.yaml file serves as the foundation for all development decisions and must be maintained as the single source of truth for the entire system architecture. 

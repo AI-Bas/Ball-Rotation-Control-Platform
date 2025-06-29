@@ -1,0 +1,23 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+[system_architecture_rule.mdc](mdc:CODE & Software/.cursor/rules/system_architecture_rule.mdc) MUST be followed for every edit and used at the end to revise documentation.
+
+[ai-testing-guidelines.mdc](mdc:CODE & Software/.cursor/rules/ai-testing-guidelines.mdc) instructs how to execute tests during development by AI agents.
+
+[system_design_architecture.yaml](mdc:CODE & Software/docs/system_design_architecture.yaml) is the single source of truth for system arcitecture reference when implementing new modules in code.
+
+[platform_config.json](mdc:CODE & Software/test_platform_control/config/platform_config.json) is the single source of truth containing all hardware constants, settings, variables and parameters configured during testing and serves as a central reference during testing and final operation, at module and system level.
+
+[roboclaw_3.py](mdc:CODE & Software/RoboClaw Software & CODE/roboclaw_python/roboclaw_3.py) contains example code to interface with the RoboClaw motor drivers.
+
+[ina219.py](mdc:CODE & Software/Current-Power_Monitor_HAT_Code/RaspberryPi/ina219.py) contains example code to interface with the 4 channel power sensor Raspberry Pi 5 HAT module.
+
+[motion.py](mdc:CODE & Software/Optical Flow Sensor/pmw3901-python-main/examples/motion.py) contains example code to interface with the optical flow sensor.
+
+[platform_control.py](mdc:CODE & Software/test_platform_control/platform_control.py) is the final process that integrates all modules for continuous operation after testing has been validated, in a modular way where every module is maintained through hardware abstraction layers or running seperate dedicated test plans.
+
+
+[system_test.py](mdc:CODE & Software/test_platform_control/tests/system_test.py) is the central testing script that calls all module tests in a modular way, where every module is maintained through hardware abstraction layers or running seperate dedicated test plans.
