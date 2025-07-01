@@ -1,0 +1,18 @@
+{
+  "bandwidth_rc1": {
+    "timestamp": "2025-07-01T01:28:33.193188",
+    "test_type": "bandwidth_incremental",
+    "controller": "rc1",
+    "max_safe_speed": 0,
+    "status": false,
+    "error": "Controller rc1 not connected"
+  },
+  "bandwidth_rc2": {
+    "timestamp": "2025-07-01T01:28:33.193307",
+    "test_type": "bandwidth_incremental",
+    "controller": "rc2",
+    "max_safe_speed": 0,
+    "status": false,
+    "error": "Controller rc2 not connected"
+  }
+}

@@ -1,0 +1,79 @@
+{
+  "connectivity": {
+    "timestamp": "2025-06-30T20:02:53.373192",
+    "test_type": "connectivity",
+    "status": true,
+    "spi_connectivity": true,
+    "sensor_initialization": true,
+    "error": null
+  },
+  "comprehensive": {
+    "timestamp": "2025-06-30T20:03:28.559962",
+    "test_suite": "optical_flow_comprehensive",
+    "tests": {
+      "connectivity": {
+        "timestamp": "2025-06-30T20:03:28.560042",
+        "test_type": "connectivity",
+        "status": true,
+        "spi_connectivity": true,
+        "sensor_initialization": true,
+        "error": null
+      },
+      "functionality": {
+        "timestamp": "2025-06-30T20:03:28.560722",
+        "test_type": "functionality",
+        "status": false,
+        "led_control": false,
+        "motion_detection": false,
+        "error": "Motion detection failed"
+      },
+      "bandwidth": {
+        "timestamp": "2025-06-30T20:03:38.565160",
+        "test_type": "bandwidth",
+        "status": true,
+        "bandwidth_data": {
+          "status": "success",
+          "max_safe_speed": 8000000,
+          "test_speeds": [
+            1000000,
+            2000000,
+            4000000,
+            8000000
+          ],
+          "bandwidth_results": {
+            "1000000": {
+              "successful": 50,
+              "failed": 0,
+              "success_rate": 1.0,
+              "commands_per_second": 4112062.745098039,
+              "duration": 1.2159347534179688e-05
+            },
+            "2000000": {
+              "successful": 50,
+              "failed": 0,
+              "success_rate": 1.0,
+              "commands_per_second": 8388608.0,
+              "duration": 5.9604644775390625e-06
+            },
+            "4000000": {
+              "successful": 50,
+              "failed": 0,
+              "success_rate": 1.0,
+              "commands_per_second": 8738133.333333334,
+              "duration": 5.7220458984375e-06
+            },
+            "8000000": {
+              "successful": 50,
+              "failed": 0,
+              "success_rate": 1.0,
+              "commands_per_second": 8738133.333333334,
+              "duration": 5.7220458984375e-06
+            }
+          }
+        },
+        "error": null
+      }
+    },
+    "overall_status": false
+  }
+}

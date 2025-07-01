@@ -1,0 +1,143 @@
+{
+  "connectivity": {
+    "status": true,
+    "port": "/dev/ttyACM2",
+    "version": "USB Roboclaw 2x30a v4.2.8",
+    "temperature": 31.8,
+    "voltage": 11.4,
+    "error": null
+  },
+  "bandwidth": {
+    "status": true,
+    "port": "/dev/ttyACM2",
+    "test_rates": [
+      10,
+      50,
+      100,
+      200,
+      300,
+      400,
+      500
+    ],
+    "success_rates": [
+      1.0,
+      0.95,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0
+    ],
+    "max_safe_rate": 500,
+    "error": null
+  },
+  "motor_mapping": {
+    "status": true,
+    "port": "/dev/ttyACM2",
+    "motors": {
+      "motor_1": {
+        "current": null,
+        "movement_test": true
+      },
+      "motor_2": {
+        "current": null,
+        "movement_test": true
+      },
+      "motor_3": {
+        "current": null,
+        "movement_test": true
+      },
+      "motor_4": {
+        "current": null,
+        "movement_test": true
+      }
+    },
+    "encoders": {
+      "motor_1": {
+        "position": 0,
+        "velocity": 0
+      },
+      "motor_2": {
+        "position": 0,
+        "velocity": 0
+      },
+      "motor_3": {
+        "position": 0,
+        "velocity": 0
+      },
+      "motor_4": {
+        "position": 0,
+        "velocity": 0
+      }
+    },
+    "error": null
+  },
+  "e_stop_cycling": {
+    "status": true,
+    "port": "/dev/ttyACM2",
+    "pin_functions": {
+      "original": {
+        "S3": 1,
+        "S4": 20,
+        "S5": 20
+      },
+      "restored": true
+    },
+    "test_results": [
+      {
+        "test_number": 1,
+        "pin_functions": [
+          0,
+          0,
+          0
+        ],
+        "set_success": true,
+        "verify_success": true,
+        "error": null
+      },
+      {
+        "test_number": 2,
+        "pin_functions": [
+          1,
+          1,
+          1
+        ],
+        "set_success": true,
+        "verify_success": true,
+        "error": null
+      },
+      {
+        "test_number": 3,
+        "pin_functions": [
+          0,
+          1,
+          0
+        ],
+        "set_success": true,
+        "verify_success": true,
+        "error": null
+      },
+      {
+        "test_number": 4,
+        "pin_functions": [
+          1,
+          0,
+          1
+        ],
+        "set_success": true,
+        "verify_success": true,
+        "error": null
+      }
+    ],
+    "error": null
+  },
+  "metadata": {
+    "test_name": "all_tests",
+    "timestamp": "2025-06-30T15:32:52.223470",
+    "development_mode": true,
+    "roboclaw_ports": [
+      "/dev/ttyACM2",
+      "/dev/ttyACM1"
+    ]
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "timestamp": "2025-06-30T15:24:46.022312",
+  "roboclaw_ports": [
+    "/dev/ttyACM2",
+    "/dev/ttyACM1",
+    "/dev/ttyACM0"
+  ],
+  "encoder_readings": {
+    "/dev/ttyACM2": {},
+    "/dev/ttyACM1": {},
+    "/dev/ttyACM0": {}
+  },
+  "motor_data": {
+    "/dev/ttyACM2": {},
+    "/dev/ttyACM1": {},
+    "/dev/ttyACM0": {}
+  }
+}

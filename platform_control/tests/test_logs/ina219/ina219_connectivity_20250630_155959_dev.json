@@ -1,0 +1,51 @@
+{
+  "status": true,
+  "detected_sensors": [
+    64,
+    65,
+    66,
+    67
+  ],
+  "sensor_data": {
+    "channel_0": {
+      "address": "0x40",
+      "voltage_v": 1.33599,
+      "current_ma": -0.09756097560975609,
+      "power_mw": 0.0,
+      "status": "connected"
+    },
+    "channel_1": {
+      "address": "0x41",
+      "voltage_v": 1.3879899999999998,
+      "current_ma": -0.09756097560975609,
+      "power_mw": 0.0,
+      "status": "connected"
+    },
+    "channel_2": {
+      "address": "0x42",
+      "voltage_v": 1.74399,
+      "current_ma": -0.09756097560975609,
+      "power_mw": 0.0,
+      "status": "connected"
+    },
+    "channel_3": {
+      "address": "0x43",
+      "voltage_v": 0.88399,
+      "current_ma": -0.09756097560975609,
+      "power_mw": 0.0,
+      "status": "connected"
+    }
+  },
+  "error": null,
+  "metadata": {
+    "test_name": "connectivity",
+    "timestamp": "2025-06-30T15:59:59.674082",
+    "development_mode": true,
+    "ina219_addresses": [
+      64,
+      65,
+      66,
+      67
+    ]
+  }
+}

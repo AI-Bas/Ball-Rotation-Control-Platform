@@ -1,0 +1,196 @@
+{
+  "timestamp": "2025-06-30T15:19:06.351660",
+  "development_mode": false,
+  "connection_status": true,
+  "e_stop_cycling_results": {
+    "status": "failed",
+    "error": "'Roboclaw' object has no attribute 'ReadEStop'"
+  },
+  "bandwidth_results": {
+    "status": "success",
+    "max_safe_rate": 500,
+    "test_rates": [
+      10,
+      50,
+      100,
+      200,
+      300,
+      400,
+      500
+    ],
+    "communication_errors": 0,
+    "successful_commands": 140,
+    "total_commands": 140,
+    "success_rate": 1.0
+  },
+  "error_led_monitoring": {
+    "monitoring_active": false,
+    "error": "'Roboclaw' object has no attribute 'ReadEStop'",
+    "timestamp": "2025-06-30T15:19:13.649774"
+  },
+  "communication_log": [
+    {
+      "timestamp": "2025-06-30T15:19:12.596908",
+      "test_number": 1,
+      "version_read": {
+        "success": 1,
+        "version": "USB Roboclaw 2x30a v4.2.8\n"
+      },
+      "temperature_read": {
+        "success": 1,
+        "temperature": 318
+      },
+      "voltage_read": {
+        "success": 1,
+        "voltage": 114
+      }
+    },
+    {
+      "timestamp": "2025-06-30T15:19:12.702643",
+      "test_number": 2,
+      "version_read": {
+        "success": 1,
+        "version": "USB Roboclaw 2x30a v4.2.8\n"
+      },
+      "temperature_read": {
+        "success": 1,
+        "temperature": 318
+      },
+      "voltage_read": {
+        "success": 1,
+        "voltage": 114
+      }
+    },
+    {
+      "timestamp": "2025-06-30T15:19:12.807732",
+      "test_number": 3,
+      "version_read": {
+        "success": 1,
+        "version": "USB Roboclaw 2x30a v4.2.8\n"
+      },
+      "temperature_read": {
+        "success": 1,
+        "temperature": 318
+      },
+      "voltage_read": {
+        "success": 1,
+        "voltage": 114
+      }
+    },
+    {
+      "timestamp": "2025-06-30T15:19:12.913630",
+      "test_number": 4,
+      "version_read": {
+        "success": 1,
+        "version": "USB Roboclaw 2x30a v4.2.8\n"
+      },
+      "temperature_read": {
+        "success": 1,
+        "temperature": 318
+      },
+      "voltage_read": {
+        "success": 1,
+        "voltage": 114
+      }
+    },
+    {
+      "timestamp": "2025-06-30T15:19:13.018728",
+      "test_number": 5,
+      "version_read": {
+        "success": 1,
+        "version": "USB Roboclaw 2x30a v4.2.8\n"
+      },
+      "temperature_read": {
+        "success": 1,
+        "temperature": 318
+      },
+      "voltage_read": {
+        "success": 1,
+        "voltage": 114
+      }
+    },
+    {
+      "timestamp": "2025-06-30T15:19:13.123741",
+      "test_number": 6,
+      "version_read": {
+        "success": 1,
+        "version": "USB Roboclaw 2x30a v4.2.8\n"
+      },
+      "temperature_read": {
+        "success": 1,
+        "temperature": 318
+      },
+      "voltage_read": {
+        "success": 1,
+        "voltage": 114
+      }
+    },
+    {
+      "timestamp": "2025-06-30T15:19:13.229628",
+      "test_number": 7,
+      "version_read": {
+        "success": 1,
+        "version": "USB Roboclaw 2x30a v4.2.8\n"
+      },
+      "temperature_read": {
+        "success": 1,
+        "temperature": 318
+      },
+      "voltage_read": {
+        "success": 1,
+        "voltage": 114
+      }
+    },
+    {
+      "timestamp": "2025-06-30T15:19:13.334734",
+      "test_number": 8,
+      "version_read": {
+        "success": 1,
+        "version": "USB Roboclaw 2x30a v4.2.8\n"
+      },
+      "temperature_read": {
+        "success": 1,
+        "temperature": 318
+      },
+      "voltage_read": {
+        "success": 1,
+        "voltage": 114
+      }
+    },
+    {
+      "timestamp": "2025-06-30T15:19:13.439703",
+      "test_number": 9,
+      "version_read": {
+        "success": 1,
+        "version": "USB Roboclaw 2x30a v4.2.8\n"
+      },
+      "temperature_read": {
+        "success": 1,
+        "temperature": 318
+      },
+      "voltage_read": {
+        "success": 1,
+        "voltage": 114
+      }
+    },
+    {
+      "timestamp": "2025-06-30T15:19:13.544771",
+      "test_number": 10,
+      "version_read": {
+        "success": 1,
+        "version": "USB Roboclaw 2x30a v4.2.8\n"
+      },
+      "temperature_read": {
+        "success": 1,
+        "temperature": 319
+      },
+      "voltage_read": {
+        "success": 1,
+        "voltage": 114
+      }
+    }
+  ],
+  "troubleshooting_steps": [],
+  "recovery_attempts": [],
+  "hardware_version": "USB Roboclaw 2x30a v4.2.8\n"
+}

@@ -1,0 +1,34 @@
+{
+  "bandwidth_rc1": {
+    "timestamp": "2025-07-01T02:50:57.459248",
+    "test_type": "bandwidth_incremental",
+    "controller": "rc1",
+    "max_safe_speed": 0,
+    "status": false,
+    "error": "Controller rc1 not connected"
+  },
+  "bandwidth_rc2": {
+    "timestamp": "2025-07-01T02:50:57.459381",
+    "test_type": "bandwidth_incremental",
+    "controller": "rc2",
+    "max_safe_speed": 0,
+    "status": false,
+    "error": "Controller rc2 not connected"
+  },
+  "e_stop_rc1": {
+    "timestamp": "2025-07-01T02:50:57.459480",
+    "test_type": "e_stop_cycling",
+    "controller": "rc1",
+    "cycles": 0,
+    "status": false,
+    "error": "Controller rc1 not connected"
+  },
+  "e_stop_rc2": {
+    "timestamp": "2025-07-01T02:50:57.459577",
+    "test_type": "e_stop_cycling",
+    "controller": "rc2",
+    "cycles": 0,
+    "status": false,
+    "error": "Controller rc2 not connected"
+  }
+}

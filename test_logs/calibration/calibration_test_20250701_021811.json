@@ -1,0 +1,65 @@
+{
+  "timestamp": "2025-07-01T02:18:11.914835",
+  "tests": {
+    "motor_encoder_calibration": "placeholder",
+    "pid_parameter_tuning": "placeholder",
+    "velocity_calibration": "placeholder",
+    "position_calibration": "placeholder",
+    "system_response_characterization": "placeholder",
+    "ball_handling_optimization": "placeholder",
+    "system_response_time": "placeholder",
+    "maximum_velocity_acceleration": "placeholder",
+    "power_consumption_analysis": "placeholder",
+    "thermal_performance_monitoring": "placeholder",
+    "ball_handling_performance_metrics": "placeholder",
+    "system_stability_analysis": "placeholder",
+    "noise_vibration_characterization": "placeholder"
+  },
+  "errors": [],
+  "calibration_data": {},
+  "performance_data": {},
+  "characterization_data": {},
+  "system_analysis": {
+    "timestamp": "2025-07-01T02:18:11.917150",
+    "system_parameters": {
+      "ball_radius": 0.111,
+      "omniwheel_radius": 0.1,
+      "wheel_positions": [
+        {
+          "x": 0.0,
+          "y": 0.1,
+          "angle": 0.0
+        },
+        {
+          "x": -0.0866,
+          "y": -0.05,
+          "angle": 120.0
+        },
+        {
+          "x": 0.0866,
+          "y": -0.05,
+          "angle": 240.0
+        }
+      ],
+      "beta_angle": 120.0
+    },
+    "kinematic_parameters": {},
+    "control_parameters": {
+      "control_loop_dt": 0.01,
+      "buffer_duration": 60.0,
+      "pid_gains": {
+        "kp": 1.0,
+        "ki": 0.01,
+        "kd": 0.001
+      }
+    },
+    "hardware_parameters": {
+      "encoder_cpr": 512,
+      "gear_reduction": 4.333,
+      "motor_constant": 699,
+      "nominal_voltage": 12,
+      "nominal_current": 6,
+      "peak_current": 60
+    }
+  }
+}

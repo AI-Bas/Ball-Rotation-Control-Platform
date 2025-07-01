@@ -1,0 +1,52 @@
+{
+  "timestamp": "2025-06-30T15:25:13.215968",
+  "power_readings": {},
+  "voltage_measurements": {
+    "channel_0": {
+      "voltage_v": 1.33199,
+      "expected_v": 12.0,
+      "deviation_v": 10.66801,
+      "status": "warning"
+    },
+    "channel_1": {
+      "voltage_v": 1.38798,
+      "expected_v": 12.0,
+      "deviation_v": 10.61202,
+      "status": "warning"
+    },
+    "channel_2": {
+      "voltage_v": 1.73999,
+      "expected_v": 12.0,
+      "deviation_v": 10.26001,
+      "status": "warning"
+    },
+    "channel_3": {
+      "voltage_v": 0.88399,
+      "expected_v": 12.0,
+      "deviation_v": 11.11601,
+      "status": "warning"
+    }
+  },
+  "current_measurements": {
+    "channel_0": {
+      "current_ma": -0.19512195121951217,
+      "power_mw": 0.4878048780487804,
+      "status": "idle"
+    },
+    "channel_1": {
+      "current_ma": -0.19512195121951217,
+      "power_mw": 0.0,
+      "status": "idle"
+    },
+    "channel_2": {
+      "current_ma": -0.09756097560975609,
+      "power_mw": 0.0,
+      "status": "idle"
+    },
+    "channel_3": {
+      "current_ma": -0.09756097560975609,
+      "power_mw": 0.0,
+      "status": "idle"
+    }
+  }
+}

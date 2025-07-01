@@ -1,0 +1,79 @@
+{
+  "connectivity": {
+    "timestamp": "2025-07-01T02:17:45.851021",
+    "test_type": "connectivity",
+    "status": false,
+    "spi_connectivity": false,
+    "sensor_initialization": false,
+    "error": "SPI connectivity failed"
+  },
+  "functionality": {
+    "timestamp": "2025-07-01T02:17:45.905709",
+    "test_type": "functionality",
+    "status": false,
+    "led_control": false,
+    "motion_detection": false,
+    "error": "Sensor not initialized"
+  },
+  "bandwidth": {
+    "timestamp": "2025-07-01T02:17:45.905830",
+    "test_type": "bandwidth",
+    "status": true,
+    "bandwidth_data": {
+      "status": "success",
+      "max_safe_speed": 8000000,
+      "test_speeds": [
+        1000000,
+        2000000,
+        4000000,
+        8000000
+      ],
+      "bandwidth_results": {
+        "1000000": {
+          "successful": 50,
+          "failed": 0,
+          "success_rate": 1.0,
+          "commands_per_second": 4194304.0,
+          "duration": 1.1920928955078125e-05
+        },
+        "2000000": {
+          "successful": 50,
+          "failed": 0,
+          "success_rate": 1.0,
+          "commands_per_second": 9118052.173913043,
+          "duration": 5.4836273193359375e-06
+        },
+        "4000000": {
+          "successful": 50,
+          "failed": 0,
+          "success_rate": 1.0,
+          "commands_per_second": 11650844.444444444,
+          "duration": 4.291534423828125e-06
+        },
+        "8000000": {
+          "successful": 50,
+          "failed": 0,
+          "success_rate": 1.0,
+          "commands_per_second": 11650844.444444444,
+          "duration": 4.291534423828125e-06
+        }
+      }
+    },
+    "error": null
+  },
+  "comprehensive": {
+    "timestamp": "2025-07-01T02:17:45.906065",
+    "test_suite": "optical_flow_comprehensive",
+    "tests": {
+      "connectivity": {
+        "timestamp": "2025-07-01T02:17:45.906090",
+        "test_type": "connectivity",
+        "status": false,
+        "spi_connectivity": false,
+        "sensor_initialization": false,
+        "error": "SPI connectivity failed"
+      }
+    },
+    "overall_status": false
+  }
+}

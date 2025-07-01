@@ -1,83 +1,131 @@
-# Football Rotation Motion Control Test Platform
-# Python dependencies for the complete system
+# Ball Rotation Control Platform - Requirements
+# Core dependencies for the platform control system
 
-# Core numerical and scientific computing
-numpy>=1.21.0
-scipy>=1.7.0
+# Hardware communication libraries
+pyserial>=3.5                    # Serial communication for RoboClaw and Maker Pi
+smbus2>=0.5.0                    # I2C communication for INA219
+spidev>=3.7                      # SPI communication for optical flow sensor
+RPi.GPIO>=0.7.1                  # GPIO control for Raspberry Pi
+gpiod>=2.0.0                     # GPIO library for PAA5100JE-Q
+gpiodevice>=0.1.0                # GPIO device library for PAA5100JE-Q
 
-# Serial communication
-pyserial>=3.5
+# Optical flow sensor
+pmw3901>=1.0.0                   # Optical flow sensor (PAA5100 class for PAA5100JE-Q)
 
-# I2C communication (for power sensors)
-smbus2>=0.4.0
-
-# SPI communication (for optical flow sensor)
-spidev>=3.5
-
-# Windows-specific functionality
-pywin32>=228; sys_platform == "win32"
-
-# Raspberry Pi GPIO control
-RPi.GPIO>=0.7.0; sys_platform == "linux"
-
-# Optical flow sensor interface
-pmw3901>=1.0.0
-
-# Type hints support
-typing-extensions>=4.0.0
-
-# Testing framework
-pytest>=6.0.0
-pytest-cov>=2.10.0
-
-# Development and notebook support
-jupyter>=1.0.0
-matplotlib>=3.5.0
+# Power monitoring
+adafruit-circuitpython-ina219>=3.4.29  # Current sensor (INA219)
+pi-ina219>=1.4.1                 # Alternative INA219 library
 
 # Data processing and analysis
-pandas>=1.3.0
+numpy>=2.3.1                     # Numerical computing
+matplotlib>=3.10.3               # Plotting and visualization
+pandas>=2.3.0                    # Data manipulation and analysis
+scipy>=1.16.0                    # Scientific computing
 
-# YAML configuration support
-pyyaml>=6.0
+# Development and testing
+pytest>=7.0.0                    # Testing framework
+black>=25.1.0                    # Code formatting
+flake8>=7.3.0                    # Code linting
+mypy>=1.16.1                     # Type checking
 
-# JSON schema validation
-jsonschema>=4.0.0
+# Documentation
+sphinx>=8.2.3                    # Documentation generation
+sphinx-rtd-theme>=3.0.2          # Read the Docs theme
 
-# Logging and monitoring
-colorlog>=6.0.0
+# Utilities
+colorlog>=6.9.0                  # Colored logging
+psutil>=7.0.0                    # System and process utilities
+pyusb>=1.3.1                     # USB device access
+pyftdi>=0.56.0                   # FTDI device support
 
-# Cross-platform file system operations
-pathlib2>=2.3.0; python_version < "3.4"
+# Platform detection and compatibility
+Adafruit-PlatformDetect>=3.80.0  # Platform detection for Adafruit libraries
+Adafruit-Blinka>=8.61.2          # Adafruit CircuitPython compatibility layer
+adafruit-circuitpython-busdevice>=5.2.13  # Bus device support
+adafruit-circuitpython-register>=1.10.4   # Register access
+adafruit-circuitpython-typing>=1.12.1     # Type hints
 
-# Time and date utilities
-python-dateutil>=2.8.0
+# Additional utilities
+plotly>=6.2.0                    # Interactive plotting
+Pillow>=11.2.1                   # Image processing
+PyYAML>=6.0.2                    # YAML configuration files
+requests>=2.32.4                 # HTTP requests
+urllib3>=2.5.0                   # HTTP client
+certifi>=2025.6.15               # SSL certificates
+charset-normalizer>=3.4.2        # Character encoding
+idna>=3.10                       # Internationalized domain names
+six>=1.17.0                      # Python 2/3 compatibility
+python-dateutil>=2.9.0.post0     # Date utilities
+pytz>=2025.2                     # Timezone support
+packaging>=25.0                  # Package utilities
+typing_extensions>=4.14.0        # Type hint extensions
 
-# Configuration management
-configparser>=5.0.0
+# =====================================================================
+# DEVELOPMENT TOOLS
+# =====================================================================
 
-# Threading and multiprocessing
-threading2>=0.3.1
+# Code formatting for consistent style
+black>=25.1.0
 
-# Network communication (for future remote monitoring)
-requests>=2.25.0
+# Linting for code quality and style checking
+flake8>=7.3.0
 
-# Data visualization
-plotly>=5.0.0
+# Type checking for better code reliability
+mypy>=1.16.1
 
-# Real-time plotting
-matplotlib>=3.5.0
+# =====================================================================
+# LOCAL/CUSTOM LIBRARIES
+# =====================================================================
 
-# System monitoring
-psutil>=5.8.0
+# Note: The following libraries are NOT pip packages and must be included locally:
 
-# Development tools
-black>=21.0.0
-flake8>=3.9.0
-mypy>=0.910
+# roboclaw_python/roboclaw_3.py
+# - RoboClaw motor controller interface
+# - More comprehensive API than pip alternative (roboclaw-python)
+# - Complete RoboClaw command set and settings management
+# - Used by: All test scripts and examples
+# - Import: from roboclaw_3 import Roboclaw
 
-# Documentation generation
-sphinx>=4.0.0
-sphinx-rtd-theme>=1.0.0
+# =====================================================================
+# REMOVED DEPENDENCIES (for reference)
+# =====================================================================
 
-# Version control integration
-gitpython>=3.1.0 
+# The following packages were removed during cleanup:
+# - sphinx, gitpython: Development tools not needed for production
+# - pywin32: Windows-specific, not needed on Linux/Raspberry Pi
+# - threading2, pathlib2: Built into Python 3.12
+# - Various unused packages: Not actually used in the codebase
+
+# =====================================================================
+# INSTALLATION NOTES
+# =====================================================================
+
+# 1. Create virtual environment:
+#    python3 -m venv venv
+#    source venv/bin/activate
+
+# 2. Install dependencies:
+#    pip install -r requirements.txt
+
+# 3. Hardware permissions required:
+#    sudo usermod -a -G dialout $USER
+#    # Logout and login required for group changes
+
+# 4. Verify installation:
+#    python3 -c "import pmw3901, ina219, pyserial, smbus2, spidev, RPi.GPIO; print('All libraries installed successfully')"
+
+# =====================================================================
+# HARDWARE COMPATIBILITY
+# =====================================================================
+
+# Verified working on:
+# - Raspberry Pi 5 (ARM64 aarch64)
+# - Ubuntu 24.04 LTS
+# - Python 3.12.3
+# - All hardware components detected and accessible
+
+# Communication protocols:
+# - USB: RoboClaw controllers (automatic baud rate)
+# - I2C: INA219 sensors at addresses 0x40-0x43
+# - SPI: PMW3901 sensor on bus 0, device 0
+# - UART: Maker Pi RP2040 at 115200 baud

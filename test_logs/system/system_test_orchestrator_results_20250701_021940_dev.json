@@ -1,0 +1,20 @@
+{
+  "timestamp": "2025-07-01T02:19:35.933946",
+  "development_mode": true,
+  "orchestrator_version": "2.0",
+  "module_results": {
+    "connectivity": {
+      "module": "Connectivity",
+      "start_time": "2025-07-01T02:19:35.934962",
+      "status": "failed",
+      "exit_code": 1,
+      "output": "\ud83d\udd0c Running System Connectivity Tests...\n\nAttempting to connect to Roboclaw controllers...\nCommunication mode: USB\n\u2713 Configuration validation passed\n\nTrying to connect to first controller on auto_detected...\n  Address: 0x80\n\u2717 Failed to connect to first controller on auto_detected\n\nConnection failed for rc1\nCurrent settings:\n  connected: False\n  address: 128\n  port: auto_detected\n  baudrate: None\n  communication_mode: USB\nAutopilot mode: Skipping user input, using default settings\n\n\u2717 No controllers connected successfully\n\u2713 INA219 sensor initialized at address 0x40\n\u2713 INA219 sensor initialized at address 0x41\n\u2713 INA219 sensor initialized at address 0x42\n\u2713 INA219 sensor initialized at address 0x43\nNote: Core motion control sensors handled by Raspberry Pi 5\nMaker Pi RP2040 handles experimental sensors, displays, and IO modules\n\n=== CircuitPython Drive Detection (LINUX) ===\nDetecting CircuitPython drives on Linux...\n\u2713 Platform configuration updated with detected drives\n\n=== Connecting to Maker Pi on /dev/ttyACM0 ===\n\u2713 Serial connection opened on /dev/ttyACM0\n\u2713 Connected to Maker Pi via serial\n\u2717 Communication test failed\n\n============================================================\n\ud83d\udd0c CONNECTIVITY TEST RESULTS\n============================================================\n\u274c ROBOCLAW: False\n   Details: {'roboclaw': {'status': 'failed', 'error': 'connection test failed'}}\n\u2705 INA219: True\n\u274c OPTICAL_FLOW: False\n   Details: {'status': 'error', 'error': 'Cannot determine SOC peripheral base address'}\n\u274c MAKER_PI: False\n   Details: {}\n\n------------------------------------------------------------\n\ud83d\udcca SUMMARY: 1/4 modules connected\n   Success Rate: 25.0%\n============================================================\n\ud83d\udcbe Results saved to: /home/bas/Desktop/REPO Ball Rotation Control Platform/Ball-Rotation-Control-Platform/platform_control/tests/test_logs/connectivity/connectivity_test_20250701_021937.json\n",
+      "error": "",
+      "duration": 1.2481935024261475
+    }
+  },
+  "system_status": "initialized",
+  "errors": [],
+  "performance_metrics": {},
+  "execution_summary": {}
+}

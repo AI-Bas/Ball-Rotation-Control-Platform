@@ -1,0 +1,31 @@
+{
+  "timestamp": "2025-06-30T14:40:38.539846",
+  "ina219_channels": {
+    "channel_0": {
+      "address": "0x40",
+      "status": "error",
+      "error": "Could not determine default I2C bus for platform."
+    },
+    "channel_1": {
+      "address": "0x41",
+      "status": "error",
+      "error": "Could not determine default I2C bus for platform."
+    },
+    "channel_2": {
+      "address": "0x42",
+      "status": "error",
+      "error": "Could not determine default I2C bus for platform."
+    },
+    "channel_3": {
+      "address": "0x43",
+      "status": "error",
+      "error": "Could not determine default I2C bus for platform."
+    }
+  },
+  "motor_mapping": {
+    "motor_1": "channel_0",
+    "motor_2": "channel_1",
+    "motor_3": "channel_2",
+    "motor_4": "channel_3"
+  }
+}

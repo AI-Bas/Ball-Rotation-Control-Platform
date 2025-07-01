@@ -1,0 +1,1118 @@
+{
+    "system_metadata": {
+        "version": "1.0",
+        "last_updated": "2025-07-01",
+        "description": "Central configuration for Ball Handler Test Platform",
+        "schema_version": "1.0",
+        "maintenance": {
+            "update_frequency": "After every test completion",
+            "validation": "Cross-reference with system_design_architecture.yaml",
+            "backup_strategy": "Automatic backup before changes"
+        }
+    },
+    "system_parameters": {
+        "rBall": 0.111,
+        "rOmni": 0.1,
+        "rZ": -0.0555,
+        "rX": 0.0555,
+        "beta": 120.0,
+        "setpoint_amplitude": 1000.0,
+        "max_velocity": 100.0,
+        "max_acceleration": 50.0,
+        "indexed_sequence": {
+            "start_velocity": 10.0,
+            "max_velocity": 100.0,
+            "ramp_time": 2.0,
+            "motor_confirmation": true,
+            "timeout": 5.0
+        },
+        "motor_confirmation": {
+            "timeout": 5.0,
+            "auto_confirm": false,
+            "target_confirmations": 3,
+            "max_attempts": 3
+        },
+        "wheel_positions": [
+            {
+                "x": 0.0,
+                "y": 0.1,
+                "angle": 0.0
+            },
+            {
+                "x": -0.0866,
+                "y": -0.05,
+                "angle": 120.0
+            },
+            {
+                "x": 0.0866,
+                "y": -0.05,
+                "angle": 240.0
+            }
+        ],
+        "last_updated": "2025-06-29T22:55:00",
+        "updated_by": "system_documentation_update"
+    },
+    "initial_conditions": {
+        "translation_velocity": {
+            "vx": 0.0,
+            "vy": 0.0
+        },
+        "control_loop": {
+            "dt": 0.01,
+            "buffer_duration": 60.0,
+            "pid_gains": {
+                "kp": 1.0,
+                "ki": 0.01,
+                "kd": 0.001
+            }
+        },
+        "last_updated": "2025-01-27T00:00:00",
+        "updated_by": "system_initialization"
+    },
+    "hardware": {
+        "roboclaw": {
+            "model": "2x30A",
+            "communication": {
+                "primary": "USB",
+                "fallback": "RS232",
+                "rs232_settings": {
+                    "baudrate_primary": 460800,
+                    "baudrate_fallback": 38400,
+                    "additional_rates": [
+                        115200,
+                        57600,
+                        9600
+                    ],
+                    "addresses": {
+                        "rc1": "0x80",
+                        "rc2": "0x80"
+                    },
+                    "timeout": 0.01,
+                    "retries": 3,
+                    "command_delay": 0.01
+                }
+            },
+            "motor_mapping": {
+                "motor1": {
+                    "controller": "rc1",
+                    "address": "0x80",
+                    "channel": "A",
+                    "port": "/dev/ttyACM0",
+                    "position": "Auto-detected motor1",
+                    "description": "Automatically detected motor1",
+                    "last_updated": "2025-06-29T20:25:40.993242",
+                    "updated_by": "automated_motor_mapping",
+                    "encoder_change": 1099,
+                    "detection_time": 3.2809224128723145
+                },
+                "motor2": {
+                    "controller": "rc1",
+                    "address": "0x80",
+                    "channel": "B",
+                    "port": "auto_detected",
+                    "position": "120\u00b0 from X-axis",
+                    "description": "Secondary wheel at 120\u00b0",
+                    "last_updated": "2025-01-29T00:00:00",
+                    "updated_by": "dynamic_port_detection"
+                },
+                "motor3": {
+                    "controller": "rc2",
+                    "address": "0x80",
+                    "channel": "A",
+                    "port": "/dev/ttyACM1",
+                    "position": "Auto-detected motor3",
+                    "description": "Automatically detected motor3",
+                    "last_updated": "2025-06-29T20:25:40.993290",
+                    "updated_by": "automated_motor_mapping",
+                    "encoder_change": 1361,
+                    "detection_time": 0.31107330322265625
+                },
+                "motor4": {
+                    "controller": "rc2",
+                    "address": "0x80",
+                    "channel": "B",
+                    "port": "auto_detected",
+                    "position": "Linear stage (future)",
+                    "description": "Future linear stage drive",
+                    "last_updated": "2025-01-29T00:00:00",
+                    "updated_by": "dynamic_port_detection"
+                }
+            },
+            "controllers": {
+                "rc1": {
+                    "port": "/dev/ttyACM0",
+                    "address": "0x80",
+                    "channels": [
+                        1,
+                        2
+                    ],
+                    "motors": [
+                        "motor1",
+                        "motor2"
+                    ],
+                    "description": "Primary controller for motors 1 and 2",
+                    "last_updated": "2025-01-29T00:00:00",
+                    "updated_by": "dynamic_port_detection"
+                },
+                "rc2": {
+                    "port": "/dev/ttyACM1",
+                    "address": "0x80",
+                    "channels": [
+                        3,
+                        4
+                    ],
+                    "motors": [
+                        "motor3",
+                        "motor4"
+                    ],
+                    "description": "Secondary controller for motors 3 and 4",
+                    "last_updated": "2025-01-29T00:00:00",
+                    "updated_by": "dynamic_port_detection"
+                }
+            },
+            "pin_functions": {
+                "s3": {
+                    "mode": 1,
+                    "description": "E-Stop (mode 1) - Emergency stop functionality, non-inverted, non-latching",
+                    "last_updated": "2025-01-27T00:00:00",
+                    "updated_by": "system_initialization"
+                },
+                "s4": {
+                    "mode": 2,
+                    "description": "Voltage clamp (mode 2) - Voltage monitoring and clamping, non-inverted, non-latching",
+                    "last_updated": "2025-01-27T00:00:00",
+                    "updated_by": "system_initialization"
+                },
+                "s5": {
+                    "mode": 2,
+                    "description": "Voltage clamp (mode 2) - Voltage monitoring and clamping, non-inverted, non-latching",
+                    "last_updated": "2025-01-27T00:00:00",
+                    "updated_by": "system_initialization"
+                }
+            },
+            "last_updated": "2025-01-27T00:00:00",
+            "updated_by": "system_initialization"
+        },
+        "optical_flow": {
+            "model": "PAA5100JE-Q",
+            "interface": "SPI",
+            "spi_bus": 0,
+            "spi_device": 0,
+            "cs_pin": 8,
+            "reset_pin": 12,
+            "motion_pin": 16,
+            "library": "pmw3901",
+            "sensor_class": "PAA5100",
+            "import_statement": "from pmw3901 import PAA5100",
+            "purpose": "Ball position and velocity tracking",
+            "features": [
+                "High-resolution motion detection",
+                "Motion tracking in X/Y directions",
+                "SPI communication interface",
+                "LED control for visual feedback"
+            ],
+            "last_updated": "2025-06-30T00:15:00",
+            "updated_by": "sensor_reference_correction"
+        },
+        "current_sensor": {
+            "i2c_bus": 1,
+            "address": [
+                "0x40",
+                "0x41",
+                "0x42",
+                "0x43"
+            ],
+            "default_reference_addresses": [
+                "0x40",
+                "0x41",
+                "0x42",
+                "0x43"
+            ],
+            "fallback_only": true,
+            "note": "These addresses are detected I2C devices and serve as fallback reference only",
+            "channels": [
+                0,
+                1,
+                2,
+                3
+            ],
+            "last_updated": "2025-01-27T00:00:00",
+            "updated_by": "system_initialization",
+            "motor_mapping": {
+                "motor1": {
+                    "sensor_address": "0x43",
+                    "current_change": 600.0,
+                    "description": "X-axis wheel"
+                },
+                "motor2": {
+                    "sensor_address": "0x40",
+                    "current_change": 600.0,
+                    "description": "120\u00b0 wheel"
+                },
+                "motor3": {
+                    "sensor_address": "0x41",
+                    "current_change": 600.0,
+                    "description": "240\u00b0 wheel"
+                },
+                "motor4": {
+                    "sensor_address": "0x42",
+                    "current_change": 600.0,
+                    "description": "Linear stage"
+                }
+            }
+        },
+        "motor_specifications": {
+            "type": "DC Brushed Motor",
+            "voltage": 12.0,
+            "current_rating": 30.0,
+            "power_rating": 360.0,
+            "speed_rating": 3000.0,
+            "torque_rating": 1.15,
+            "last_updated": "2025-06-29T22:55:00",
+            "updated_by": "system_documentation_update"
+        },
+        "wheel_specifications": {
+            "type": "Omni-directional Wheel",
+            "diameter": 0.2,
+            "width": 0.025,
+            "material": "Polyurethane",
+            "hardness": 85,
+            "weight": 0.15,
+            "last_updated": "2025-06-29T22:55:00",
+            "updated_by": "system_documentation_update"
+        },
+        "transmission_specifications": {
+            "type": "Direct Drive with Encoder",
+            "gear_ratio": 1.0,
+            "efficiency": 0.95,
+            "encoder_resolution": 4096,
+            "encoder_type": "Quadrature",
+            "backlash": 0.001,
+            "last_updated": "2025-06-29T22:55:00",
+            "updated_by": "system_documentation_update"
+        },
+        "maker_pi": {
+            "type": "maker_pi_rp2040",
+            "responsibility": "experimental_modules_only",
+            "note": "Core motion control sensors (encoder feedback, optical flow, power sensor) handled by Raspberry Pi 5",
+            "communication": {
+                "primary": "USB_CIRCUITPYTHON",
+                "fallback": "USB_SERIAL",
+                "baudrate": 115200,
+                "timeout": 1
+            },
+            "circuitpython_detection": {
+                "drive_files": [
+                    "boot_out.txt",
+                    "code.py"
+                ],
+                "boot_out_path": "boot_out.txt",
+                "code_py_path": "code.py",
+                "backup_directory": "platform_control/tests/maker_pi_settings_backup"
+            },
+            "modules": {
+                "experimental_sensors": {
+                    "enabled": true,
+                    "description": "Future experimental sensor modules (NOT core motion control sensors)",
+                    "last_updated": "2025-01-27T00:00:00",
+                    "updated_by": "system_initialization"
+                },
+                "displays": {
+                    "enabled": true,
+                    "description": "Future display modules for user interface and status",
+                    "last_updated": "2025-01-27T00:00:00",
+                    "updated_by": "system_initialization"
+                },
+                "io_modules": {
+                    "enabled": true,
+                    "description": "Future IO modules for additional functionality",
+                    "last_updated": "2025-01-27T00:00:00",
+                    "updated_by": "system_initialization"
+                }
+            },
+            "detected_drives": {},
+            "last_updated": "2025-07-01T03:49:56.648373",
+            "updated_by": "maker_pi_interface",
+            "connection_status": {
+                "I:\\": {
+                    "status": "no_serial_port",
+                    "error": "No serial port detected"
+                }
+            },
+            "experimental_modules": {
+                "I:\\": {
+                    "experimental_sensors": {
+                        "status": "placeholder",
+                        "description": "Future experimental sensor modules (NOT core motion control sensors)",
+                        "note": "Core motion control sensors handled by Raspberry Pi 5"
+                    },
+                    "displays": {
+                        "status": "placeholder",
+                        "description": "Future display modules for user interface and status"
+                    },
+                    "io_modules": {
+                        "status": "placeholder",
+                        "description": "Future IO modules for additional functionality"
+                    },
+                    "file_system_access": {
+                        "status": "working",
+                        "description": "File system access confirmed"
+                    }
+                }
+            }
+        },
+        "hardware_responsibilities": {
+            "raspberry_pi_5": {
+                "role": "Core motion control",
+                "responsibilities": [
+                    "Encoder feedback from RoboClaw controllers",
+                    "Optical flow sensor (PMW3901) for ball motion detection",
+                    "Power sensor (INA219) for current and voltage monitoring",
+                    "Primary motion control loop and system coordination"
+                ],
+                "note": "Handles all core motion control sensors centrally"
+            },
+            "maker_pi_rp2040": {
+                "role": "Experimental modules",
+                "responsibilities": [
+                    "Experimental sensor modules (future)",
+                    "Display modules (future)",
+                    "IO modules (future)"
+                ],
+                "note": "Clear separation ensures motion control loop performance is not affected"
+            }
+        },
+        "last_updated": "2025-01-27T00:00:00",
+        "updated_by": "system_initialization"
+    },
+    "logging": {
+        "data_file": "platform_data.csv",
+        "error_file": "error_log.txt",
+        "plot_update_interval": 0.5,
+        "test_logs_dir": "platform_control/tests/test_logs",
+        "maker_pi_backups_dir": "platform_control/tests/maker_pi_settings_backup",
+        "last_updated": "2025-01-27T00:00:00",
+        "updated_by": "system_initialization"
+    },
+    "motor_defaults": {
+        "encoder_cpr": 512,
+        "gear_reduction": 4.333,
+        "motor_constant": 699,
+        "nominal_voltage": 12,
+        "nominal_current": 6,
+        "peak_current": 60,
+        "last_updated": "2025-01-27T00:00:00",
+        "updated_by": "system_initialization"
+    },
+    "testing": {
+        "roboclaw_settings_backup_dir": "platform_control/tests/roboclaw_settings_backup",
+        "compare_settings_mode": "latest",
+        "test_logs_dir": "platform_control/tests/test_logs",
+        "maker_pi_settings_backup_dir": "platform_control/tests/maker_pi_settings_backup",
+        "modular_test_structure": {
+            "system_test": "Main unified test suite",
+            "maker_pi_test": "Maker Pi experimental module testing",
+            "calibration_tests": "Motor and system calibration",
+            "system_characterization_tests": "Performance testing and characterization"
+        },
+        "last_updated": "2025-01-27T00:00:00",
+        "updated_by": "system_initialization"
+    },
+    "communication": {
+        "serial_port": "/dev/ttyAMA0",
+        "serial_baudrate": 115200,
+        "timeout": 1,
+        "last_updated": "2025-01-27T00:00:00",
+        "updated_by": "system_initialization"
+    },
+    "roboclaw_settings_reference": {
+        "description": "Comprehensive reference list of all RoboClaw 2x30A settings for backup, comparison, and restoration",
+        "version": "1.0",
+        "last_updated": "2025-06-28 01:01:39",
+        "settings": {
+            "velocity_pid": {
+                "description": "Velocity PID control parameters for each motor",
+                "units": "scaled values (divide by 65536 for actual values)",
+                "motor1": {
+                    "p": {
+                        "default": 65536,
+                        "description": "Proportional gain",
+                        "actual_default": 1.0,
+                        "last_updated": "2025-06-28 01:01:39",
+                        "updated_by": "reference_creation"
+                    },
+                    "i": {
+                        "default": 32768,
+                        "description": "Integral gain",
+                        "actual_default": 0.5,
+                        "last_updated": "2025-06-28 01:01:39",
+                        "updated_by": "reference_creation"
+                    },
+                    "d": {
+                        "default": 16384,
+                        "description": "Derivative gain",
+                        "actual_default": 0.25,
+                        "last_updated": "2025-06-28 01:01:39",
+                        "updated_by": "reference_creation"
+                    },
+                    "qpps": {
+                        "default": 44000,
+                        "description": "Quadrature pulses per second",
+                        "actual_default": 44000,
+                        "last_updated": "2025-06-28 01:01:39",
+                        "updated_by": "reference_creation"
+                    }
+                },
+                "motor2": {
+                    "p": {
+                        "default": 65536,
+                        "description": "Proportional gain",
+                        "actual_default": 1.0,
+                        "last_updated": "2025-06-28 01:01:39",
+                        "updated_by": "reference_creation"
+                    },
+                    "i": {
+                        "default": 32768,
+                        "description": "Integral gain",
+                        "actual_default": 0.5,
+                        "last_updated": "2025-06-28 01:01:39",
+                        "updated_by": "reference_creation"
+                    },
+                    "d": {
+                        "default": 16384,
+                        "description": "Derivative gain",
+                        "actual_default": 0.25,
+                        "last_updated": "2025-06-28 01:01:39",
+                        "updated_by": "reference_creation"
+                    },
+                    "qpps": {
+                        "default": 44000,
+                        "description": "Quadrature pulses per second",
+                        "actual_default": 44000,
+                        "last_updated": "2025-06-28 01:01:39",
+                        "updated_by": "reference_creation"
+                    }
+                },
+                "motor3": {
+                    "p": {
+                        "default": 65536,
+                        "description": "Proportional gain",
+                        "actual_default": 1.0,
+                        "last_updated": "2025-06-28 01:01:39",
+                        "updated_by": "reference_creation"
+                    },
+                    "i": {
+                        "default": 32768,
+                        "description": "Integral gain",
+                        "actual_default": 0.5,
+                        "last_updated": "2025-06-28 01:01:39",
+                        "updated_by": "reference_creation"
+                    },
+                    "d": {
+                        "default": 16384,
+                        "description": "Derivative gain",
+                        "actual_default": 0.25,
+                        "last_updated": "2025-06-28 01:01:39",
+                        "updated_by": "reference_creation"
+                    },
+                    "qpps": {
+                        "default": 44000,
+                        "description": "Quadrature pulses per second",
+                        "actual_default": 44000,
+                        "last_updated": "2025-06-28 01:01:39",
+                        "updated_by": "reference_creation"
+                    }
+                }
+            },
+            "position_pid": {
+                "description": "Position PID control parameters for each motor",
+                "units": "scaled values (divide by 1024 for actual values)",
+                "motor1": {
+                    "kp": {
+                        "default": 1024,
+                        "description": "Proportional gain",
+                        "actual_default": 1.0,
+                        "last_updated": "2025-06-28 01:01:39",
+                        "updated_by": "reference_creation"
+                    },
+                    "ki": {
+                        "default": 512,
+                        "description": "Integral gain",
+                        "actual_default": 0.5,
+                        "last_updated": "2025-06-28 01:01:39",
+                        "updated_by": "reference_creation"
+                    },
+                    "kd": {
+                        "default": 256,
+                        "description": "Derivative gain",
+                        "actual_default": 0.25,
+                        "last_updated": "2025-06-28 01:01:39",
+                        "updated_by": "reference_creation"
+                    },
+                    "kimax": {
+                        "default": 156,
+                        "description": "Maximum integral windup",
+                        "actual_default": 156,
+                        "last_updated": "2025-06-28 01:01:39",
+                        "updated_by": "reference_creation"
+                    },
+                    "deadzone": {
+                        "default": 0,
+                        "description": "Position deadzone",
+                        "actual_default": 0,
+                        "last_updated": "2025-06-28 01:01:39",
+                        "updated_by": "reference_creation"
+                    },
+                    "min": {
+                        "default": 0,
+                        "description": "Minimum position",
+                        "actual_default": 0,
+                        "last_updated": "2025-06-28 01:01:39",
+                        "updated_by": "reference_creation"
+                    },
+                    "max": {
+                        "default": 50000,
+                        "description": "Maximum position",
+                        "actual_default": 50000,
+                        "last_updated": "2025-06-28 01:01:39",
+                        "updated_by": "reference_creation"
+                    }
+                },
+                "motor2": {
+                    "kp": {
+                        "default": 1024,
+                        "description": "Proportional gain",
+                        "actual_default": 1.0,
+                        "last_updated": "2025-06-28 01:01:39",
+                        "updated_by": "reference_creation"
+                    },
+                    "ki": {
+                        "default": 512,
+                        "description": "Integral gain",
+                        "actual_default": 0.5,
+                        "last_updated": "2025-06-28 01:01:39",
+                        "updated_by": "reference_creation"
+                    },
+                    "kd": {
+                        "default": 256,
+                        "description": "Derivative gain",
+                        "actual_default": 0.25,
+                        "last_updated": "2025-06-28 01:01:39",
+                        "updated_by": "reference_creation"
+                    },
+                    "kimax": {
+                        "default": 156,
+                        "description": "Maximum integral windup",
+                        "actual_default": 156,
+                        "last_updated": "2025-06-28 01:01:39",
+                        "updated_by": "reference_creation"
+                    },
+                    "deadzone": {
+                        "default": 0,
+                        "description": "Position deadzone",
+                        "actual_default": 0,
+                        "last_updated": "2025-06-28 01:01:39",
+                        "updated_by": "reference_creation"
+                    },
+                    "min": {
+                        "default": 0,
+                        "description": "Minimum position",
+                        "actual_default": 0,
+                        "last_updated": "2025-06-28 01:01:39",
+                        "updated_by": "reference_creation"
+                    },
+                    "max": {
+                        "default": 50000,
+                        "description": "Maximum position",
+                        "actual_default": 50000,
+                        "last_updated": "2025-06-28 01:01:39",
+                        "updated_by": "reference_creation"
+                    }
+                },
+                "motor3": {
+                    "kp": {
+                        "default": 1024,
+                        "description": "Proportional gain",
+                        "actual_default": 1.0,
+                        "last_updated": "2025-06-28 01:01:39",
+                        "updated_by": "reference_creation"
+                    },
+                    "ki": {
+                        "default": 512,
+                        "description": "Integral gain",
+                        "actual_default": 0.5,
+                        "last_updated": "2025-06-28 01:01:39",
+                        "updated_by": "reference_creation"
+                    },
+                    "kd": {
+                        "default": 256,
+                        "description": "Derivative gain",
+                        "actual_default": 0.25,
+                        "last_updated": "2025-06-28 01:01:39",
+                        "updated_by": "reference_creation"
+                    },
+                    "kimax": {
+                        "default": 156,
+                        "description": "Maximum integral windup",
+                        "actual_default": 156,
+                        "last_updated": "2025-06-28 01:01:39",
+                        "updated_by": "reference_creation"
+                    },
+                    "deadzone": {
+                        "default": 0,
+                        "description": "Position deadzone",
+                        "actual_default": 0,
+                        "last_updated": "2025-06-28 01:01:39",
+                        "updated_by": "reference_creation"
+                    },
+                    "min": {
+                        "default": 0,
+                        "description": "Minimum position",
+                        "actual_default": 0,
+                        "last_updated": "2025-06-28 01:01:39",
+                        "updated_by": "reference_creation"
+                    },
+                    "max": {
+                        "default": 50000,
+                        "description": "Maximum position",
+                        "actual_default": 50000,
+                        "last_updated": "2025-06-28 01:01:39",
+                        "updated_by": "reference_creation"
+                    }
+                }
+            },
+            "voltage_limits": {
+                "description": "Battery voltage limits for main and logic circuits",
+                "units": "0.1V increments (divide by 10 for actual voltage)",
+                "main_battery": {
+                    "min": {
+                        "default": 60,
+                        "description": "Minimum main battery voltage",
+                        "actual_default": 6.0,
+                        "last_updated": "2025-06-28 01:01:39",
+                        "updated_by": "reference_creation"
+                    },
+                    "max": {
+                        "default": 300,
+                        "description": "Maximum main battery voltage",
+                        "actual_default": 30.0,
+                        "last_updated": "2025-06-28 01:01:39",
+                        "updated_by": "reference_creation"
+                    }
+                },
+                "logic_battery": {
+                    "min": {
+                        "default": 60,
+                        "description": "Minimum logic battery voltage",
+                        "actual_default": 6.0,
+                        "last_updated": "2025-06-28 01:01:39",
+                        "updated_by": "reference_creation"
+                    },
+                    "max": {
+                        "default": 300,
+                        "description": "Maximum logic battery voltage",
+                        "actual_default": 30.0,
+                        "last_updated": "2025-06-28 01:01:39",
+                        "updated_by": "reference_creation"
+                    }
+                }
+            },
+            "current_limits": {
+                "description": "Maximum current limits for each motor",
+                "units": "0.1A increments (divide by 10 for actual current)",
+                "motor1": {
+                    "default": 600,
+                    "description": "Maximum current for motor 1",
+                    "actual_default": 60.0,
+                    "last_updated": "2025-06-28 01:01:39",
+                    "updated_by": "reference_creation"
+                },
+                "motor2": {
+                    "default": 600,
+                    "description": "Maximum current for motor 2",
+                    "actual_default": 60.0,
+                    "last_updated": "2025-06-28 01:01:39",
+                    "updated_by": "reference_creation"
+                },
+                "motor3": {
+                    "default": 600,
+                    "description": "Maximum current for motor 3",
+                    "actual_default": 60.0,
+                    "last_updated": "2025-06-28 01:01:39",
+                    "updated_by": "reference_creation"
+                }
+            },
+            "acceleration": {
+                "description": "Default acceleration values for each motor",
+                "units": "steps per second squared",
+                "motor1": {
+                    "default": 100000,
+                    "description": "Default acceleration for motor 1",
+                    "actual_default": 100000,
+                    "last_updated": "2025-06-28 01:01:39",
+                    "updated_by": "reference_creation"
+                },
+                "motor2": {
+                    "default": 100000,
+                    "description": "Default acceleration for motor 2",
+                    "actual_default": 100000,
+                    "last_updated": "2025-06-28 01:01:39",
+                    "updated_by": "reference_creation"
+                },
+                "motor3": {
+                    "default": 100000,
+                    "description": "Default acceleration for motor 3",
+                    "actual_default": 100000,
+                    "last_updated": "2025-06-28 01:01:39",
+                    "updated_by": "reference_creation"
+                }
+            },
+            "encoder_settings": {
+                "description": "Encoder configuration for each motor",
+                "units": "mode values (0-3)",
+                "motor1": {
+                    "default": 0,
+                    "description": "Encoder mode for motor 1 (0=Quadrature, 1=Single, 2=Single with direction, 3=Single with direction inverted)",
+                    "actual_default": 0,
+                    "last_updated": "2025-06-28 01:01:39",
+                    "updated_by": "reference_creation"
+                },
+                "motor2": {
+                    "default": 0,
+                    "description": "Encoder mode for motor 2 (0=Quadrature, 1=Single, 2=Single with direction, 3=Single with direction inverted)",
+                    "actual_default": 0,
+                    "last_updated": "2025-06-28 01:01:39",
+                    "updated_by": "reference_creation"
+                },
+                "motor3": {
+                    "default": 0,
+                    "description": "Encoder mode for motor 3 (0=Quadrature, 1=Single, 2=Single with direction, 3=Single with direction inverted)",
+                    "actual_default": 0,
+                    "last_updated": "2025-06-28 01:01:39",
+                    "updated_by": "reference_creation"
+                }
+            },
+            "pwm_settings": {
+                "description": "PWM mode configuration",
+                "units": "mode values (0-1)",
+                "pwm_mode": {
+                    "default": 0,
+                    "description": "PWM mode (0=Sign magnitude, 1=Locked antiphase)",
+                    "actual_default": 0,
+                    "last_updated": "2025-06-28 01:01:39",
+                    "updated_by": "reference_creation"
+                }
+            },
+            "deadband": {
+                "description": "Analog input deadband settings",
+                "units": "raw values",
+                "min": {
+                    "default": 0,
+                    "description": "Minimum deadband value",
+                    "actual_default": 0,
+                    "last_updated": "2025-06-28 01:01:39",
+                    "updated_by": "reference_creation"
+                },
+                "max": {
+                    "default": 0,
+                    "description": "Maximum deadband value",
+                    "actual_default": 0,
+                    "last_updated": "2025-06-28 01:01:39",
+                    "updated_by": "reference_creation"
+                }
+            },
+            "pin_functions": {
+                "description": "Pin function configuration for S3, S4, S5 pins",
+                "units": "function codes",
+                "s3_mode": {
+                    "default": 1,
+                    "description": "S3 pin function (0=Disabled, 1=E-Stop, 2=Voltage clamp, 3=User switch)",
+                    "actual_default": 1,
+                    "last_updated": "2025-06-28 01:01:39",
+                    "updated_by": "reference_creation"
+                },
+                "s4_mode": {
+                    "default": 2,
+                    "description": "S4 pin function (0=Disabled, 1=E-Stop, 2=Voltage clamp, 3=User switch)",
+                    "actual_default": 2,
+                    "last_updated": "2025-06-28 01:01:39",
+                    "updated_by": "reference_creation"
+                },
+                "s5_mode": {
+                    "default": 2,
+                    "description": "S5 pin function (0=Disabled, 1=E-Stop, 2=Voltage clamp, 3=User switch)",
+                    "actual_default": 2,
+                    "last_updated": "2025-06-28 01:01:39",
+                    "updated_by": "reference_creation"
+                }
+            },
+            "configuration": {
+                "description": "General configuration settings",
+                "units": "bit flags",
+                "config": {
+                    "default": 0,
+                    "description": "Configuration flags (bit 0=Packet serial mode, bit 1=RC mode, bit 2=Analog mode, etc.)",
+                    "actual_default": 0,
+                    "last_updated": "2025-06-28 01:01:39",
+                    "updated_by": "reference_creation"
+                }
+            },
+            "encoder_counts": {
+                "description": "Current encoder count values for each motor",
+                "units": "encoder counts",
+                "motor1": {
+                    "default": 0,
+                    "description": "Current encoder count for motor 1",
+                    "actual_default": 0,
+                    "last_updated": "2025-06-28 01:01:39",
+                    "updated_by": "reference_creation"
+                },
+                "motor2": {
+                    "default": 0,
+                    "description": "Current encoder count for motor 2",
+                    "actual_default": 0,
+                    "last_updated": "2025-06-28 01:01:39",
+                    "updated_by": "reference_creation"
+                },
+                "motor3": {
+                    "default": 0,
+                    "description": "Current encoder count for motor 3",
+                    "actual_default": 0,
+                    "last_updated": "2025-06-28 01:01:39",
+                    "updated_by": "reference_creation"
+                }
+            },
+            "status_monitoring": {
+                "description": "Real-time status values (read-only)",
+                "units": "various",
+                "main_voltage": {
+                    "description": "Current main battery voltage (0.1V units)",
+                    "read_only": true
+                },
+                "logic_voltage": {
+                    "description": "Current logic battery voltage (0.1V units)",
+                    "read_only": true
+                },
+                "temperature": {
+                    "description": "Current temperature (0.1\u00b0C units)",
+                    "read_only": true
+                },
+                "error_status": {
+                    "description": "Current error status (bit flags)",
+                    "read_only": true
+                },
+                "motor1_current": {
+                    "description": "Current motor 1 current (0.1A units)",
+                    "read_only": true
+                },
+                "motor2_current": {
+                    "description": "Current motor 2 current (0.1A units)",
+                    "read_only": true
+                },
+                "motor3_current": {
+                    "description": "Current motor 3 current (0.1A units)",
+                    "read_only": true
+                },
+                "motor1_speed": {
+                    "description": "Current motor 1 speed (QPPS)",
+                    "read_only": true
+                },
+                "motor2_speed": {
+                    "description": "Current motor 2 speed (QPPS)",
+                    "read_only": true
+                },
+                "motor3_speed": {
+                    "description": "Current motor 3 speed (QPPS)",
+                    "read_only": true
+                },
+                "motor1_position": {
+                    "description": "Current motor 1 position (encoder counts)",
+                    "read_only": true
+                },
+                "motor2_position": {
+                    "description": "Current motor 2 position (encoder counts)",
+                    "read_only": true
+                },
+                "motor3_position": {
+                    "description": "Current motor 3 position (encoder counts)",
+                    "read_only": true
+                }
+            }
+        },
+        "error_codes": {
+            "description": "RoboClaw error status bit definitions",
+            "0x01": "E-Stop",
+            "0x02": "Temperature Error",
+            "0x04": "Main Battery High Error",
+            "0x08": "Logic Battery High Error",
+            "0x10": "Logic Battery Low Error",
+            "0x20": "M1 Driver Fault",
+            "0x40": "M2 Driver Fault",
+            "0x80": "Main Battery Low Error"
+        },
+        "backup_restore": {
+            "description": "Settings backup and restore configuration",
+            "auto_backup": true,
+            "backup_on_changes": true,
+            "compare_on_startup": true,
+            "prompt_for_restore": true,
+            "backup_directory": "config/roboclaw_settings_backup",
+            "backup_filename_format": "roboclaw_settings_{timestamp}.json",
+            "reference_filename": "roboclaw_settings_reference.json"
+        },
+        "rc1": {
+            "settings": {
+                "pin_functions": {
+                    "s3_mode": 1,
+                    "s4_mode": 20,
+                    "s5_mode": 20,
+                    "description": "Pin function modes (0=Disabled, 1=E-Stop, 2=Voltage clamp, 3=User switch)"
+                },
+                "logic_voltage_limits": {
+                    "logic_battery_min": 60,
+                    "logic_battery_max": 100,
+                    "description": "Logic battery voltage limits (0.1V units)"
+                },
+                "current_limits": {
+                    "motor1_max_current": 1500,
+                    "description": "Motor current limits (0.1A units)",
+                    "motor2_max_current": 1500
+                },
+                "velocity_pid_motor1": {
+                    "p": 0.1307373046875,
+                    "i": 0.010528564453125,
+                    "d": 0.0,
+                    "qpps": 374437,
+                    "description": "Velocity PID parameters for motor 1 (scaled values)"
+                },
+                "velocity_pid_motor2": {
+                    "p": 0.1435089111328125,
+                    "i": 0.0108795166015625,
+                    "d": 0.0,
+                    "qpps": 375000,
+                    "description": "Velocity PID parameters for motor 2 (scaled values)"
+                },
+                "position_pid_motor1": {
+                    "kp": 96.9130859375,
+                    "ki": 2.2451171875,
+                    "kd": 674.3330078125,
+                    "kimax": 3757,
+                    "deadzone": 0,
+                    "min": 0,
+                    "max": 0,
+                    "description": "Position PID parameters for motor 1 (scaled values)"
+                },
+                "position_pid_motor2": {
+                    "kp": 101.1455078125,
+                    "ki": 2.259765625,
+                    "kd": 678.4638671875,
+                    "kimax": 3742,
+                    "deadzone": 0,
+                    "min": 0,
+                    "max": 0,
+                    "description": "Position PID parameters for motor 2 (scaled values)"
+                }
+            },
+            "last_updated": "2025-06-28T19:56:54.504235",
+            "updated_by": "settings_manager"
+        },
+        "rc2": {
+            "settings": {
+                "pin_functions": {
+                    "s3_mode": 1,
+                    "s4_mode": 20,
+                    "s5_mode": 20,
+                    "description": "Pin function modes (0=Disabled, 1=E-Stop, 2=Voltage clamp, 3=User switch)"
+                },
+                "logic_voltage_limits": {
+                    "logic_battery_min": 60,
+                    "logic_battery_max": 100,
+                    "description": "Logic battery voltage limits (0.1V units)"
+                },
+                "current_limits": {
+                    "motor1_max_current": 1500,
+                    "description": "Motor current limits (0.1A units)",
+                    "motor2_max_current": 1500
+                },
+                "velocity_pid_motor1": {
+                    "p": 0.14239501953125,
+                    "i": 0.0107879638671875,
+                    "d": 0.0,
+                    "qpps": 377812,
+                    "description": "Velocity PID parameters for motor 1 (scaled values)"
+                },
+                "velocity_pid_motor2": {
+                    "p": 0.0,
+                    "i": 0.0,
+                    "d": 0.0,
+                    "qpps": 0,
+                    "description": "Velocity PID parameters for motor 2 (scaled values)"
+                },
+                "position_pid_motor1": {
+                    "kp": 67.44140625,
+                    "ki": 1.4892578125,
+                    "kd": 446.7822265625,
+                    "kimax": 3746,
+                    "deadzone": 0,
+                    "min": 0,
+                    "max": 0,
+                    "description": "Position PID parameters for motor 1 (scaled values)"
+                },
+                "position_pid_motor2": {
+                    "kp": 0.0,
+                    "ki": 0.0,
+                    "kd": 0.0,
+                    "kimax": 0,
+                    "deadzone": 0,
+                    "min": 0,
+                    "max": 0,
+                    "description": "Position PID parameters for motor 2 (scaled values)"
+                }
+            },
+            "last_updated": "2025-06-28T19:57:08.020952",
+            "updated_by": "settings_manager"
+        }
+    },
+    "module_timestamps": {
+        "connectivity_tests": {
+            "last_updated": "2025-06-29T20:24:05.941751",
+            "updated_by": "system_initialization",
+            "status": "initialized"
+        },
+        "roboclaw_motor_identification": {
+            "last_updated": "2025-06-29T20:24:05.941769",
+            "updated_by": "system_initialization",
+            "status": "initialized"
+        },
+        "roboclaw_settings_manager": {
+            "last_updated": "2025-06-29T20:24:05.941772",
+            "updated_by": "system_initialization",
+            "status": "initialized"
+        },
+        "calibration_tests": {
+            "last_updated": "2025-06-29T20:24:05.941774",
+            "updated_by": "system_initialization",
+            "status": "initialized"
+        },
+        "system_characterization_tests": {
+            "last_updated": "2025-06-29T20:24:05.941776",
+            "updated_by": "system_initialization",
+            "status": "initialized"
+        },
+        "maker_pi_tests": {
+            "last_updated": "2025-06-29T20:24:05.941779",
+            "updated_by": "system_initialization",
+            "status": "initialized"
+        },
+        "ina219_tests": {
+            "last_updated": "2025-06-29T20:24:05.941781",
+            "updated_by": "system_initialization",
+            "status": "initialized"
+        },
+        "pmw3901_tests": {
+            "last_updated": "2025-06-29T20:24:05.941783",
+            "updated_by": "system_initialization",
+            "status": "initialized"
+        }
+    }
+}

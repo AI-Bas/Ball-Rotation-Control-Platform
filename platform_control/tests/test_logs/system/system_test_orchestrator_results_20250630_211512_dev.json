@@ -1,0 +1,20 @@
+{
+  "timestamp": "2025-06-30T21:12:59.591891",
+  "development_mode": true,
+  "orchestrator_version": "2.0",
+  "module_results": {
+    "connectivity": {
+      "module": "Connectivity",
+      "start_time": "2025-06-30T21:12:59.592591",
+      "status": "failed",
+      "exit_code": 1,
+      "output": "",
+      "error": "Traceback (most recent call last):\n  File \"/home/bas/Desktop/REPO Ball Rotation Control Platform/Ball-Rotation-Control-Platform/test_platform_control/tests/connectivity_test.py\", line 20, in <module>\n    from utils.power_sensor import PowerSensor\n  File \"/home/bas/Desktop/REPO Ball Rotation Control Platform/Ball-Rotation-Control-Platform/test_platform_control/utils/../utils/power_sensor.py\", line 1, in <module>\n    from ina219 import INA219\nModuleNotFoundError: No module named 'ina219'\n",
+      "duration": 0.4548616409301758
+    }
+  },
+  "system_status": "initialized",
+  "errors": [],
+  "performance_metrics": {},
+  "execution_summary": {}
+}

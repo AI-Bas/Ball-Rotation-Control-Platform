@@ -177,14 +177,14 @@ cython_debug/
 
 # Project-specific ignores
 # Test results and logs (keep structure but ignore content)
-test_platform_control/test_logs/*.json
-test_platform_control/tests/test_logs/*.json
-test_platform_control/tests/roboclaw_settings_backup/*.json
+platform_control/tests/test_logs/*.json
+platform_control/tests/roboclaw_settings_backup/*.json
+platform_control/tests/maker_pi_settings_backup/*.py
 
 # Keep the directories but ignore the content
-!test_platform_control/test_logs/.gitkeep
-!test_platform_control/tests/test_logs/.gitkeep
-!test_platform_control/tests/roboclaw_settings_backup/.gitkeep
+!platform_control/tests/test_logs/.gitkeep
+!platform_control/tests/roboclaw_settings_backup/.gitkeep
+!platform_control/tests/maker_pi_settings_backup/.gitkeep
 
 # Temporary files
 *.tmp

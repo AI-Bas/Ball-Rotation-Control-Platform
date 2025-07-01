@@ -1,0 +1,321 @@
+{
+  "connectivity": {
+    "status": true,
+    "detected_sensors": [
+      64,
+      65,
+      66,
+      67
+    ],
+    "sensor_data": {
+      "channel_0": {
+        "address": "0x40",
+        "voltage_v": 1.33599,
+        "current_ma": -0.09756097560975609,
+        "power_mw": 0.0,
+        "status": "connected"
+      },
+      "channel_1": {
+        "address": "0x41",
+        "voltage_v": 1.3879899999999998,
+        "current_ma": -0.09756097560975609,
+        "power_mw": 0.0,
+        "status": "connected"
+      },
+      "channel_2": {
+        "address": "0x42",
+        "voltage_v": 1.73599,
+        "current_ma": -0.09756097560975609,
+        "power_mw": 0.0,
+        "status": "connected"
+      },
+      "channel_3": {
+        "address": "0x43",
+        "voltage_v": 0.88399,
+        "current_ma": -0.09756097560975609,
+        "power_mw": 0.0,
+        "status": "connected"
+      }
+    },
+    "error": null
+  },
+  "voltage_range": {
+    "status": false,
+    "voltage_tests": {
+      "channel_0": {
+        "address": "0x40",
+        "average_voltage": 1.334792,
+        "min_voltage": 1.33199,
+        "max_voltage": 1.34,
+        "voltage_range": 0.008010000000000073,
+        "in_range": false,
+        "readings": [
+          1.33599,
+          1.33199,
+          1.33199,
+          1.33599,
+          1.33199,
+          1.336,
+          1.33599,
+          1.33199,
+          1.33599,
+          1.34
+        ]
+      },
+      "channel_1": {
+        "address": "0x41",
+        "average_voltage": 1.3871889999999998,
+        "min_voltage": 1.3839899999999998,
+        "max_voltage": 1.3919899999999998,
+        "voltage_range": 0.008000000000000007,
+        "in_range": false,
+        "readings": [
+          1.3879899999999998,
+          1.3839899999999998,
+          1.3879899999999998,
+          1.3839899999999998,
+          1.3879899999999998,
+          1.3839899999999998,
+          1.38798,
+          1.3879899999999998,
+          1.3919899999999998,
+          1.3879899999999998
+        ]
+      },
+      "channel_2": {
+        "address": "0x42",
+        "average_voltage": 1.7395889999999998,
+        "min_voltage": 1.73599,
+        "max_voltage": 1.74399,
+        "voltage_range": 0.008000000000000007,
+        "in_range": false,
+        "readings": [
+          1.73599,
+          1.73599,
+          1.73999,
+          1.73999,
+          1.73999,
+          1.73999,
+          1.73999,
+          1.74399,
+          1.73999,
+          1.73998
+        ]
+      },
+      "channel_3": {
+        "address": "0x43",
+        "average_voltage": 0.88199,
+        "min_voltage": 0.87999,
+        "max_voltage": 0.88399,
+        "voltage_range": 0.0040000000000000036,
+        "in_range": false,
+        "readings": [
+          0.87999,
+          0.87999,
+          0.88399,
+          0.88399,
+          0.87999,
+          0.87999,
+          0.88399,
+          0.88399,
+          0.88399,
+          0.87999
+        ]
+      }
+    },
+    "error": null
+  },
+  "current_monitoring": {
+    "status": true,
+    "current_tests": {
+      "motor_1": {
+        "motor": 1,
+        "baseline_currents": {
+          "channel_0": -0.09756097560975609,
+          "channel_1": -0.09756097560975609,
+          "channel_2": -0.09756097560975609,
+          "channel_3": -0.09756097560975609
+        },
+        "test_currents": {
+          "channel_0": 0.0,
+          "channel_1": -0.19512195121951217,
+          "channel_2": 49.59756097560975,
+          "channel_3": -0.09756097560975609
+        },
+        "current_changes": {
+          "channel_0": 0.09756097560975609,
+          "channel_1": -0.09756097560975609,
+          "channel_2": 49.695121951219505,
+          "channel_3": 0.0
+        }
+      },
+      "motor_2": {
+        "motor": 2,
+        "baseline_currents": {
+          "channel_0": -0.19512195121951217,
+          "channel_1": 0.0,
+          "channel_2": 50.40243902439024,
+          "channel_3": -0.09756097560975609
+        },
+        "test_currents": {
+          "channel_0": 0.0,
+          "channel_1": -0.19512195121951217,
+          "channel_2": 49.40243902439024,
+          "channel_3": -0.09756097560975609
+        },
+        "current_changes": {
+          "channel_0": 0.19512195121951217,
+          "channel_1": -0.19512195121951217,
+          "channel_2": -1.0,
+          "channel_3": 0.0
+        }
+      },
+      "motor_3": {
+        "motor": 3,
+        "baseline_currents": {
+          "channel_0": 0.0,
+          "channel_1": 0.09756097560975609,
+          "channel_2": 53.09756097560975,
+          "channel_3": -0.09756097560975609
+        },
+        "test_currents": {
+          "channel_0": -0.09756097560975609,
+          "channel_1": -0.09756097560975609,
+          "channel_2": 51.792682926829265,
+          "channel_3": -0.09756097560975609
+        },
+        "current_changes": {
+          "channel_0": -0.09756097560975609,
+          "channel_1": -0.19512195121951217,
+          "channel_2": -1.3048780487804876,
+          "channel_3": 0.0
+        }
+      },
+      "motor_4": {
+        "motor": 4,
+        "baseline_currents": {
+          "channel_0": 0.0,
+          "channel_1": 0.0,
+          "channel_2": 65.90243902439023,
+          "channel_3": -0.09756097560975609
+        },
+        "test_currents": {
+          "channel_0": 0.0,
+          "channel_1": -0.09756097560975609,
+          "channel_2": 65.90243902439023,
+          "channel_3": -0.09756097560975609
+        },
+        "current_changes": {
+          "channel_0": 0.0,
+          "channel_1": -0.09756097560975609,
+          "channel_2": 0.0,
+          "channel_3": 0.0
+        }
+      }
+    },
+    "motor_mapping": {
+      "motor_1": "channel_2",
+      "motor_2": "channel_2",
+      "motor_3": "channel_2",
+      "motor_4": "channel_1"
+    },
+    "error": null
+  },
+  "bandwidth": {
+    "status": true,
+    "bandwidth_tests": {
+      "channel_0": {
+        "address": "0x40",
+        "test_rates": [
+          1,
+          5,
+          10,
+          20,
+          50,
+          100
+        ],
+        "success_rates": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "max_safe_rate": 100
+      },
+      "channel_1": {
+        "address": "0x41",
+        "test_rates": [
+          1,
+          5,
+          10,
+          20,
+          50,
+          100
+        ],
+        "success_rates": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "max_safe_rate": 100
+      },
+      "channel_2": {
+        "address": "0x42",
+        "test_rates": [
+          1,
+          5,
+          10,
+          20,
+          50,
+          100
+        ],
+        "success_rates": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "max_safe_rate": 100
+      },
+      "channel_3": {
+        "address": "0x43",
+        "test_rates": [
+          1,
+          5,
+          10,
+          20,
+          50,
+          100
+        ],
+        "success_rates": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "max_safe_rate": 100
+      }
+    },
+    "error": null
+  },
+  "metadata": {
+    "test_name": "all_tests",
+    "timestamp": "2025-06-30T16:05:19.702303",
+    "development_mode": true,
+    "ina219_addresses": [
+      64,
+      65,
+      66,
+      67
+    ]
+  }
+}

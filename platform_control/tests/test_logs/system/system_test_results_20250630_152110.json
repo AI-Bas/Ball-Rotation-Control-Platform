@@ -1,0 +1,91 @@
+{
+  "timestamp": "2025-06-30T14:58:42.199538",
+  "development_mode": false,
+  "tests": {},
+  "errors": [],
+  "module_results": {},
+  "system_status": "some_tests_failed",
+  "connectivity_tests": {
+    "timestamp": "2025-06-30T15:19:04.930956",
+    "roboclaw": true,
+    "ina219": true,
+    "pmw3901": true,
+    "maker_pi": true,
+    "overall": true,
+    "details": {
+      "roboclaw": {
+        "status": "connected",
+        "performance": {},
+        "timeout_test": {}
+      },
+      "ina219": {
+        "status": "connected",
+        "timeout_test": {}
+      },
+      "pmw3901": {
+        "status": "connected",
+        "timeout_test": {}
+      },
+      "maker_pi": {
+        "status": "connected",
+        "timeout_test": {}
+      }
+    },
+    "performance_metrics": {},
+    "timeout_tests": {},
+    "recovery_attempts": {},
+    "summary": {
+      "connected_modules": 4,
+      "total_modules": 4,
+      "success_rate": 1.0
+    }
+  },
+  "performance_metrics": {},
+  "error_log": [
+    {
+      "timestamp": "2025-06-30T15:00:30.512868",
+      "module": "RoboClaw",
+      "error": "Detailed connectivity test failed",
+      "context": "detailed_connectivity",
+      "recovery_attempted": false,
+      "development_mode": false
+    },
+    {
+      "timestamp": "2025-06-30T15:03:55.311831",
+      "module": "RoboClaw",
+      "error": "Detailed connectivity test failed",
+      "context": "detailed_connectivity",
+      "recovery_attempted": false,
+      "development_mode": false
+    },
+    {
+      "timestamp": "2025-06-30T15:19:13.656059",
+      "module": "RoboClaw",
+      "error": "Detailed connectivity test failed",
+      "context": "detailed_connectivity",
+      "recovery_attempted": false,
+      "development_mode": false
+    }
+  ],
+  "recovery_attempts": {},
+  "troubleshooting_hints": [
+    {
+      "timestamp": "2025-06-30T15:00:30.512887",
+      "module": "RoboClaw",
+      "hint": "Check RoboClaw firmware and communication settings",
+      "priority": "medium"
+    },
+    {
+      "timestamp": "2025-06-30T15:03:55.311857",
+      "module": "RoboClaw",
+      "hint": "Check RoboClaw firmware and communication settings",
+      "priority": "medium"
+    },
+    {
+      "timestamp": "2025-06-30T15:19:13.656082",
+      "module": "RoboClaw",
+      "hint": "Check RoboClaw firmware and communication settings",
+      "priority": "medium"
+    }
+  ]
+}

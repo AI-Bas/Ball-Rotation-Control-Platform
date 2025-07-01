@@ -1,0 +1,107 @@
+{
+  "status": true,
+  "current_tests": {
+    "motor_1": {
+      "motor": 1,
+      "baseline_currents": {
+        "channel_0": -0.09756097560975609,
+        "channel_1": -0.09756097560975609,
+        "channel_2": -0.09756097560975609,
+        "channel_3": -0.09756097560975609
+      },
+      "test_currents": {
+        "channel_0": -0.09756097560975609,
+        "channel_1": -0.09756097560975609,
+        "channel_2": 67.49999999999999,
+        "channel_3": -0.09756097560975609
+      },
+      "current_changes": {
+        "channel_0": 0.0,
+        "channel_1": 0.0,
+        "channel_2": 67.59756097560974,
+        "channel_3": 0.0
+      }
+    },
+    "motor_2": {
+      "motor": 2,
+      "baseline_currents": {
+        "channel_0": 0.0,
+        "channel_1": 0.0,
+        "channel_2": 51.0,
+        "channel_3": -0.09756097560975609
+      },
+      "test_currents": {
+        "channel_0": -0.19512195121951217,
+        "channel_1": -0.09756097560975609,
+        "channel_2": 33.59756097560975,
+        "channel_3": -0.09756097560975609
+      },
+      "current_changes": {
+        "channel_0": -0.19512195121951217,
+        "channel_1": -0.09756097560975609,
+        "channel_2": -17.402439024390247,
+        "channel_3": 0.0
+      }
+    },
+    "motor_3": {
+      "motor": 3,
+      "baseline_currents": {
+        "channel_0": -0.09756097560975609,
+        "channel_1": -0.09756097560975609,
+        "channel_2": 41.99999999999999,
+        "channel_3": -0.09756097560975609
+      },
+      "test_currents": {
+        "channel_0": 0.0,
+        "channel_1": 0.0,
+        "channel_2": 42.292682926829265,
+        "channel_3": 0.0
+      },
+      "current_changes": {
+        "channel_0": 0.09756097560975609,
+        "channel_1": 0.09756097560975609,
+        "channel_2": 0.2926829268292721,
+        "channel_3": 0.09756097560975609
+      }
+    },
+    "motor_4": {
+      "motor": 4,
+      "baseline_currents": {
+        "channel_0": 0.0,
+        "channel_1": -0.09756097560975609,
+        "channel_2": 42.90243902439024,
+        "channel_3": -0.09756097560975609
+      },
+      "test_currents": {
+        "channel_0": -0.09756097560975609,
+        "channel_1": -0.09756097560975609,
+        "channel_2": 42.90243902439024,
+        "channel_3": -0.09756097560975609
+      },
+      "current_changes": {
+        "channel_0": -0.09756097560975609,
+        "channel_1": 0.0,
+        "channel_2": 0.0,
+        "channel_3": 0.0
+      }
+    }
+  },
+  "motor_mapping": {
+    "motor_1": "channel_2",
+    "motor_2": "channel_2",
+    "motor_3": "channel_2",
+    "motor_4": "channel_0"
+  },
+  "error": null,
+  "metadata": {
+    "test_name": "current_monitoring",
+    "timestamp": "2025-06-30T16:01:03.233727",
+    "development_mode": true,
+    "ina219_addresses": [
+      64,
+      65,
+      66,
+      67
+    ]
+  }
+}

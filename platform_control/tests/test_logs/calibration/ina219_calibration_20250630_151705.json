@@ -1,0 +1,39 @@
+{
+  "timestamp": "2025-06-30T15:17:05.311886",
+  "ina219_channels": {
+    "channel_0": {
+      "address": "0x40",
+      "current_ma": -0.19512195121951217,
+      "voltage_v": 1.3279800000000002,
+      "power_mw": 0.0,
+      "status": "connected"
+    },
+    "channel_1": {
+      "address": "0x41",
+      "current_ma": -0.3048780487804878,
+      "voltage_v": 1.38798,
+      "power_mw": 0.4878048780487804,
+      "status": "connected"
+    },
+    "channel_2": {
+      "address": "0x42",
+      "current_ma": -0.09756097560975609,
+      "voltage_v": 1.73998,
+      "power_mw": 0.4878048780487804,
+      "status": "connected"
+    },
+    "channel_3": {
+      "address": "0x43",
+      "current_ma": -0.09756097560975609,
+      "voltage_v": 0.87999,
+      "power_mw": 0.0,
+      "status": "connected"
+    }
+  },
+  "motor_mapping": {
+    "motor_1": "channel_0",
+    "motor_2": "channel_1",
+    "motor_3": "channel_2",
+    "motor_4": "channel_3"
+  }
+}

@@ -1,4 +1,0 @@
-[run]
-source = pmw3901
-omit =
-    .tox/*

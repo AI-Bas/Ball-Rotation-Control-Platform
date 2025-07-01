@@ -1,0 +1,100 @@
+{
+  "bandwidth_rc1": {
+    "timestamp": "2025-07-01T00:39:07.621421",
+    "test_type": "bandwidth_incremental",
+    "controller": "rc1",
+    "max_safe_speed": 0,
+    "status": false,
+    "error": "Controller rc1 not connected"
+  },
+  "bandwidth_rc2": {
+    "timestamp": "2025-07-01T00:39:07.621455",
+    "test_type": "bandwidth_incremental",
+    "controller": "rc2",
+    "max_safe_speed": 0,
+    "status": false,
+    "error": "Controller rc2 not connected"
+  },
+  "connectivity_detailed": {
+    "timestamp": "2025-07-01T00:39:07.621305",
+    "test_type": "connectivity_detailed",
+    "controllers": {
+      "rc1": {
+        "connected": false,
+        "port": "auto_detected",
+        "address": 128,
+        "version": "unknown"
+      },
+      "rc2": {
+        "connected": false,
+        "port": "auto_detected",
+        "address": 128,
+        "version": "unknown"
+      }
+    },
+    "overall_status": false
+  },
+  "e_stop_rc1": {
+    "timestamp": "2025-07-01T00:39:07.621483",
+    "test_type": "e_stop_cycling",
+    "controller": "rc1",
+    "cycles": 0,
+    "status": false,
+    "error": "Controller rc1 not connected"
+  },
+  "e_stop_rc2": {
+    "timestamp": "2025-07-01T00:39:07.621509",
+    "test_type": "e_stop_cycling",
+    "controller": "rc2",
+    "cycles": 0,
+    "status": false,
+    "error": "Controller rc2 not connected"
+  },
+  "motor_mapping": {
+    "timestamp": "2025-07-01T00:39:07.621537",
+    "test_type": "motor_mapping",
+    "motors": {
+      "motor1": {
+        "controller": "rc1",
+        "channel": "A",
+        "position": "Auto-detected motor1",
+        "description": "Automatically detected motor1",
+        "encoder_change": 1099,
+        "detection_time": 3.2809224128723145
+      },
+      "motor2": {
+        "controller": "rc1",
+        "channel": "B",
+        "position": "120\u00b0 from X-axis",
+        "description": "Secondary wheel at 120\u00b0",
+        "encoder_change": 0,
+        "detection_time": 0
+      },
+      "motor3": {
+        "controller": "rc2",
+        "channel": "A",
+        "position": "Auto-detected motor3",
+        "description": "Automatically detected motor3",
+        "encoder_change": 1361,
+        "detection_time": 0.31107330322265625
+      },
+      "motor4": {
+        "controller": "rc2",
+        "channel": "B",
+        "position": "Linear stage (future)",
+        "description": "Future linear stage drive",
+        "encoder_change": 0,
+        "detection_time": 0
+      }
+    },
+    "status": true
+  },
+  "settings_manager": {
+    "timestamp": "2025-07-01T00:39:07.621623",
+    "test_type": "settings_manager",
+    "settings_read": false,
+    "settings_saved": false,
+    "comparison": true,
+    "status": false
+  }
+}

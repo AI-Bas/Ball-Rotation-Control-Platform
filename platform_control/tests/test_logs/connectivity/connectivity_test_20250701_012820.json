@@ -1,0 +1,67 @@
+{
+  "timestamp": "2025-07-01 01:28:19",
+  "tests": {
+    "roboclaw": {
+      "status": false,
+      "ports_detected": [],
+      "controllers_found": 0,
+      "details": {
+        "roboclaw": {
+          "status": "failed",
+          "error": "connection test failed"
+        }
+      }
+    },
+    "ina219": {
+      "status": true,
+      "sensors_found": 4,
+      "addresses": [
+        "0x40",
+        "0x41",
+        "0x42",
+        "0x43"
+      ],
+      "details": {
+        "0x40": {
+          "status": "connected",
+          "voltage": 1.336,
+          "current": 100.0
+        },
+        "0x41": {
+          "status": "connected",
+          "voltage": 1.336,
+          "current": 0.0
+        },
+        "0x42": {
+          "status": "connected",
+          "voltage": 1.336,
+          "current": -100.0
+        },
+        "0x43": {
+          "status": "connected",
+          "voltage": 1.336,
+          "current": -200.0
+        }
+      }
+    },
+    "optical_flow": {
+      "status": false,
+      "sensor_detected": false,
+      "details": {
+        "status": "error",
+        "error": "Cannot determine SOC peripheral base address"
+      }
+    },
+    "maker_pi": {
+      "status": false,
+      "usb_detected": false,
+      "uart_detected": false,
+      "details": {}
+    }
+  },
+  "summary": {
+    "total_modules": 4,
+    "connected_modules": 1,
+    "success_rate": 0.25
+  }
+}

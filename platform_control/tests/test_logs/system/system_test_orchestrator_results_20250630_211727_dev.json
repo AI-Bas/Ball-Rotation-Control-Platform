@@ -1,0 +1,20 @@
+{
+  "timestamp": "2025-06-30T21:16:49.828348",
+  "development_mode": true,
+  "orchestrator_version": "2.0",
+  "module_results": {
+    "connectivity": {
+      "module": "Connectivity",
+      "start_time": "2025-06-30T21:16:49.829412",
+      "status": "failed",
+      "exit_code": 1,
+      "output": "",
+      "error": "Traceback (most recent call last):\n  File \"/home/bas/Desktop/REPO Ball Rotation Control Platform/Ball-Rotation-Control-Platform/test_platform_control/tests/connectivity_test.py\", line 20, in <module>\n    from utils.power_sensor import PowerSensor\n  File \"/home/bas/Desktop/REPO Ball Rotation Control Platform/Ball-Rotation-Control-Platform/test_platform_control/utils/../utils/power_sensor.py\", line 1, in <module>\n    import board\n  File \"/home/bas/Desktop/REPO Ball Rotation Control Platform/Ball-Rotation-Control-Platform/venv/lib/python3.12/site-packages/board.py\", line 45, in <module>\n    from adafruit_blinka.board.raspberrypi.raspi_5 import *\n  File \"/home/bas/Desktop/REPO Ball Rotation Control Platform/Ball-Rotation-Control-Platform/venv/lib/python3.12/site-packages/adafruit_blinka/board/raspberrypi/raspi_5.py\", line 6, in <module>\n    from adafruit_blinka.microcontroller.bcm2712 import pin\n  File \"/home/bas/Desktop/REPO Ball Rotation Control Platform/Ball-Rotation-Control-Platform/venv/lib/python3.12/site-packages/adafruit_blinka/microcontroller/bcm2712/pin.py\", line 7, in <module>\n    from adafruit_blinka.microcontroller.generic_linux.lgpio_pin import Pin\n  File \"/home/bas/Desktop/REPO Ball Rotation Control Platform/Ball-Rotation-Control-Platform/venv/lib/python3.12/site-packages/adafruit_blinka/microcontroller/generic_linux/lgpio_pin.py\", line 7, in <module>\n    import lgpio\nModuleNotFoundError: No module named 'lgpio'\n",
+      "duration": 0.6012074947357178
+    }
+  },
+  "system_status": "initialized",
+  "errors": [],
+  "performance_metrics": {},
+  "execution_summary": {}
+}

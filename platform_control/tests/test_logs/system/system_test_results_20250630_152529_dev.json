@@ -1,0 +1,85 @@
+{
+  "timestamp": "2025-06-30T15:23:38.408289",
+  "development_mode": true,
+  "tests": {},
+  "errors": [],
+  "module_results": {},
+  "system_status": "some_tests_failed",
+  "connectivity_tests": {
+    "timestamp": "2025-06-30T15:24:23.394774",
+    "roboclaw": true,
+    "ina219": true,
+    "pmw3901": true,
+    "maker_pi": true,
+    "overall": true,
+    "details": {
+      "roboclaw": {
+        "status": "connected",
+        "performance": {
+          "status": "success",
+          "total_commands": 100,
+          "successful_commands": 100,
+          "failed_commands": 0,
+          "success_rate": 1.0,
+          "commands_per_second": 333.30398394153855,
+          "total_time": 0.30002641677856445,
+          "reliable": true,
+          "bandwidth_test": {
+            "max_safe_rate": 1000,
+            "failure_rate": null,
+            "test_rates": [
+              10,
+              50,
+              100,
+              200,
+              500,
+              1000
+            ],
+            "status": "completed"
+          }
+        },
+        "timeout_test": {}
+      },
+      "ina219": {
+        "status": "connected",
+        "timeout_test": {}
+      },
+      "pmw3901": {
+        "status": "connected",
+        "timeout_test": {}
+      },
+      "maker_pi": {
+        "status": "connected",
+        "timeout_test": {}
+      }
+    },
+    "performance_metrics": {},
+    "timeout_tests": {},
+    "recovery_attempts": {},
+    "summary": {
+      "connected_modules": 4,
+      "total_modules": 4,
+      "success_rate": 1.0
+    }
+  },
+  "performance_metrics": {},
+  "error_log": [
+    {
+      "timestamp": "2025-06-30T15:24:46.008320",
+      "module": "RoboClaw",
+      "error": "Detailed connectivity test failed",
+      "context": "detailed_connectivity",
+      "recovery_attempted": false,
+      "development_mode": true
+    }
+  ],
+  "recovery_attempts": {},
+  "troubleshooting_hints": [
+    {
+      "timestamp": "2025-06-30T15:24:46.008415",
+      "module": "RoboClaw",
+      "hint": "Check RoboClaw firmware and communication settings",
+      "priority": "medium"
+    }
+  ]
+}
