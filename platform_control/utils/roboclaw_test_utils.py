@@ -13,6 +13,7 @@ import platform
 from datetime import datetime
 from typing import Dict, Any, Optional, List, Tuple
 import serial
+from utils.roboclaw_interface import RoboClawInterface
 
 # Add the parent directory to sys.path to import from utils
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
@@ -260,9 +261,314 @@ class RoboClawTestUtils:
 
     def backup_current_settings(self) -> None:
         """Backup current settings to a timestamped file"""
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        filename = f"roboclaw_settings_{timestamp}.json"
-        self.save_settings(self.current_settings, filename)
-        print(f"Settings backed up to: {filename}")
+        try:
+            # Ensure backup directory exists
+            os.makedirs(self.backup_dir, exist_ok=True)
+            
+            # Create timestamped filename
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            filename = f"roboclaw_settings_backup_{timestamp}.json"
+            filepath = os.path.join(self.backup_dir, filename)
+            
+            # Read current settings
+            all_settings = {}
+            for controller_name in ['rc1', 'rc2']:
+                if controller_name in self.interface.controller_info and self.interface.controller_info[controller_name]['connected']:
+                    controller = getattr(self.interface, controller_name)
+                    address = self.interface.controller_info[controller_name]['address']
+                    
+                    if controller:
+                        settings = self.interface.settings_manager.read_current_settings(controller, address)
+                        all_settings[controller_name] = settings
+            
+            # Save to backup file
+            with open(filepath, 'w') as f:
+                json.dump(all_settings, f, indent=2)
+            
+            print(f"   💾 Settings backed up to: {filepath}")
+            
+        except Exception as e:
+            print(f"   ❌ Error backing up settings: {e}")
+    
+    def test_connectivity(self, controller_name: str) -> Dict[str, Any]:
+        """Test connectivity for a specific controller"""
+        result = {
+            "timestamp": datetime.now().isoformat(),
+            "test_type": "connectivity_test",
+            "controller": controller_name,
+            "status": False,
+            "details": {}
+        }
+        
+        if controller_name not in self.interface.controller_info:
+            result["error"] = f"Controller {controller_name} not found"
+            return result
+        
+        if not self.interface.controller_info[controller_name]['connected']:
+            result["error"] = f"Controller {controller_name} not connected"
+            return result
+        
+        controller = getattr(self.interface, controller_name)
+        address = self.interface.controller_info[controller_name]['address']
+        
+        try:
+            # Test version read
+            version_result = controller.ReadVersion(address)
+            if version_result[0]:
+                result["details"]["version"] = version_result[1]
+                result["status"] = True
+            else:
+                result["error"] = "Version read failed"
+            
+            # Test voltage read
+            voltage_result = controller.ReadMainBatteryVoltage(address)
+            if voltage_result[0]:
+                result["details"]["voltage"] = voltage_result[1] / 10.0  # Convert to volts
+            else:
+                result["details"]["voltage_error"] = "Voltage read failed"
+            
+            # Test current read
+            current_result = controller.ReadCurrents(address)
+            if current_result[0]:
+                result["details"]["currents"] = {
+                    "m1": current_result[1] / 100.0,  # Convert to amps
+                    "m2": current_result[2] / 100.0
+                }
+            else:
+                result["details"]["current_error"] = "Current read failed"
+            
+        except Exception as e:
+            result["error"] = str(e)
+        
+        return result
+    
+    def test_bandwidth(self, controller_name: str, max_speed: int = 500000) -> Dict[str, Any]:
+        """Test communication bandwidth for a specific controller"""
+        result = {
+            "timestamp": datetime.now().isoformat(),
+            "test_type": "bandwidth_test",
+            "controller": controller_name,
+            "max_safe_speed": 0,
+            "status": False
+        }
+        
+        if controller_name not in self.interface.controller_info:
+            result["error"] = f"Controller {controller_name} not found"
+            return result
+        
+        if not self.interface.controller_info[controller_name]['connected']:
+            result["error"] = f"Controller {controller_name} not connected"
+            return result
+        
+        controller = getattr(self.interface, controller_name)
+        address = self.interface.controller_info[controller_name]['address']
+        
+        # Test speeds from low to high
+        test_speeds = [1000, 5000, 10000, 20000, 50000, 100000, 200000, 500000]
+        test_speeds = [s for s in test_speeds if s <= max_speed]
+        
+        for speed in test_speeds:
+            try:
+                # Test version read at this speed
+                version_result = controller.ReadVersion(address)
+                if version_result[0]:
+                    result["max_safe_speed"] = speed
+                else:
+                    break
+            except Exception:
+                break
+        
+        result["status"] = result["max_safe_speed"] > 0
+        return result
+    
+    def test_estop_cycling(self, controller_name: str, cycles: int = 5, frequency: float = 1.0) -> Dict[str, Any]:
+        """Test E-Stop cycling for a specific controller"""
+        result = {
+            "timestamp": datetime.now().isoformat(),
+            "test_type": "estop_cycling_test",
+            "controller": controller_name,
+            "cycles_completed": 0,
+            "status": False
+        }
+        
+        if controller_name not in self.interface.controller_info:
+            result["error"] = f"Controller {controller_name} not found"
+            return result
+        
+        if not self.interface.controller_info[controller_name]['connected']:
+            result["error"] = f"Controller {controller_name} not connected"
+            return result
+        
+        controller = getattr(self.interface, controller_name)
+        address = self.interface.controller_info[controller_name]['address']
+        
+        try:
+            cycle_time = 1.0 / frequency
+            completed_cycles = 0
+            
+            for i in range(cycles):
+                # Read error state (should show E-Stop when active)
+                error_result = controller.ReadError(address)
+                if error_result[0]:
+                    error_code = error_result[1]
+                    # Check if E-Stop is active (bit 1)
+                    estop_active = bool(error_code & 0x0002)
+                    
+                    if estop_active:
+                        completed_cycles += 1
+                
+                time.sleep(cycle_time)
+            
+            result["cycles_completed"] = completed_cycles
+            result["status"] = completed_cycles > 0
+            
+        except Exception as e:
+            result["error"] = str(e)
+        
+        return result
+    
+    def test_motor_mapping(self) -> Dict[str, Any]:
+        """Test motor mapping functionality"""
+        result = {
+            "timestamp": datetime.now().isoformat(),
+            "test_type": "motor_mapping_test",
+            "motors": {},
+            "status": False
+        }
+        
+        # Test each motor
+        for motor_id in range(1, 5):  # 4 motors
+            motor_result = {
+                "motor_id": motor_id,
+                "status": False,
+                "details": {}
+            }
+            
+            try:
+                # Try to set a very low velocity
+                success = self.interface.set_velocity(motor_id, 50)
+                motor_result["status"] = success
+                
+                if success:
+                    # Get motor data
+                    motor_data = self.interface.get_motor_data(motor_id)
+                    if motor_data:
+                        motor_result["details"] = motor_data
+                    
+                    # Stop motor
+                    self.interface.set_velocity(motor_id, 0)
+                
+            except Exception as e:
+                motor_result["error"] = str(e)
+            
+            result["motors"][motor_id] = motor_result
+        
+        # Determine overall status
+        successful_motors = sum(1 for motor in result["motors"].values() if motor["status"])
+        result["status"] = successful_motors > 0
+        
+        return result
+
+def fix_roboclaw_pins(interface=None, controller_name='rc2'):
+    """Fix RoboClaw pin settings for a given controller (default rc2)"""
+    if interface is None:
+        interface = RoboClawInterface(use_dual_controllers=True)
+        if not interface.connect():
+            return False, 'Failed to connect to RoboClaw controllers'
+    if not interface.controller_info.get(controller_name, {}).get('connected', False):
+        return False, f'{controller_name.upper()} is not connected'
+    controller = getattr(interface, controller_name)
+    address = interface.controller_info[controller_name]['address']
+    try:
+        result = controller.SetPinFunctions(address, 0, 0, 0)
+        if result:
+            verify_result = controller.ReadPinFunctions(address)
+            if verify_result[0]:
+                s3, s4, s5 = verify_result[1], verify_result[2], verify_result[3]
+                if s3 == 0 and s4 == 0 and s5 == 0:
+                    return True, {'s3': s3, 's4': s4, 's5': s5}
+                else:
+                    return False, {'s3': s3, 's4': s4, 's5': s5}
+            else:
+                return False, 'Could not verify pin settings'
+        else:
+            return False, 'Failed to apply pin settings'
+    except Exception as e:
+        return False, str(e)
+
+def check_error_state(interface, controller_name):
+    """Check error state and pin functions for a given controller"""
+    result = {
+        'timestamp': datetime.now().isoformat(),
+        'controller': controller_name,
+        'error_state': None,
+        'pin_functions': None,
+        'status': False
+    }
+    if controller_name not in interface.controller_info:
+        result['error'] = f'Controller {controller_name} not found'
+        return result
+    if not interface.controller_info[controller_name]['connected']:
+        result['error'] = f'Controller {controller_name} not connected'
+        return result
+    controller = getattr(interface, controller_name)
+    address = interface.controller_info[controller_name]['address']
+    try:
+        error_result = controller.ReadError(address)
+        if error_result[0]:
+            error_code = error_result[1]
+            result['error_state'] = error_code
+            error_messages = []
+            if error_code & 0x0001:
+                error_messages.append('Normal')
+            if error_code & 0x0002:
+                error_messages.append('E-Stop')
+            if error_code & 0x0004:
+                error_messages.append('Temperature Error')
+            if error_code & 0x0008:
+                error_messages.append('Temperature 2 Error')
+            if error_code & 0x0010:
+                error_messages.append('Main Battery High Error')
+            if error_code & 0x0020:
+                error_messages.append('Logic Battery High Error')
+            if error_code & 0x0040:
+                error_messages.append('Logic Battery Low Error')
+            if error_code & 0x0080:
+                error_messages.append('M1 Driver Fault')
+            if error_code & 0x0100:
+                error_messages.append('M2 Driver Fault')
+            if error_code & 0x0200:
+                error_messages.append('Main Battery Low Error')
+            if error_code & 0x0400:
+                error_messages.append('M1 Home')
+            if error_code & 0x0800:
+                error_messages.append('M2 Home')
+            if error_code & 0x1000:
+                error_messages.append('M1 Position Error')
+            if error_code & 0x2000:
+                error_messages.append('M2 Position Error')
+            if error_code & 0x4000:
+                error_messages.append('M1 Current Error')
+            if error_code & 0x8000:
+                error_messages.append('M2 Current Error')
+            result['error_messages'] = error_messages
+            result['estop_active'] = bool(error_code & 0x0002)
+        else:
+            result['error'] = 'Failed to read error state'
+            return result
+        pin_result = controller.ReadPinFunctions(address)
+        if pin_result[0]:
+            s3_mode, s4_mode, s5_mode = pin_result[1], pin_result[2], pin_result[3]
+            result['pin_functions'] = {'s3': s3_mode, 's4': s4_mode, 's5': s5_mode}
+            result['s3_inverted'] = (s3_mode == 1)
+            result['s4_inverted'] = (s4_mode == 1)
+            result['s5_inverted'] = (s5_mode == 1)
+        else:
+            result['error'] = 'Failed to read pin functions'
+            return result
+        result['status'] = True
+    except Exception as e:
+        result['error'] = str(e)
+    return result
 
 # RoboclawSettings class moved to roboclaw_interface.py to avoid circular imports 

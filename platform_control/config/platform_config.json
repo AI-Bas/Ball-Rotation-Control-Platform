@@ -1,7 +1,7 @@
 {
     "system_metadata": {
         "version": "1.0",
-        "last_updated": "2025-07-01",
+        "last_updated": "2025-07-02",
         "description": "Central configuration for Ball Handler Test Platform",
         "schema_version": "1.0",
         "maintenance": {
@@ -70,6 +70,42 @@
         "updated_by": "system_initialization"
     },
     "hardware": {
+        "usb_devices": {
+            "mapping": {
+                "ttyACM0": {
+                    "device": "Maker Pi RP2040",
+                    "vendor": "2e8a",
+                    "product": "1000",
+                    "serial": "E660C0621357672F",
+                    "description": "Experimental module for CircuitPython development",
+                    "last_updated": "2025-07-02T02:45:00",
+                    "updated_by": "usb_port_verification"
+                },
+                "ttyACM1": {
+                    "device": "RoboClaw 2x30A",
+                    "vendor": "03eb",
+                    "product": "2404",
+                    "description": "Secondary motor controller (RC2) on USB Type 3 port",
+                    "last_updated": "2025-07-02T02:45:00",
+                    "updated_by": "usb_port_verification"
+                },
+                "ttyACM2": {
+                    "device": "RoboClaw 2x30A",
+                    "vendor": "03eb",
+                    "product": "2404",
+                    "description": "Primary motor controller (RC1) on USB Type 3 port",
+                    "last_updated": "2025-07-02T02:45:00",
+                    "updated_by": "usb_port_verification"
+                }
+            },
+            "fallback_detection": {
+                "enabled": true,
+                "method": "udevadm_info",
+                "description": "Use udevadm info to detect USB devices when automatic detection fails"
+            },
+            "last_updated": "2025-07-02T02:45:00",
+            "updated_by": "usb_port_verification"
+        },
         "roboclaw": {
             "model": "2x30A",
             "communication": {
@@ -97,11 +133,11 @@
                     "controller": "rc1",
                     "address": "0x80",
                     "channel": "A",
-                    "port": "/dev/ttyACM0",
+                    "port": "/dev/ttyACM2",
                     "position": "Auto-detected motor1",
-                    "description": "Automatically detected motor1",
-                    "last_updated": "2025-06-29T20:25:40.993242",
-                    "updated_by": "automated_motor_mapping",
+                    "description": "Automatically detected motor1 (USB Type 3 port)",
+                    "last_updated": "2025-07-02T02:45:00",
+                    "updated_by": "usb_port_verification",
                     "encoder_change": 1099,
                     "detection_time": 3.2809224128723145
                 },
@@ -109,11 +145,11 @@
                     "controller": "rc1",
                     "address": "0x80",
                     "channel": "B",
-                    "port": "auto_detected",
+                    "port": "/dev/ttyACM2",
                     "position": "120\u00b0 from X-axis",
-                    "description": "Secondary wheel at 120\u00b0",
-                    "last_updated": "2025-01-29T00:00:00",
-                    "updated_by": "dynamic_port_detection"
+                    "description": "Secondary wheel at 120\u00b0 (USB Type 3 port)",
+                    "last_updated": "2025-07-02T02:45:00",
+                    "updated_by": "usb_port_verification"
                 },
                 "motor3": {
                     "controller": "rc2",
@@ -122,10 +158,10 @@
                     "port": "/dev/ttyACM1",
                     "position": "Auto-detected motor3",
                     "description": "Automatically detected motor3",
-                    "last_updated": "2025-06-29T20:25:40.993290",
+                    "last_updated": "2025-07-02T02:18:15.700691",
                     "updated_by": "automated_motor_mapping",
-                    "encoder_change": 1361,
-                    "detection_time": 0.31107330322265625
+                    "encoder_change": -1499,
+                    "detection_time": 1751415492.343529
                 },
                 "motor4": {
                     "controller": "rc2",
@@ -134,13 +170,15 @@
                     "port": "auto_detected",
                     "position": "Linear stage (future)",
                     "description": "Future linear stage drive",
-                    "last_updated": "2025-01-29T00:00:00",
-                    "updated_by": "dynamic_port_detection"
+                    "last_updated": "2025-07-02T02:18:15.700726",
+                    "updated_by": "automated_motor_mapping",
+                    "encoder_change": 10068,
+                    "detection_time": 1751415495.7006013
                 }
             },
             "controllers": {
                 "rc1": {
-                    "port": "/dev/ttyACM0",
+                    "port": "/dev/ttyACM2",
                     "address": "0x80",
                     "channels": [
                         1,
@@ -150,9 +188,9 @@
                         "motor1",
                         "motor2"
                     ],
-                    "description": "Primary controller for motors 1 and 2",
-                    "last_updated": "2025-01-29T00:00:00",
-                    "updated_by": "dynamic_port_detection"
+                    "description": "Primary controller for motors 1 and 2 (USB Type 3 port)",
+                    "last_updated": "2025-07-02T02:45:00",
+                    "updated_by": "usb_port_verification"
                 },
                 "rc2": {
                     "port": "/dev/ttyACM1",
@@ -165,9 +203,9 @@
                         "motor3",
                         "motor4"
                     ],
-                    "description": "Secondary controller for motors 3 and 4",
-                    "last_updated": "2025-01-29T00:00:00",
-                    "updated_by": "dynamic_port_detection"
+                    "description": "Secondary controller for motors 3 and 4 (USB Type 3 port)",
+                    "last_updated": "2025-07-02T02:45:00",
+                    "updated_by": "usb_port_verification"
                 }
             },
             "pin_functions": {
@@ -331,7 +369,7 @@
                 }
             },
             "detected_drives": {},
-            "last_updated": "2025-07-01T03:49:56.648373",
+            "last_updated": "2025-07-02T17:35:07.746932",
             "updated_by": "maker_pi_interface",
             "connection_status": {
                 "I:\\": {

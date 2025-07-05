@@ -1,0 +1,157 @@
+{
+  "address_testing": {
+    "timestamp": "2025-07-02T02:31:01.082439",
+    "results": {
+      "rc1": {
+        "128": {
+          "status": "no_response"
+        },
+        "129": {
+          "status": "no_response"
+        },
+        "130": {
+          "status": "no_response"
+        },
+        "131": {
+          "status": "no_response"
+        },
+        "132": {
+          "status": "no_response"
+        },
+        "133": {
+          "status": "no_response"
+        },
+        "134": {
+          "status": "no_response"
+        },
+        "135": {
+          "status": "no_response"
+        },
+        "136": {
+          "status": "no_response"
+        },
+        "137": {
+          "status": "no_response"
+        }
+      },
+      "rc2": {
+        "128": {
+          "version": "USB Roboclaw 2x30a v4.2.8\n",
+          "status": "connected"
+        },
+        "129": {
+          "status": "no_response"
+        },
+        "130": {
+          "status": "no_response"
+        },
+        "131": {
+          "status": "no_response"
+        },
+        "132": {
+          "status": "no_response"
+        },
+        "133": {
+          "status": "no_response"
+        },
+        "134": {
+          "status": "no_response"
+        },
+        "135": {
+          "status": "no_response"
+        },
+        "136": {
+          "status": "no_response"
+        },
+        "137": {
+          "status": "no_response"
+        }
+      }
+    }
+  },
+  "motor_mapping_identification": {
+    "timestamp": "2025-07-02T02:31:01.082747",
+    "success": false
+  },
+  "motor_mapping_verification": {
+    "timestamp": "2025-07-02T02:31:01.082845",
+    "success": false
+  },
+  "motor_control_test": {
+    "timestamp": "2025-07-02T02:31:01.083608",
+    "results": {
+      "motor1": [
+        {
+          "velocity": 100,
+          "success": false,
+          "error": "Failed to set velocity"
+        },
+        {
+          "velocity": 200,
+          "success": false,
+          "error": "Failed to set velocity"
+        },
+        {
+          "velocity": 300,
+          "success": false,
+          "error": "Failed to set velocity"
+        }
+      ],
+      "motor2": [
+        {
+          "velocity": 100,
+          "success": false,
+          "error": "Failed to set velocity"
+        },
+        {
+          "velocity": 200,
+          "success": false,
+          "error": "Failed to set velocity"
+        },
+        {
+          "velocity": 300,
+          "success": false,
+          "error": "Failed to set velocity"
+        }
+      ],
+      "motor3": [
+        {
+          "velocity": 100,
+          "success": false,
+          "error": "Failed to set velocity"
+        },
+        {
+          "velocity": 200,
+          "success": false,
+          "error": "Failed to set velocity"
+        },
+        {
+          "velocity": 300,
+          "success": false,
+          "error": "Failed to set velocity"
+        }
+      ],
+      "motor4": [
+        {
+          "velocity": 100,
+          "success": false,
+          "error": "Failed to set velocity"
+        },
+        {
+          "velocity": 200,
+          "success": false,
+          "error": "Failed to set velocity"
+        },
+        {
+          "velocity": 300,
+          "success": false,
+          "error": "Failed to set velocity"
+        }
+      ]
+    }
+  },
+  "pin_config_fix": {
+    "timestamp": "2025-07-02T02:31:01.084744",
+    "results": {}
+  }
+}

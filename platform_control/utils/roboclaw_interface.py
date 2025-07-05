@@ -1,912 +1,822 @@
 #!/usr/bin/env python3
 """
-Consolidated RoboClaw Interface Module
-Integrates all RoboClaw functionality including interface, testing, troubleshooting, and motor identification
-Uses roboclaw_3.py as the reference implementation and platform_config.json for configuration
-
-Features:
-- Dual controller support (USB and RS232 modes)
-- Motor identification and assignment
-- Settings backup and comparison
-- PID parameter management (read/write only - no autotune via USB)
-- Comprehensive troubleshooting and connectivity testing
-- Integration with platform_config.json for all settings
+Simplified RoboClaw Interface Module
+Streamlined interface that uses roboclaw_3.py directly without duplication
+Under 400 lines with essential functionality only
 """
 
-import sys
 import os
 import json
 import time
-import platform
-import serial
-import threading
-import serial.tools.list_ports
-from typing import Dict, Any, Optional, List, Tuple
 from datetime import datetime
-
-# Import roboclaw_3 from utils directory
 from .roboclaw_3 import Roboclaw
 
-# Import test utilities
-# RoboclawSettings class moved here to avoid circular import
-class RoboclawSettings:
-    """Settings management for RoboClaw controllers."""
-    
-    def __init__(self):
-        self.settings = {}
-    
-    def load_settings(self, config_path: Optional[str] = None) -> dict:
-        """Load settings from config file."""
-        if config_path is None:
-            config_path = "roboclaw_settings.json"
-        
-        try:
-            with open(config_path, 'r') as f:
-                self.settings = json.load(f)
-        except FileNotFoundError:
-            self.settings = {}
-        except Exception as e:
-            print(f"Error loading settings: {e}")
-            self.settings = {}
-        
-        return self.settings
-    
-    def save_settings(self, settings: dict, config_path: Optional[str] = None) -> bool:
-        """Save settings to config file."""
-        if config_path is None:
-            config_path = "roboclaw_settings.json"
-        
-        try:
-            with open(config_path, 'w') as f:
-                json.dump(settings, f, indent=2)
-            return True
-        except Exception as e:
-            print(f"Error saving settings: {e}")
-            return False
-    
-    def read_current_settings(self, roboclaw_instance) -> dict:
-        """Read current settings from RoboClaw instance."""
-        settings = {}
-        try:
-            # Read PID settings
-            settings['m1_pid'] = roboclaw_instance.ReadM1VelocityPID()
-            settings['m2_pid'] = roboclaw_instance.ReadM2VelocityPID()
-            
-            # Read voltage settings
-            settings['main_voltage'] = roboclaw_instance.ReadMainBatteryVoltage()
-            
-            # Read current limits
-            settings['m1_max_current'] = roboclaw_instance.ReadM1MaxCurrent()
-            settings['m2_max_current'] = roboclaw_instance.ReadM2MaxCurrent()
-            
-        except Exception as e:
-            print(f"Error reading settings: {e}")
-        
-        return settings
-
-class TimeoutSafeRoboClaw:
-    """Timeout-safe wrapper for RoboClaw to prevent hanging on non-RoboClaw devices"""
-    
-    def __init__(self, port_name: str, timeout: float = 1.0, retries: int = 1):
-        """Initialize with timeout-safe settings"""
-        # Create RoboClaw instance with reasonable timeout to prevent hanging
-        self.rc = Roboclaw(port_name, 0, timeout=0.5, retries=retries)  # 500ms timeout
-        self.port_name = port_name
-        self.timeout = timeout
-        
-    def Open(self) -> bool:
-        """Open the port with timeout protection"""
-        try:
-            return bool(self.rc.Open())
-        except Exception:
-            return False
-    
-    def ReadVersion(self, address: int) -> Tuple[int, Any]:
-        """Read version with timeout protection"""
-        try:
-            # Set a very short timeout for the serial port to prevent hanging
-            if hasattr(self.rc, '_port') and self.rc._port:
-                self.rc._port.timeout = 0.1  # 100ms timeout
-            
-            result = self.rc.ReadVersion(address)
-            return result
-        except Exception:
-            return (0, "")
-    
-    def _port_close(self):
-        """Close the port safely"""
-        try:
-            if hasattr(self.rc, '_port') and self.rc._port:
-                self.rc._port.close()
-        except Exception:
-            pass
-
-class RoboClawTroubleshooter:
-    """Helper for troubleshooting RoboClaw connectivity issues."""
-    @staticmethod
-    def handle_serial_timeout(port, channel=None, log_func=None):
-        msg = f"\n[!] Serial timeout or no response from RoboClaw on port {port}"
-        if channel:
-            msg += f", channel {channel}"
-        msg += ".\n"
-        msg += "Possible causes:\n"
-        msg += " - Incorrect COM port or port in use by another application\n"
-        msg += " - USB/RS232 cable not connected or faulty\n"
-        msg += " - RoboClaw not powered or not in correct mode\n"
-        msg += " - Incorrect address or baudrate configuration\n"
-        msg += " - Driver not installed or permissions issue\n"
-        msg += " - Address conflict (multiple controllers with same address)\n"
-        msg += "\nTroubleshooting steps:\n"
-        msg += " 1. Check physical connections and power.\n"
-        msg += " 2. Verify correct COM port in platform_config.json.\n"
-        msg += " 3. Try disconnecting/reconnecting USB.\n"
-        msg += " 4. Use Windows Device Manager to check port status.\n"
-        msg += " 5. Ensure only one app is using the port.\n"
-        msg += " 6. If using RS232, check wiring and jumpers.\n"
-        msg += " 7. Try swapping cables or ports.\n"
-        msg += " 8. If both controllers have same address, change one using IonMotion.\n"
-        print(msg)
-        if log_func:
-            log_func("connectivity", msg)
-
 class RoboClawInterface:
-    def __init__(self, use_dual_controllers: bool = False, use_rs232_fallback: bool = False, autopilot_mode: bool = False):
-        """
-        Initialize the RoboClaw interface
-        Args:
-            use_dual_controllers: If True, attempt to connect to both controllers. If False, only connect to RC1.
-            use_rs232_fallback: If True, use RS232 communication instead of USB (for troubleshooting)
-            autopilot_mode: If True, skip user input prompts and use default values
-        """
+    def __init__(self, use_dual_controllers: bool = True, autopilot_mode: bool = False):
         self.use_dual_controllers = use_dual_controllers
-        self.use_rs232_fallback = use_rs232_fallback
         self.autopilot_mode = autopilot_mode
         self.connected = False
-        
-        # Load configuration from platform_config.json
         self.config = self.load_platform_config()
         self.roboclaw_config = self.config.get('hardware', {}).get('roboclaw', {})
-        
-        # Initialize controllers based on configuration
         self.rc1 = None
         self.rc2 = None
         self.controller_info = {}
-        self.motor_data = {}
-        
-        # Initialize settings manager
-        self.settings_manager = RoboclawSettings()
-        
-        # Initialize troubleshooting components
-        self.current_os = self.detect_os()
-        self.backup_dir = self.config.get('testing', {}).get('roboclaw_settings_backup_dir', 
-                                                           'platform_control/tests/roboclaw_settings_backup')
-        self.encoder_monitoring = False
-        self.monitoring_thread = None
-        self.errors = []
-        
-        # Setup controllers
         self.setup_controllers()
-    
-    def detect_os(self) -> str:
-        """Detect the current operating system"""
-        system = platform.system().lower()
-        if system == "windows":
-            return "windows"
-        elif system == "linux":
-            return "ubuntu"
-        else:
-            return "unknown"
-    
-    def load_platform_config(self) -> Dict[str, Any]:
-        """Load platform configuration from JSON file"""
-        config_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'config', 'platform_config.json')
+
+    def load_platform_config(self):
+        config_path = os.path.join(os.path.dirname(__file__), '..', 'config', 'platform_config.json')
         try:
             with open(config_path, 'r') as f:
                 return json.load(f)
         except Exception as e:
-            print(f"Warning: Could not load platform_config.json: {e}")
+            print(f"Error loading platform config: {e}")
             return {}
-    
+
     def _parse_address(self, address_value):
-        """Parse address value from config (supports both hex strings and integers)"""
         if isinstance(address_value, str):
             if address_value.startswith('0x'):
                 return int(address_value, 16)
             else:
                 return int(address_value)
-        else:
-            return int(address_value)
+        return address_value
 
     def setup_controllers(self):
-        """Setup RoboClaw controllers based on configuration"""
-        # Get controller configurations from platform_config.json
-        controllers_config = self.roboclaw_config.get('controllers', {})
-        communication_config = self.roboclaw_config.get('communication', {})
-        rs232_config = communication_config.get('rs232_settings', {})
-        motor_mapping = self.roboclaw_config.get('motor_mapping', {})
-
-        # Get configuration values
-        rc1_config = controllers_config.get('rc1', {})
-        rc2_config = controllers_config.get('rc2', {})
+        """Setup controllers with proper addressing to avoid conflicts"""
+        controllers = self.roboclaw_config.get('controllers', {})
         
-        rc1_port = rc1_config.get('port')
-        rc2_port = rc2_config.get('port')
-        rc1_address = self._parse_address(rc1_config.get('address'))
-        rc2_address = self._parse_address(rc2_config.get('address'))
-        
-        if self.use_rs232_fallback:
-            # RS232 mode: requires baud rate and address
-            baudrate_primary = rs232_config.get('baudrate_primary')
-            baudrate_fallback = rs232_config.get('baudrate_fallback')
-            rs232_rc1_address = self._parse_address(rs232_config.get('addresses', {}).get('rc1'))
-            rs232_rc2_address = self._parse_address(rs232_config.get('addresses', {}).get('rc2'))
-
-            # Use RS232 addresses if available, otherwise fall back to controller addresses
-            rc1_address = rs232_rc1_address if rs232_rc1_address is not None else rc1_address
-            rc2_address = rs232_rc2_address if rs232_rc2_address is not None else rc2_address
-
-            # Initialize first controller with RS232 settings
-            self.rc1 = Roboclaw(rc1_port, baudrate_primary)
-            self.controller_info['rc1'] = {
-                'connected': False, 
-                'address': rc1_address,
-                'port': rc1_port,
-                'baudrate_primary': baudrate_primary,
-                'baudrate_fallback': baudrate_fallback,
-                'communication_mode': 'RS232'
-            }
-
-            # Initialize second controller if using dual controllers
-            if self.use_dual_controllers:
-                self.rc2 = Roboclaw(rc2_port, baudrate_primary)
-                self.controller_info['rc2'] = {
-                    'connected': False, 
-                    'address': rc2_address,
-                    'port': rc2_port,
-                    'baudrate_primary': baudrate_primary,
-                    'baudrate_fallback': baudrate_fallback,
-                    'communication_mode': 'RS232'
-                }
-        else:
-            # USB mode: still requires address for RoboClaw methods, but no baud rate
-            # Initialize first controller with USB settings
-            self.rc1 = Roboclaw(rc1_port, 0)  # USB mode, baud rate not used
-            self.controller_info['rc1'] = {
-                'connected': False, 
-                'address': rc1_address,
-                'port': rc1_port,
-                'baudrate': None,  # No baud rate in USB mode
-                'communication_mode': 'USB'
-            }
-
-            # Initialize second controller if using dual controllers
-            if self.use_dual_controllers:
-                self.rc2 = Roboclaw(rc2_port, 0)  # USB mode, baud rate not used
-                self.controller_info['rc2'] = {
-                    'connected': False, 
-                    'address': rc2_address,
-                    'port': rc2_port,
-                    'baudrate': None,  # No baud rate in USB mode
-                    'communication_mode': 'USB'
-                }
-        
-        # Setup motor data based on motor mapping configuration
-        self.motor_data = {}
-        for motor_num in range(1, 4):  # Motors 1, 2, 3
-            motor_key = f"motor{motor_num}"
-            if motor_key in motor_mapping:
-                motor_config = motor_mapping[motor_key]
-                controller_name = motor_config['controller']
-                address = self._parse_address(motor_config['address'])
-                channel = motor_config['channel']
-                
-                # Get the appropriate controller instance
-                if controller_name == 'rc1':
-                    controller = self.rc1
-                elif controller_name == 'rc2':
-                    controller = self.rc2
-                else:
-                    print(f"Warning: Unknown controller {controller_name} for {motor_key}")
-                    continue
-                
-                # Map channel A/B to 1/2 for RoboClaw methods
-                channel_num = 1 if channel == 'A' else 2
-                
-                self.motor_data[motor_num] = {
-                    'address': address,
-                    'channel': channel_num,  # 1 for A, 2 for B
-                    'controller': controller,
-                    'controller_name': controller_name,
-                    'channel_letter': channel
-                }
-    
-    def connect(self) -> bool:
-        """
-        Connect to the RoboClaw controller(s)
-        Returns:
-            bool: True if at least one controller is connected successfully
-        """
-        try:
-            print("\nAttempting to connect to Roboclaw controllers...")
-            print(f"Communication mode: {'RS232' if self.use_rs232_fallback else 'USB'}")
-            
-            # Validate configuration before attempting connection
-            if not self._validate_configuration():
-                return False
-            
-            # Try to connect to first controller
-            rc1_info = self.controller_info['rc1']
-            print(f"\nTrying to connect to first controller on {rc1_info['port']}...")
-            
-            if self.use_rs232_fallback:
-                print(f"  Address: 0x{rc1_info['address']:02X}")
-                print(f"  Baudrate: {rc1_info['baudrate_primary']}")
-                
-                # Try primary baud rate first
-                if self.rc1 and self.rc1.Open():
-                    self.controller_info['rc1']['connected'] = True
-                    print(f"✓ Successfully connected to first controller at {rc1_info['baudrate_primary']} baud")
-                else:
-                    # Try fallback baud rate
-                    print(f"Primary baud rate failed, trying fallback {rc1_info['baudrate_fallback']}...")
-                    self.rc1 = Roboclaw(rc1_info['port'], rc1_info['baudrate_fallback'])
-                    if self.rc1 and self.rc1.Open():
-                        self.controller_info['rc1']['connected'] = True
-                        print(f"✓ Successfully connected to first controller at {rc1_info['baudrate_fallback']} baud")
-                    else:
-                        print(f"✗ Failed to connect to first controller on {rc1_info['port']}")
-                        if self._handle_connection_failure('rc1', rc1_info):
-                            return False
-            else:
-                # USB mode
-                print(f"  Address: 0x{rc1_info['address']:02X}")
-                
-                if self.rc1 and self.rc1.Open():
-                    self.controller_info['rc1']['connected'] = True
-                    print("✓ Successfully connected to first controller via USB")
-                else:
-                    print(f"✗ Failed to connect to first controller on {rc1_info['port']}")
-                    if self._handle_connection_failure('rc1', rc1_info):
-                        return False
-            
-            # Try to connect to second controller if using dual controllers
-            if self.use_dual_controllers and self.rc2:
-                rc2_info = self.controller_info['rc2']
-                print(f"\nTrying to connect to second controller on {rc2_info['port']}...")
-                
-                if self.use_rs232_fallback:
-                    print(f"  Address: 0x{rc2_info['address']:02X}")
-                    print(f"  Baudrate: {rc2_info['baudrate_primary']}")
-                    
-                    if self.rc2.Open():
-                        self.controller_info['rc2']['connected'] = True
-                        print(f"✓ Successfully connected to second controller at {rc2_info['baudrate_primary']} baud")
-                    else:
-                        # Try fallback baud rate
-                        print(f"Primary baud rate failed, trying fallback {rc2_info['baudrate_fallback']}...")
-                        self.rc2 = Roboclaw(rc2_info['port'], rc2_info['baudrate_fallback'])
-                        if self.rc2.Open():
-                            self.controller_info['rc2']['connected'] = True
-                            print(f"✓ Successfully connected to second controller at {rc2_info['baudrate_fallback']} baud")
-                        else:
-                            print(f"✗ Failed to connect to second controller on {rc2_info['port']}")
-                            if self._handle_connection_failure('rc2', rc2_info):
-                                return False
-                else:
-                    # USB mode
-                    print(f"  Address: 0x{rc2_info['address']:02X}")
-                    
-                    if self.rc2.Open():
-                        self.controller_info['rc2']['connected'] = True
-                        print("✓ Successfully connected to second controller via USB")
-                    else:
-                        print(f"✗ Failed to connect to second controller on {rc2_info['port']}")
-                        if self._handle_connection_failure('rc2', rc2_info):
-                            return False
-            
-            # Check if at least one controller is connected
-            connected_controllers = [name for name, info in self.controller_info.items() if info['connected']]
-            if connected_controllers:
-                self.connected = True
-                print(f"\n✓ Successfully connected to {len(connected_controllers)} controller(s): {', '.join(connected_controllers)}")
-                self.update_config_timestamp()
-                return True
-            else:
-                print("\n✗ No controllers connected successfully")
-                return False
-                
-        except Exception as e:
-            print(f"Error during connection: {e}")
-            self.log_error("connection", str(e))
-            return False
-    
-    def _validate_configuration(self) -> bool:
-        """Validate the configuration has required fields"""
-        required_fields = []
-        
-        # Check RC1 configuration
-        rc1_config = self.roboclaw_config.get('controllers', {}).get('rc1', {})
-        if not rc1_config.get('port'):
-            required_fields.append("RC1 port")
-        if not rc1_config.get('address'):
-            required_fields.append("RC1 address")
-        
-        # Check RC2 configuration if using dual controllers
-        if self.use_dual_controllers:
-            rc2_config = self.roboclaw_config.get('controllers', {}).get('rc2', {})
-            if not rc2_config.get('port'):
-                required_fields.append("RC2 port")
-            if not rc2_config.get('address'):
-                required_fields.append("RC2 address")
-        
-        if required_fields:
-            print(f"✗ Missing configuration: {', '.join(required_fields)}")
-            return False
-        
-        print("✓ Configuration validation passed")
-        return True
-    
-    def _handle_connection_failure(self, controller_name: str, current_settings: Dict[str, Any]) -> bool:
-        """Handle connection failure with user interaction"""
-        print(f"\nConnection failed for {controller_name}")
-        print("Current settings:")
-        for key, value in current_settings.items():
-            print(f"  {key}: {value}")
-        
-        if self.autopilot_mode:
-            print("Autopilot mode: Skipping user input, using default settings")
-            return False
-        
-        response = input("\nWould you like to update connection settings? (y/n): ").lower().strip()
-        if response == 'y':
-            new_settings = self.prompt_for_connection_settings(controller_name, current_settings)
-            if new_settings:
-                self.update_platform_config(controller_name, new_settings)
-                return True
-        
-        return False
-    
-    def update_config_timestamp(self):
-        """Update the last_updated timestamp in platform_config.json"""
-        try:
-            config_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'config', 'platform_config.json')
-            
-            with open(config_path, 'r') as f:
-                config = json.load(f)
-            
-            # Update timestamp
-            config['system_metadata']['last_updated'] = datetime.now().strftime("%Y-%m-%d")
-            
-            with open(config_path, 'w') as f:
-                json.dump(config, f, indent=4)
-                
-        except Exception as e:
-            print(f"Warning: Could not update config timestamp: {e}")
-    
-    def read_and_save_settings(self) -> bool:
-        """Read current settings from all connected controllers and save to backup"""
-        try:
-            print("\n=== Reading and Saving RoboClaw Settings ===")
-            
-            all_settings = {}
-            for controller_name, controller_info in self.controller_info.items():
-                if controller_info['connected']:
-                    print(f"\nReading settings from {controller_name}...")
-                    
-                    # Get controller instance
-                    if controller_name == 'rc1':
-                        rc = self.rc1
-                    elif controller_name == 'rc2':
-                        rc = self.rc2
-                    else:
-                        continue
-                    
-                    # Read settings using RoboclawSettings class
-                    settings = self.settings_manager.read_current_settings(rc)
-                    if settings:
-                        all_settings[controller_name] = settings
-                        print(f"✓ Successfully read settings from {controller_name}")
-                    else:
-                        print(f"✗ Failed to read settings from {controller_name}")
-            
-            if all_settings:
-                # Save settings to backup
-                timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-                backup_filename = f"roboclaw_settings_{timestamp}.json"
-                backup_path = os.path.join(self.backup_dir, backup_filename)
-                
-                # Ensure backup directory exists
-                os.makedirs(self.backup_dir, exist_ok=True)
-                
-                with open(backup_path, 'w') as f:
-                    json.dump(all_settings, f, indent=4)
-                
-                print(f"\n✓ Settings saved to {backup_path}")
-                
-                # Update platform_config.json with current settings
-                for controller_name, settings in all_settings.items():
-                    self.update_platform_config(controller_name, settings)
-                
-                return True
-            else:
-                print("✗ No settings read from any controller")
-                return False
-                
-        except Exception as e:
-            print(f"Error reading and saving settings: {e}")
-            self.log_error("read_and_save_settings", str(e))
-            return False
-    
-    def compare_with_previous_settings(self):
-        """Compare current settings with previous backup"""
-        try:
-            print("\n=== Comparing with Previous Settings ===")
-            
-            # Get latest backup file
-            backup_files = [f for f in os.listdir(self.backup_dir) if f.startswith('roboclaw_settings_') and f.endswith('.json')]
-            if not backup_files:
-                print("No previous settings found for comparison")
-                return
-            
-            backup_files.sort(reverse=True)
-            latest_backup = backup_files[0]
-            latest_backup_path = os.path.join(self.backup_dir, latest_backup)
-            
-            print(f"Comparing with {latest_backup}...")
-            
-            with open(latest_backup_path, 'r') as f:
-                previous_settings = json.load(f)
-            
-            # Read current settings
-            current_settings = {}
-            for controller_name, controller_info in self.controller_info.items():
-                if controller_info['connected']:
-                    if controller_name == 'rc1':
-                        rc = self.rc1
-                    elif controller_name == 'rc2':
-                        rc = self.rc2
-                    else:
-                        continue
-                    
-                    settings = self.settings_manager.read_current_settings(rc)
-                    if settings:
-                        current_settings[controller_name] = settings
-            
-            # Compare settings
-            differences = self.compare_with_reference_settings(current_settings)
-            
-            if differences:
-                print("Differences found:")
-                self.print_settings_comparison(differences, "previous")
-            else:
-                print("✓ No differences found")
-                
-        except Exception as e:
-            print(f"Error comparing settings: {e}")
-            self.log_error("compare_with_previous_settings", str(e))
-    
-    def get_motor_data(self, motor_num: int) -> Optional[Dict[str, Any]]:
-        """
-        Get comprehensive motor data for a specific motor
-        Args:
-            motor_num: Motor number (1, 2, or 3)
-        Returns:
-            Dict containing motor data or None if error
-        """
-        try:
-            if motor_num not in self.motor_data:
-                print(f"Motor {motor_num} not configured")
-                return None
-            
-            motor_info = self.motor_data[motor_num]
-            controller = motor_info['controller']
-            address = motor_info['address']
-            channel = motor_info['channel']
-            
-            if not controller:
-                print(f"Controller not available for motor {motor_num}")
-                return None
-            
-            # Read encoder data
-            if channel == 1:  # Motor A
-                enc_result = controller.ReadEncM1(address)
-                speed_result = controller.ReadSpeedM1(address)
-                ispeed_result = controller.ReadISpeedM1(address)
-            else:  # Motor B
-                enc_result = controller.ReadEncM2(address)
-                speed_result = controller.ReadSpeedM2(address)
-                ispeed_result = controller.ReadISpeedM2(address)
-            
-            # Read voltage and current
-            voltage_result = controller.ReadMainBatteryVoltage(address)
-            current_result = controller.ReadCurrents(address)
-            
-            # Read error status
-            error_result = controller.ReadError(address)
-            
-            # Read temperature
-            temp_result = controller.ReadTemp(address)
-            
-            # Check if all reads were successful
-            if (enc_result[0] and speed_result[0] and ispeed_result[0] and 
-                voltage_result[0] and current_result[0] and error_result[0] and temp_result[0]):
-                
-                # Extract current for specific motor
-                if channel == 1:
-                    current = current_result[1]  # Motor 1 current
-                else:
-                    current = current_result[2]  # Motor 2 current
-                
-                # Get PID settings
-                if channel == 1:
-                    pid_result = controller.ReadM1VelocityPID(address)
-                else:
-                    pid_result = controller.ReadM2VelocityPID(address)
-                
-                pid_data = {}
-                if pid_result[0]:
-                    pid_data = {
-                        'p': pid_result[1] / 65536.0,  # Convert from scaled value
-                        'i': pid_result[2] / 65536.0,
-                        'd': pid_result[3] / 65536.0,
-                        'qpps': pid_result[4]
-                    }
-                
-                return {
-                    'motor_num': motor_num,
-                    'controller': motor_info['controller_name'],
-                    'channel': motor_info['channel_letter'],
-                    'address': address,
-                    'encoder_position': enc_result[1],
-                    'encoder_velocity': speed_result[1],
-                    'instantaneous_velocity': ispeed_result[1],
-                    'voltage': voltage_result[1] / 10.0,  # Convert from 0.1V units
-                    'current': current / 10.0,  # Convert from 0.1A units
-                    'error': error_result[1],
-                    'temperature': temp_result[1] / 10.0,  # Convert from 0.1°C units
-                    'pid_settings': pid_data,
-                    'timestamp': time.time()
-                }
-            else:
-                print(f"Failed to read data from motor {motor_num}")
-                return None
-                
-        except Exception as e:
-            print(f"Error reading motor {motor_num} data: {e}")
-            self.log_error("get_motor_data", f"Motor {motor_num}: {str(e)}")
-            return None
-    
-    def set_velocity(self, motor_num: int, velocity: float) -> bool:
-        """
-        Set motor velocity in encoder counts per second
-        Args:
-            motor_num: Motor number (1, 2, or 3)
-            velocity: Velocity in encoder counts per second
-        Returns:
-            bool: True if successful
-        """
-        try:
-            if motor_num not in self.motor_data:
-                print(f"Motor {motor_num} not configured")
-                return False
-            
-            motor_info = self.motor_data[motor_num]
-            controller = motor_info['controller']
-            address = motor_info['address']
-            channel = motor_info['channel']
-            
-            if not controller:
-                print(f"Controller not available for motor {motor_num}")
-                return False
-            
-            # Set velocity using RoboClaw 3.py methods
-            if channel == 1:  # Motor A
-                result = controller.SpeedM1(address, int(velocity))
-            else:  # Motor B
-                result = controller.SpeedM2(address, int(velocity))
-            
-            if result and result[0]:
-                print(f"✓ Set motor {motor_num} velocity to {velocity:.0f} counts/s")
-                return True
-            else:
-                print(f"✗ Failed to set motor {motor_num} velocity")
-                return False
-                
-        except Exception as e:
-            print(f"Error setting motor {motor_num} velocity: {e}")
-            self.log_error("set_velocity", f"Motor {motor_num}: {str(e)}")
-            return False
-    
-    def close(self):
-        """Close all controller connections"""
-        try:
-            if self.rc1 and hasattr(self.rc1, '_port') and self.rc1._port:
-                self.rc1._port.close()
-            if self.rc2 and hasattr(self.rc2, '_port') and self.rc2._port:
-                self.rc2._port.close()
-            self.connected = False
-            print("✓ RoboClaw connections closed")
-        except Exception as e:
-            print(f"Error closing connections: {e}")
-    
-    def compare_with_reference_settings(self, current_settings: Dict[str, Any]) -> Dict[str, Any]:
-        """Compare current settings with reference settings from platform_config.json"""
-        differences = {}
-        
-        def compare_nested_dicts(current: Dict[str, Any], reference: Dict[str, Any], path: str = "") -> None:
-            for key, ref_value in reference.items():
-                current_path = f"{path}.{key}" if path else key
-                
-                if key not in current:
-                    differences[current_path] = {
-                        'current': None,
-                        'reference': ref_value,
-                        'status': 'missing'
-                    }
-                elif isinstance(ref_value, dict) and isinstance(current[key], dict):
-                    compare_nested_dicts(current[key], ref_value, current_path)
-                elif current[key] != ref_value:
-                    differences[current_path] = {
-                        'current': current[key],
-                        'reference': ref_value,
-                        'status': 'different'
-                    }
-        
-        # Get reference settings from platform_config.json
-        reference_settings = self.config.get('roboclaw_settings_reference', {}).get('settings', {})
-        
-        if reference_settings:
-            compare_nested_dicts(current_settings, reference_settings)
-        
-        return differences
-    
-    def print_settings_comparison(self, differences: Dict[str, Any], comparison_type: str = "reference"):
-        """Print settings comparison in a readable format"""
-        print(f"\nSettings Comparison ({comparison_type}):")
-        print("-" * 80)
-        
-        for path, diff in differences.items():
-            status = diff['status']
-            current = diff['current']
-            reference = diff['reference']
-            
-            if status == 'missing':
-                print(f"✗ {path}: Missing (should be {reference})")
-            elif status == 'different':
-                print(f"⚠ {path}: {current} (should be {reference})")
-        
-        print("-" * 80)
-    
-    def restore_settings_from_backup(self, backup_file: str) -> bool:
-        """Restore settings from a backup file"""
-        try:
-            print(f"\n=== Restoring Settings from {backup_file} ===")
-            
-            backup_path = os.path.join(self.backup_dir, backup_file)
-            if not os.path.exists(backup_path):
-                print(f"Backup file {backup_file} not found")
-                return False
-            
-            with open(backup_path, 'r') as f:
-                backup_settings = json.load(f)
-            
-            for controller_name, settings in backup_settings.items():
-                if controller_name in self.controller_info and self.controller_info[controller_name]['connected']:
-                    print(f"\nRestoring settings for {controller_name}...")
-                    
-                    # Get controller instance
-                    if controller_name == 'rc1':
-                        rc = self.rc1
-                    elif controller_name == 'rc2':
-                        rc = self.rc2
-                    else:
-                        continue
-                    
-                    address = self.controller_info[controller_name]['address']
-                    
-                    # Restore velocity PID settings
-                    if 'velocity_pid' in settings:
-                        pid_settings = settings['velocity_pid']
-                        for motor_key, motor_pid in pid_settings.items():
-                            if motor_key in ['motor1', 'motor2']:
-                                channel = 1 if motor_key == 'motor1' else 2
-                                p = int(motor_pid['p'] * 65536)  # Convert to scaled value
-                                i = int(motor_pid['i'] * 65536)
-                                d = int(motor_pid['d'] * 65536)
-                                qpps = motor_pid['qpps']
-                                
-                                if channel == 1:
-                                    result = rc.SetM1VelocityPID(address, p, i, d, qpps)
-                                else:
-                                    result = rc.SetM2VelocityPID(address, p, i, d, qpps)
-                                
-                                if result and result[0]:
-                                    print(f"  ✓ Restored {motor_key} velocity PID")
-                                else:
-                                    print(f"  ✗ Failed to restore {motor_key} velocity PID")
-                    
-                    # Restore voltage limits
-                    if 'voltage_limits' in settings:
-                        voltage_settings = settings['voltage_limits']
-                        if 'main_battery' in voltage_settings:
-                            main_batt = voltage_settings['main_battery']
-                            min_voltage = main_batt['min']
-                            max_voltage = main_batt['max']
-                            result = rc.SetMainVoltages(address, min_voltage, max_voltage)
-                            if result and result[0]:
-                                print(f"  ✓ Restored main battery voltage limits")
-                            else:
-                                print(f"  ✗ Failed to restore main battery voltage limits")
-                    
-                    # Restore current limits
-                    if 'current_limits' in settings:
-                        current_settings = settings['current_limits']
-                        for motor_key, max_current in current_settings.items():
-                            if motor_key in ['motor1', 'motor2']:
-                                channel = 1 if motor_key == 'motor1' else 2
-                                if channel == 1:
-                                    result = rc.SetM1MaxCurrent(address, max_current)
-                                else:
-                                    result = rc.SetM2MaxCurrent(address, max_current)
-                                
-                                if result and result[0]:
-                                    print(f"  ✓ Restored {motor_key} current limit")
-                                else:
-                                    print(f"  ✗ Failed to restore {motor_key} current limit")
-            
-            print("✓ Settings restoration completed")
-            return True
-            
-        except Exception as e:
-            print(f"Error restoring settings: {e}")
-            self.log_error("restore_settings_from_backup", str(e))
-            return False
-    
-    def update_platform_config(self, controller_name: str, new_settings: Dict[str, Any]) -> bool:
-        """Update platform_config.json with new settings"""
-        try:
-            config_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'config', 'platform_config.json')
-            
-            with open(config_path, 'r') as f:
-                config = json.load(f)
-            
-            # Update settings in config
-            if 'roboclaw_settings_reference' not in config:
-                config['roboclaw_settings_reference'] = {}
-            
-            if 'settings' not in config['roboclaw_settings_reference']:
-                config['roboclaw_settings_reference']['settings'] = {}
-            
-            config['roboclaw_settings_reference']['settings'].update(new_settings)
-            config['roboclaw_settings_reference']['last_updated'] = datetime.now().isoformat()
-            config['roboclaw_settings_reference']['updated_by'] = 'roboclaw_interface'
-            
-            with open(config_path, 'w') as f:
-                json.dump(config, f, indent=4)
-            
-            return True
-            
-        except Exception as e:
-            print(f"Error updating platform config: {e}")
-            self.log_error("update_platform_config", str(e))
-            return False
-    
-    def prompt_for_connection_settings(self, controller_name: str, current_settings: Dict[str, Any]) -> Dict[str, Any]:
-        """Prompt user for connection settings when automatic detection fails"""
-        print(f"\n🔧 Manual configuration required for {controller_name}")
-        print("Current settings:", current_settings)
-        
-        # For now, return current settings
-        # In a full implementation, this would prompt for user input
-        return current_settings
-    
-    def log_error(self, test_name: str, error: str):
-        """Log test errors for troubleshooting"""
-        error_entry = {
-            "timestamp": datetime.now().isoformat(),
-            "test": test_name,
-            "error": error
+        # Use the same address for both controllers since they're on different USB ports
+        # This avoids conflicts while allowing both to work
+        address_mapping = {
+            'rc1': 0x80,  # Primary controller
+            'rc2': 0x80   # Secondary controller (same address, different port)
         }
         
-        self.errors.append(error_entry)
-        print(f"   ❌ {test_name}: {error}") 
+        for controller_name in ['rc1', 'rc2']:
+            if controller_name in controllers:
+                controller_config = controllers[controller_name]
+                # Use the address mapping instead of config address
+                self.controller_info[controller_name] = {
+                    'port': controller_config.get('port', ''),
+                    'address': address_mapping[controller_name],  # Use same address
+                    'connected': False,
+                    'description': controller_config.get('description', ''),
+                    'original_address': controller_config.get('address', '0x80')  # Keep original for reference
+                }
+            else:
+                self.controller_info[controller_name] = {
+                    'port': '',
+                    'address': address_mapping[controller_name],  # Use same address
+                    'connected': False,
+                    'description': '',
+                    'original_address': '0x80'
+                }
+
+    def connect(self):
+        print("🔌 Connecting to RoboClaw controllers...")
+        success = False
+        controllers_to_connect = ['rc1']
+        if self.use_dual_controllers:
+            controllers_to_connect.append('rc2')
+        for controller_name in controllers_to_connect:
+            if controller_name not in self.controller_info:
+                print(f"   ❌ {controller_name} not configured")
+                continue
+            controller_info = self.controller_info[controller_name]
+            port = controller_info['port']
+            address = controller_info['address']
+            if not port:
+                print(f"   ❌ {controller_name} port not configured")
+                continue
+            print(f"   🔗 Connecting to {controller_name} on {port}...")
+            roboclaw = Roboclaw(port, 0, timeout=0.5, retries=2)
+            if not roboclaw.Open():
+                print(f"   ❌ Failed to open {controller_name} on {port}")
+                continue
+            version_result = roboclaw.ReadVersion(address)
+            if version_result[0]:
+                print(f"   ✅ {controller_name} connected successfully")
+                print(f"      Version: {version_result[1]}")
+                self.controller_info[controller_name]['connected'] = True
+                setattr(self, controller_name, roboclaw)
+                success = True  # At least one controller connected
+            else:
+                print(f"   ❌ {controller_name} connection failed - no response")
+                roboclaw._port.close()
+        self.connected = success
+        return success
+
+    def disconnect(self):
+        for controller_name in ['rc1', 'rc2']:
+            if hasattr(self, controller_name):
+                controller = getattr(self, controller_name)
+                if controller and hasattr(controller, '_port'):
+                    controller._port.close()
+                self.controller_info[controller_name]['connected'] = False
+        self.connected = False
+
+    def set_velocity(self, motor_id: int, velocity: float) -> bool:
+        if not self.connected:
+            print("❌ Not connected to controllers")
+            return False
+        motor_mapping = self.roboclaw_config.get('motor_mapping', {})
+        motor_key = f"motor{motor_id}"
+        if motor_key not in motor_mapping:
+            print(f"❌ Motor {motor_id} not mapped")
+            return False
+        motor_config = motor_mapping[motor_key]
+        controller_name = motor_config.get('controller', 'rc1')
+        channel = motor_config.get('channel', 'A')
+        if controller_name not in self.controller_info or not self.controller_info[controller_name]['connected']:
+            print(f"❌ Controller {controller_name} not connected")
+            return False
+        controller = getattr(self, controller_name)
+        address = self.controller_info[controller_name]['address']
+        qpps = int(velocity * 100)
+        try:
+            if channel == 'A':
+                result = controller.SpeedM1(address, qpps)
+            elif channel == 'B':
+                result = controller.SpeedM2(address, qpps)
+            else:
+                print(f"❌ Invalid channel {channel}")
+                return False
+            if result:
+                print(f"✅ Motor {motor_id} velocity set to {velocity}")
+                return True
+            else:
+                print(f"❌ Failed to set motor {motor_id} velocity")
+                return False
+        except Exception as e:
+            print(f"❌ Error setting motor {motor_id} velocity: {e}")
+            return False
+
+    def get_motor_data(self, motor_id: int):
+        if not self.connected:
+            return None
+        motor_mapping = self.roboclaw_config.get('motor_mapping', {})
+        motor_key = f"motor{motor_id}"
+        if motor_key not in motor_mapping:
+            return None
+        motor_config = motor_mapping[motor_key]
+        controller_name = motor_config.get('controller', 'rc1')
+        channel = motor_config.get('channel', 'A')
+        if controller_name not in self.controller_info or not self.controller_info[controller_name]['connected']:
+            return None
+        controller = getattr(self, controller_name)
+        address = self.controller_info[controller_name]['address']
+        try:
+            data = {
+                'motor_id': motor_id,
+                'controller': controller_name,
+                'channel': channel,
+                'timestamp': time.time()
+            }
+            if channel == 'A':
+                encoder_result = controller.ReadEncM1(address)
+                speed_result = controller.ReadSpeedM1(address)
+            else:
+                encoder_result = controller.ReadEncM2(address)
+                speed_result = controller.ReadSpeedM2(address)
+            if encoder_result[0]:
+                data['encoder_position'] = encoder_result[1]
+                data['encoder_velocity'] = encoder_result[2]
+            if speed_result[0]:
+                data['speed'] = speed_result[1]
+                data['speed_status'] = speed_result[2]
+            current_result = controller.ReadCurrents(address)
+            if current_result[0]:
+                if channel == 'A':
+                    data['current'] = current_result[1]
+                else:
+                    data['current'] = current_result[2]
+            voltage_result = controller.ReadMainBatteryVoltage(address)
+            if voltage_result[0]:
+                data['voltage'] = voltage_result[1] / 10.0
+            return data
+        except Exception as e:
+            print(f"❌ Error reading motor {motor_id} data: {e}")
+            return None
+
+    def read_error_state(self, controller_name: str = 'rc1'):
+        """Read error state from controller"""
+        if not self.connected or controller_name not in self.controller_info:
+            return None
+        if not self.controller_info[controller_name]['connected']:
+            return None
+        controller = getattr(self, controller_name)
+        address = self.controller_info[controller_name]['address']
+        try:
+            error_result = controller.ReadError(address)
+            if error_result[0]:
+                error_code = error_result[1]
+                error_info = self.decode_error(error_code)
+                return {
+                    'controller': controller_name,
+                    'error_code': error_code,
+                    'error_info': error_info,
+                    'timestamp': time.time()
+                }
+        except Exception as e:
+            print(f"❌ Error reading error state: {e}")
+        return None
+
+    def decode_error(self, error_code: int):
+        """Decode RoboClaw error code"""
+        errors = {
+            0x00000000: "Normal",
+            0x00000001: "M1 CMD timeout",
+            0x00000002: "M2 CMD timeout", 
+            0x00000004: "M1POS",
+            0x00000008: "M2POS",
+            0x00000010: "M1SPD",
+            0x00000020: "M2SPD",
+            0x00000040: "M1ACC",
+            0x00000080: "M2ACC",
+            0x00000100: "M1OV",
+            0x00000200: "M2OV",
+            0x00000400: "M1ST",
+            0x00000800: "M2ST",
+            0x00001000: "M1P",
+            0x00002000: "M2P",
+            0x00004000: "M1I",
+            0x00008000: "M2I",
+            0x00010000: "M1D",
+            0x00020000: "M2D",
+            0x00040000: "M1V",
+            0x00080000: "M2V",
+            0x00100000: "M1T",
+            0x00200000: "M2T",
+            0x00400000: "M1E",
+            0x00800000: "M2E",
+            0x01000000: "M1M",
+            0x02000000: "M2M",
+            0x04000000: "M1S",
+            0x08000000: "M2S",
+            0x10000000: "M1L",
+            0x20000000: "M2L",
+            0x40000000: "M1R",
+            0x80000000: "M2R"
+        }
+        active_errors = []
+        for code, description in errors.items():
+            if error_code & code:
+                active_errors.append(description)
+        return {
+            'active_errors': active_errors,
+            'error_count': len(active_errors),
+            'is_error': error_code != 0
+        }
+
+    def test_estop_functionality(self, controller_name: str = 'rc1') -> bool:
+        """Test E-Stop functionality with human confirmation"""
+        if not self.connected or controller_name not in self.controller_info:
+            print("❌ Controller not connected")
+            return False
+        if not self.controller_info[controller_name]['connected']:
+            print("❌ Controller not connected")
+            return False
+        print(f"\n🛑 Testing E-Stop functionality on {controller_name}")
+        print("This test requires human confirmation of E-Stop behavior.")
+        print("The E-Stop should be NON-LATCHING (mode 1) - it should reset automatically when released.")
+        if not self.autopilot_mode:
+            input("Press Enter when ready to test E-Stop...")
+        controller = getattr(self, controller_name)
+        address = self.controller_info[controller_name]['address']
+        try:
+            # Read pin functions to verify E-Stop configuration
+            pin_result = controller.ReadPinFunctions(address)
+            if pin_result[0]:
+                s3_mode = pin_result[1]
+                print(f"   📌 S3 pin mode: {s3_mode} (1 = E-Stop)")
+                if s3_mode != 1:
+                    print("   ⚠️ S3 pin not configured for E-Stop (mode 1)")
+                    print("   🔧 Configuring S3 pin for E-Stop...")
+                    controller.SetPinFunctions(address, 1, 2, 2)  # S3=E-Stop, S4=S5=Voltage clamp
+                    print("   ✅ S3 pin configured for E-Stop")
+            # Test E-Stop by reading error state
+            print("   🔍 Reading E-Stop state...")
+            error_state = self.read_error_state(controller_name)
+            if error_state and error_state['error_info']['is_error']:
+                print("   ⚠️ E-Stop is active (errors detected)")
+                print("   📋 Active errors:")
+                for error in error_state['error_info']['active_errors']:
+                    print(f"      - {error}")
+            else:
+                print("   ✅ E-Stop is not active (no errors)")
+            if not self.autopilot_mode:
+                input("Press Enter to continue...")
+            return True
+        except Exception as e:
+            print(f"❌ Error testing E-Stop: {e}")
+            return False
+
+    def monitor_motor_channels(self):
+        """Monitor all motor channels for encoder changes"""
+        if not self.connected:
+            print("❌ Not connected to controllers")
+            return False
+        
+        print("\n📊 Motor Channel Monitoring")
+        print("Monitoring all motor channels for encoder changes...")
+        print("Press any key to stop monitoring")
+        print("-" * 50)
+        
+        # Get all motor mappings
+        motor_mapping = self.roboclaw_config.get('motor_mapping', {})
+        monitored_channels = {}
+        
+        # Initialize monitoring for each motor
+        for motor_id in range(1, 5):
+            motor_key = f"motor{motor_id}"
+            if motor_key in motor_mapping:
+                motor_config = motor_mapping[motor_key]
+                controller_name = motor_config.get('controller', 'rc1')
+                channel = motor_config.get('channel', 'A')
+                
+                if controller_name in self.controller_info and self.controller_info[controller_name]['connected']:
+                    controller = getattr(self, controller_name)
+                    address = self.controller_info[controller_name]['address']
+                    
+                    # Read initial position
+                    if channel == 'A':
+                        encoder_result = controller.ReadEncM1(address)
+                    else:
+                        encoder_result = controller.ReadEncM2(address)
+                    
+                    if encoder_result[0]:
+                        monitored_channels[motor_id] = {
+                            'controller': controller_name,
+                            'channel': channel,
+                            'controller_obj': controller,
+                            'address': address,
+                            'initial_position': encoder_result[1],
+                            'last_position': encoder_result[1],
+                            'last_change': 0
+                        }
+                        print(f"   Motor {motor_id}: {controller_name}, Channel {channel}, Initial: {encoder_result[1]}")
+        
+        if not monitored_channels:
+            print("   ❌ No motors available for monitoring")
+            return False
+        
+        print("\nMonitoring started. Press any key to stop...")
+        
+        try:
+            import select
+            import sys
+            
+            while True:
+                # Check for key press (non-blocking)
+                if select.select([sys.stdin], [], [], 0.1)[0]:
+                    break
+                
+                # Monitor each channel
+                for motor_id, info in monitored_channels.items():
+                    try:
+                        if info['channel'] == 'A':
+                            encoder_result = info['controller_obj'].ReadEncM1(info['address'])
+                        else:
+                            encoder_result = info['controller_obj'].ReadEncM2(info['address'])
+                        
+                        if encoder_result[0]:
+                            current_position = encoder_result[1]
+                            change = current_position - info['last_position']
+                            
+                            if change != 0:
+                                info['last_position'] = current_position
+                                info['last_change'] = change
+                                total_change = current_position - info['initial_position']
+                                
+                                print(f"   Motor {motor_id} ({info['controller']}, {info['channel']}): "
+                                      f"Pos={current_position}, Change={change:+d}, Total={total_change:+d}")
+                    except Exception as e:
+                        print(f"   ❌ Error monitoring motor {motor_id}: {e}")
+                
+                time.sleep(0.1)  # 100ms monitoring interval
+                
+        except KeyboardInterrupt:
+            pass
+        
+        print("\n📊 Monitoring Summary:")
+        for motor_id, info in monitored_channels.items():
+            total_change = info['last_position'] - info['initial_position']
+            print(f"   Motor {motor_id} ({info['controller']}, {info['channel']}): "
+                  f"Total change = {total_change:+d}")
+        
+        return True
+
+    def identify_motor_mapping(self):
+        """New motor mapping system - asks for motor movement and monitors encoder changes"""
+        if not self.connected:
+            print("❌ Not connected to controllers")
+            return False
+        
+        print("\n🔍 Motor Mapping Identification - New System")
+        print("=" * 60)
+        print("This process will:")
+        print("1. Ask you to move Motor 1, then monitor which encoder changes")
+        print("2. Ask you to move Motor 2, then monitor which encoder changes")
+        print("3. Continue for Motor 3 and Motor 4")
+        print("4. Press Enter to skip any motor")
+        print("5. Show summary and option to save mapping")
+        print("=" * 60)
+        
+        # Initialize monitoring for all channels
+        monitored_channels = {}
+        identified_motors = {}
+        
+        # Setup monitoring for all possible channels
+        for controller_name in ['rc1', 'rc2']:
+            if controller_name in self.controller_info and self.controller_info[controller_name]['connected']:
+                controller = getattr(self, controller_name)
+                address = self.controller_info[controller_name]['address']
+                
+                # Monitor both channels A and B for each controller
+                for channel in ['A', 'B']:
+                    channel_key = f"{controller_name}_{channel}"
+                    
+                    # Read initial encoder position
+                    if channel == 'A':
+                        encoder_result = controller.ReadEncM1(address)
+                    else:
+                        encoder_result = controller.ReadEncM2(address)
+                    
+                    if encoder_result[0]:
+                        monitored_channels[channel_key] = {
+                            'controller': controller_name,
+                            'channel': channel,
+                            'controller_obj': controller,
+                            'address': address,
+                            'initial_position': encoder_result[1],
+                            'last_position': encoder_result[1],
+                            'motor_id': None  # Will be assigned when detected
+                        }
+                        print(f"   📊 Monitoring {controller_name} Channel {channel}: Initial position = {encoder_result[1]}")
+        
+        if not monitored_channels:
+            print("❌ No channels available for monitoring")
+            return False
+        
+        # Test each motor individually
+        for motor_id in range(1, 5):
+            print(f"\n🔄 Testing Motor {motor_id}")
+            print("-" * 40)
+            
+            if not self.autopilot_mode:
+                input(f"Please move Motor {motor_id} (turn the wheel) and press Enter when ready...")
+            else:
+                print(f"   🤖 Autopilot: Testing Motor {motor_id}")
+                time.sleep(2)  # Give time for movement
+            
+            # Monitor all channels for changes
+            start_time = time.time()
+            timeout = 10  # 10 second timeout
+            detected_channel = None
+            
+            while time.time() - start_time < timeout:
+                for channel_key, channel_info in monitored_channels.items():
+                    if channel_info['motor_id'] is not None:
+                        continue  # This channel already assigned
+                    
+                    try:
+                        # Read current encoder position
+                        if channel_info['channel'] == 'A':
+                            encoder_result = channel_info['controller_obj'].ReadEncM1(channel_info['address'])
+                        else:
+                            encoder_result = channel_info['controller_obj'].ReadEncM2(channel_info['address'])
+                        
+                        if encoder_result[0]:
+                            current_position = encoder_result[1]
+                            change = current_position - channel_info['last_position']
+                            
+                            # Check for significant movement (more than 100 counts)
+                            if abs(change) > 100:
+                                print(f"   ✅ Detected movement on {channel_key}: Change = {change:+d}")
+                                detected_channel = channel_key
+                                channel_info['motor_id'] = motor_id
+                                channel_info['last_position'] = current_position
+                                
+                                # Calculate total change from initial
+                                total_change = current_position - channel_info['initial_position']
+                                
+                                identified_motors[motor_id] = {
+                                    'controller': channel_info['controller'],
+                                    'channel': channel_info['channel'],
+                                    'address': channel_info['address'],
+                                    'encoder_change': total_change,
+                                    'detection_time': time.time(),
+                                    'channel_key': channel_key
+                                }
+                                break
+                    except Exception as e:
+                        print(f"   ❌ Error monitoring {channel_key}: {e}")
+                
+                if detected_channel:
+                    break
+                
+                time.sleep(0.1)  # 100ms monitoring interval
+            
+            if detected_channel:
+                print(f"   ✅ Motor {motor_id} mapped to {detected_channel}")
+            else:
+                print(f"   ⏭️ Motor {motor_id} skipped (no movement detected)")
+        
+        # Show summary
+        if identified_motors:
+            print("\n📋 Motor Mapping Summary:")
+            print("=" * 50)
+            for motor_id, info in identified_motors.items():
+                print(f"   Motor {motor_id}: {info['controller']}, Channel {info['channel']}")
+                print(f"      Address: 0x{info['address']:02X}")
+                print(f"      Encoder change: {info['encoder_change']}")
+                print(f"      Channel key: {info['channel_key']}")
+            
+            # Ask to save mapping
+            if not self.autopilot_mode:
+                save_choice = input("\nSave this mapping to platform_config.json? (y/n): ").lower().strip()
+                if save_choice == 'y':
+                    self.update_motor_mapping_new(identified_motors)
+                    return True
+                else:
+                    print("Mapping not saved")
+                    return False
+            else:
+                self.update_motor_mapping_new(identified_motors)
+                return True
+        else:
+            print("❌ No motors identified")
+            return False
+
+    def verify_motor_mapping(self):
+        if not self.connected:
+            print("❌ Not connected to controllers")
+            return False
+        print("\n🔍 Motor Mapping Verification")
+        print("Testing each mapped motor with forward/backward commands...")
+        motor_mapping = self.roboclaw_config.get('motor_mapping', {})
+        verified_motors = {}
+        for motor_id in range(1, 5):
+            motor_key = f"motor{motor_id}"
+            if motor_key not in motor_mapping:
+                continue
+            motor_config = motor_mapping[motor_key]
+            controller_name = motor_config.get('controller', 'rc1')
+            channel = motor_config.get('channel', 'A')
+            if controller_name not in self.controller_info or not self.controller_info[controller_name]['connected']:
+                continue
+            controller = getattr(self, controller_name)
+            address = self.controller_info[controller_name]['address']
+            print(f"\n🔄 Verifying Motor {motor_id} ({controller_name}, channel {channel})")
+            try:
+                if channel == 'A':
+                    initial_result = controller.ReadEncM1(address)
+                else:
+                    initial_result = controller.ReadEncM2(address)
+                if not initial_result[0]:
+                    print(f"   ❌ Failed to read initial encoder for motor {motor_id}")
+                    continue
+                initial_position = initial_result[1]
+                print(f"   📊 Initial position: {initial_position}")
+                test_velocity = 500
+                if channel == 'A':
+                    controller.SpeedM1(address, test_velocity)
+                else:
+                    controller.SpeedM2(address, test_velocity)
+                print(f"   ⚡ Sent forward command (velocity: {test_velocity})")
+                time.sleep(1.0)
+                if channel == 'A':
+                    during_result = controller.ReadEncM1(address)
+                else:
+                    during_result = controller.ReadEncM2(address)
+                if during_result[0]:
+                    during_position = during_result[1]
+                    forward_change = during_position - initial_position
+                    print(f"   📊 During movement: {during_position} (change: {forward_change})")
+                    if channel == 'A':
+                        controller.SpeedM1(address, 0)
+                    else:
+                        controller.SpeedM2(address, 0)
+                    time.sleep(0.5)
+                    if channel == 'A':
+                        controller.SpeedM1(address, -test_velocity)
+                    else:
+                        controller.SpeedM2(address, -test_velocity)
+                    print(f"   ⚡ Sent backward command (velocity: -{test_velocity})")
+                    time.sleep(1.0)
+                    if channel == 'A':
+                        final_result = controller.ReadEncM1(address)
+                    else:
+                        final_result = controller.ReadEncM2(address)
+                    if final_result[0]:
+                        final_position = final_result[1]
+                        total_change = final_position - initial_position
+                        if channel == 'A':
+                            controller.SpeedM1(address, 0)
+                        else:
+                            controller.SpeedM2(address, 0)
+                        print(f"   📊 Final position: {final_position} (total change: {total_change})")
+                        if abs(forward_change) > 50 and abs(total_change) > 50:
+                            verified_motors[motor_id] = {
+                                'controller': controller_name,
+                                'channel': channel,
+                                'forward_change': forward_change,
+                                'total_change': total_change,
+                                'verification_time': time.time()
+                            }
+                            print(f"   ✅ Motor {motor_id} verification successful")
+                        else:
+                            print(f"   ❌ Motor {motor_id} insufficient movement detected")
+                    else:
+                        print(f"   ❌ Failed to read final position for motor {motor_id}")
+                        if channel == 'A':
+                            controller.SpeedM1(address, 0)
+                        else:
+                            controller.SpeedM2(address, 0)
+                else:
+                    print(f"   ❌ Failed to read position during movement for motor {motor_id}")
+                    if channel == 'A':
+                        controller.SpeedM1(address, 0)
+                    else:
+                        controller.SpeedM2(address, 0)
+            except Exception as e:
+                print(f"   ❌ Error verifying motor {motor_id}: {e}")
+                try:
+                    if channel == 'A':
+                        controller.SpeedM1(address, 0)
+                    else:
+                        controller.SpeedM2(address, 0)
+                except:
+                    pass
+        if verified_motors:
+            print("\n📋 Motor Verification Results:")
+            for motor_id, info in verified_motors.items():
+                print(f"   ✅ Motor {motor_id}: {info['controller']}, channel {info['channel']}")
+                print(f"      Forward change: {info['forward_change']}")
+                print(f"      Total change: {info['total_change']}")
+            return True
+        else:
+            print("❌ No motors verified successfully")
+            return False
+
+    def update_motor_mapping(self, identified_motors):
+        try:
+            motor_mapping = self.roboclaw_config.get('motor_mapping', {})
+            for motor_id, info in identified_motors.items():
+                motor_key = f"motor{motor_id}"
+                if motor_key in motor_mapping:
+                    motor_mapping[motor_key].update({
+                        'controller': info['controller'],
+                        'channel': info['channel'],
+                        'encoder_change': info['encoder_change'],
+                        'detection_time': info['detection_time'],
+                        'last_updated': datetime.now().isoformat(),
+                        'updated_by': 'automated_motor_mapping'
+                    })
+            self.roboclaw_config['motor_mapping'] = motor_mapping
+            self.config['hardware']['roboclaw'] = self.roboclaw_config
+            config_path = os.path.join(os.path.dirname(__file__), '..', 'config', 'platform_config.json')
+            with open(config_path, 'w') as f:
+                json.dump(self.config, f, indent=4)
+            print("✅ Motor mapping updated in platform configuration")
+        except Exception as e:
+            print(f"❌ Error updating motor mapping: {e}")
+
+    def update_motor_mapping_new(self, identified_motors):
+        try:
+            motor_mapping = self.roboclaw_config.get('motor_mapping', {})
+            for motor_id, info in identified_motors.items():
+                motor_key = f"motor{motor_id}"
+                if motor_key in motor_mapping:
+                    motor_mapping[motor_key].update({
+                        'controller': info['controller'],
+                        'channel': info['channel'],
+                        'encoder_change': info['encoder_change'],
+                        'detection_time': info['detection_time'],
+                        'last_updated': datetime.now().isoformat(),
+                        'updated_by': 'automated_motor_mapping'
+                    })
+            self.roboclaw_config['motor_mapping'] = motor_mapping
+            self.config['hardware']['roboclaw'] = self.roboclaw_config
+            config_path = os.path.join(os.path.dirname(__file__), '..', 'config', 'platform_config.json')
+            with open(config_path, 'w') as f:
+                json.dump(self.config, f, indent=4)
+            print("✅ Motor mapping updated in platform configuration")
+        except Exception as e:
+            print(f"❌ Error updating motor mapping: {e}")
+
+    def run_connectivity_test(self) -> bool:
+        """Run comprehensive connectivity test"""
+        print("\n🔌 RoboClaw Connectivity Test")
+        print("=" * 50)
+        
+        # Test connection
+        if not self.connect():
+            print("❌ Connection test failed")
+            return False
+        
+        print("✅ Connection test passed")
+        
+        # Test motor mapping
+        if not self.identify_motor_mapping():
+            print("❌ Motor mapping test failed")
+            return False
+        
+        print("✅ Motor mapping test passed")
+        
+        # Test E-Stop functionality
+        for controller_name in ['rc1', 'rc2']:
+            if controller_name in self.controller_info and self.controller_info[controller_name]['connected']:
+                if not self.test_estop_functionality(controller_name):
+                    print(f"❌ E-Stop test failed for {controller_name}")
+                    return False
+                print(f"✅ E-Stop test passed for {controller_name}")
+        
+        # Check for errors
+        for controller_name in ['rc1', 'rc2']:
+            if controller_name in self.controller_info and self.controller_info[controller_name]['connected']:
+                error_state = self.read_error_state(controller_name)
+                if error_state and error_state['error_info']['is_error']:
+                    print(f"⚠️ Errors detected on {controller_name}:")
+                    for error in error_state['error_info']['active_errors']:
+                        print(f"   - {error}")
+                else:
+                    print(f"✅ No errors on {controller_name}")
+        
+        print("\n✅ All connectivity tests passed")
+        return True
+
+    def test_roboclaw_addresses(self):
+        """Test different addresses for RoboClaw controllers to find correct configuration"""
+        print("\n🔍 RoboClaw Address Testing")
+        print("=" * 50)
+        print("Testing different addresses for each controller...")
+        
+        # Test addresses from 0x80 to 0x89
+        test_addresses = list(range(0x80, 0x8A))  # 0x80 to 0x89
+        
+        results = {}
+        
+        for controller_name in ['rc1', 'rc2']:
+            if controller_name not in self.controller_info:
+                continue
+                
+            port = self.controller_info[controller_name]['port']
+            if not port:
+                print(f"   ⚠️ {controller_name} port not configured")
+                continue
+                
+            print(f"\n🔧 Testing {controller_name} on {port}")
+            print("-" * 30)
+            
+            controller_results = {}
+            
+            for address in test_addresses:
+                try:
+                    # Create temporary RoboClaw instance
+                    temp_roboclaw = Roboclaw(port, 0, timeout=0.5, retries=1)
+                    if not temp_roboclaw.Open():
+                        continue
+                    
+                    # Try to read version
+                    version_result = temp_roboclaw.ReadVersion(address)
+                    if version_result[0]:
+                        print(f"   ✅ Address 0x{address:02X}: {version_result[1]}")
+                        controller_results[address] = {
+                            'version': version_result[1],
+                            'status': 'connected'
+                        }
+                    else:
+                        print(f"   ❌ Address 0x{address:02X}: No response")
+                        controller_results[address] = {
+                            'status': 'no_response'
+                        }
+                    
+                    temp_roboclaw._port.close()
+                    
+                except Exception as e:
+                    print(f"   ❌ Address 0x{address:02X}: Error - {e}")
+                    controller_results[address] = {
+                        'status': 'error',
+                        'error': str(e)
+                    }
+            
+            results[controller_name] = controller_results
+            
+            # Find best address for this controller
+            best_address = None
+            for address, result in controller_results.items():
+                if result['status'] == 'connected':
+                    best_address = address
+                    break
+            
+            if best_address:
+                print(f"   🎯 Recommended address for {controller_name}: 0x{best_address:02X}")
+                # Update the controller info
+                self.controller_info[controller_name]['address'] = best_address
+            else:
+                print(f"   ❌ No working address found for {controller_name}")
+        
+        return results
+
+    def __del__(self):
+        self.disconnect() 

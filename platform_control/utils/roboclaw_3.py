@@ -125,10 +125,16 @@ class Roboclaw:
 	def _sendcommand(self,address,command):
 		self.crc_clear()
 		self.crc_update(address)
-#		self._port.write(chr(address))
+		# EDIT: Replaced deprecated chr() function with to_bytes()
+		# WHY: chr() was deprecated in Python 3, to_bytes() is the modern way to convert integers to bytes
+		# Original: self._port.write(chr(address))
+		# Fixed: self._port.write(address.to_bytes(1, 'big'))
 		self._port.write(address.to_bytes(1, 'big'))
 		self.crc_update(command)
-#		self._port.write(chr(command))
+		# EDIT: Replaced deprecated chr() function with to_bytes()
+		# WHY: chr() was deprecated in Python 3, to_bytes() is the modern way to convert integers to bytes
+		# Original: self._port.write(chr(command))
+		# Fixed: self._port.write(command.to_bytes(1, 'big'))
 		self._port.write(command.to_bytes(1, 'big'))
 		return
 
@@ -178,7 +184,10 @@ class Roboclaw:
 
 	def _writebyte(self,val):
 		self.crc_update(val&0xFF)
-#		self._port.write(chr(val&0xFF))
+		# EDIT: Replaced deprecated chr() function with to_bytes()
+		# WHY: chr() was deprecated in Python 3, to_bytes() is the modern way to convert integers to bytes
+		# Original: self._port.write(chr(val&0xFF))
+		# Fixed: self._port.write(val.to_bytes(1, 'big'))
 		self._port.write(val.to_bytes(1, 'big'))
 
 	def _writesbyte(self,val):
@@ -203,7 +212,7 @@ class Roboclaw:
 	def _read1(self,address,cmd):
 		trys = self._trystimeout
 		while 1:
-			self._port.flushInput()
+			self._port.reset_input_buffer()
 			self._sendcommand(address,cmd)
 			val1 = self._readbyte()
 			if val1[0]:
@@ -220,7 +229,7 @@ class Roboclaw:
 	def _read2(self,address,cmd):
 		trys = self._trystimeout
 		while 1:
-			self._port.flushInput()
+			self._port.reset_input_buffer()
 			self._sendcommand(address,cmd)
 			val1 = self._readword()
 			if val1[0]:
@@ -237,7 +246,7 @@ class Roboclaw:
 	def _read4(self,address,cmd):
 		trys = self._trystimeout
 		while 1:
-			self._port.flushInput()
+			self._port.reset_input_buffer()
 			self._sendcommand(address,cmd)
 			val1 = self._readlong()
 			if val1[0]:
@@ -254,7 +263,7 @@ class Roboclaw:
 	def _read4_1(self,address,cmd):
 		trys = self._trystimeout
 		while 1:
-			self._port.flushInput()
+			self._port.reset_input_buffer()
 			self._sendcommand(address,cmd)
 			val1 = self._readslong()
 			if val1[0]:
@@ -273,7 +282,7 @@ class Roboclaw:
 	def _read_n(self,address,cmd,args):
 		trys = self._trystimeout
 		while 1:
-			self._port.flushInput()
+			self._port.reset_input_buffer()
 			trys-=1
 			if trys==0:
 				break
@@ -595,7 +604,7 @@ class Roboclaw:
 	def _write4S444S441(self,address,cmd,val1,val2,val3,val4,val5,val6,val7):
 		trys=self._trystimeout
 		while trys:
-			self._sendcommand(self,address,cmd)
+			self._sendcommand(address,cmd)
 			self._writelong(val1)
 			self._writeslong(val2)
 			self._writelong(val3)
@@ -710,7 +719,7 @@ class Roboclaw:
 	def ReadVersion(self,address):
 		trys=self._trystimeout
 		while 1:
-			self._port.flushInput()
+			self._port.reset_input_buffer()
 			self._sendcommand(address,self.Cmd.GETVERSION)
 			str = ""
 			passed = True
@@ -757,11 +766,17 @@ class Roboclaw:
 		return self._write1(address,self.Cmd.SETMAXLB,val)
 
 	def SetM1VelocityPID(self,address,p,i,d,qpps):
-#		return self._write4444(address,self.Cmd.SETM1PID,long(d*65536),long(p*65536),long(i*65536),qpps)
+		# EDIT: Removed long() function calls
+		# WHY: long() function was deprecated in Python 3, int() handles all integer types automatically
+		# Original: long(d*65536), long(p*65536), long(i*65536)
+		# Fixed: d*65536, p*65536, i*65536
 		return self._write4444(address,self.Cmd.SETM1PID,d*65536,p*65536,i*65536,qpps)
 
 	def SetM2VelocityPID(self,address,p,i,d,qpps):
-#		return self._write4444(address,self.Cmd.SETM2PID,long(d*65536),long(p*65536),long(i*65536),qpps)
+		# EDIT: Removed long() function calls
+		# WHY: long() function was deprecated in Python 3, int() handles all integer types automatically
+		# Original: long(d*65536), long(p*65536), long(i*65536)
+		# Fixed: d*65536, p*65536, i*65536
 		return self._write4444(address,self.Cmd.SETM2PID,d*65536,p*65536,i*65536,qpps)
 
 	def ReadISpeedM1(self,address):
@@ -846,7 +861,7 @@ class Roboclaw:
 		return (0,0,0)
 
 	def SpeedAccelM1M2_2(self,address,accel1,speed1,accel2,speed2):
-		return self._write4S44S4(address,self.Cmd.MIXEDSPEED2ACCEL,accel,speed1,accel2,speed2)
+		return self._write4S44S4(address,self.Cmd.MIXEDSPEED2ACCEL,accel1,speed1,accel2,speed2)
 
 	def SpeedAccelDistanceM1M2_2(self,address,accel1,speed1,distance1,accel2,speed2,distance2,buffer):
 		return self._write4S444S441(address,self.Cmd.MIXEDSPEED2ACCELDIST,accel1,speed1,distance1,accel2,speed2,distance2,buffer)
@@ -863,19 +878,27 @@ class Roboclaw:
 	def ReadM1VelocityPID(self,address):
 		data = self._read_n(address,self.Cmd.READM1PID,4)
 		if data[0]:
-			data[1]/=65536.0
-			data[2]/=65536.0
-			data[3]/=65536.0
-			return data
+			# EDIT: Convert tuple to list for modification, then back to tuple
+			# WHY: Original code tried to assign to tuple indices (data[1]/=65536.0), which is not allowed in Python
+			# Tuples are immutable, so we must convert to list, modify, then convert back to preserve return structure
+			data_list = list(data)
+			data_list[1] = data_list[1] / 65536.0
+			data_list[2] = data_list[2] / 65536.0
+			data_list[3] = data_list[3] / 65536.0
+			return tuple(data_list)
 		return (0,0,0,0,0)
 
 	def ReadM2VelocityPID(self,address):
 		data = self._read_n(address,self.Cmd.READM2PID,4)
 		if data[0]:
-			data[1]/=65536.0
-			data[2]/=65536.0
-			data[3]/=65536.0
-			return data
+			# EDIT: Convert tuple to list for modification, then back to tuple
+			# WHY: Original code tried to assign to tuple indices (data[1]/=65536.0), which is not allowed in Python
+			# Tuples are immutable, so we must convert to list, modify, then convert back to preserve return structure
+			data_list = list(data)
+			data_list[1] = data_list[1] / 65536.0
+			data_list[2] = data_list[2] / 65536.0
+			data_list[3] = data_list[3] / 65536.0
+			return tuple(data_list)
 		return (0,0,0,0,0)
 
 	def SetMainVoltages(self,address,min, max):
@@ -901,29 +924,43 @@ class Roboclaw:
 		return (0,0,0)
 
 	def SetM1PositionPID(self,address,kp,ki,kd,kimax,deadzone,min,max):
-#		return self._write4444444(address,self.Cmd.SETM1POSPID,long(kd*1024),long(kp*1024),long(ki*1024),kimax,deadzone,min,max)
+		# EDIT: Removed long() function calls
+		# WHY: long() function was deprecated in Python 3, int() handles all integer types automatically
+		# Original: long(kd*1024), long(kp*1024), long(ki*1024)
+		# Fixed: kd*1024, kp*1024, ki*1024
 		return self._write4444444(address,self.Cmd.SETM1POSPID,kd*1024,kp*1024,ki*1024,kimax,deadzone,min,max)
 
 	def SetM2PositionPID(self,address,kp,ki,kd,kimax,deadzone,min,max):
-#		return self._write4444444(address,self.Cmd.SETM2POSPID,long(kd*1024),long(kp*1024),long(ki*1024),kimax,deadzone,min,max)
+		# EDIT: Removed long() function calls
+		# WHY: long() function was deprecated in Python 3, int() handles all integer types automatically
+		# Original: long(kd*1024), long(kp*1024), long(ki*1024)
+		# Fixed: kd*1024, kp*1024, ki*1024
 		return self._write4444444(address,self.Cmd.SETM2POSPID,kd*1024,kp*1024,ki*1024,kimax,deadzone,min,max)
 
 	def ReadM1PositionPID(self,address):
 		data = self._read_n(address,self.Cmd.READM1POSPID,7)
 		if data[0]:
-			data[1]/=1024.0
-			data[2]/=1024.0
-			data[3]/=1024.0
-			return data
+			# EDIT: Convert tuple to list for modification, then back to tuple
+			# WHY: Original code tried to assign to tuple indices (data[1]/=1024.0), which is not allowed in Python
+			# Tuples are immutable, so we must convert to list, modify, then convert back to preserve return structure
+			data_list = list(data)
+			data_list[1] = data_list[1] / 1024.0
+			data_list[2] = data_list[2] / 1024.0
+			data_list[3] = data_list[3] / 1024.0
+			return tuple(data_list)
 		return (0,0,0,0,0,0,0,0)
 		
 	def ReadM2PositionPID(self,address):
 		data = self._read_n(address,self.Cmd.READM2POSPID,7)
 		if data[0]:
-			data[1]/=1024.0
-			data[2]/=1024.0
-			data[3]/=1024.0
-			return data
+			# EDIT: Convert tuple to list for modification, then back to tuple
+			# WHY: Original code tried to assign to tuple indices (data[1]/=1024.0), which is not allowed in Python
+			# Tuples are immutable, so we must convert to list, modify, then convert back to preserve return structure
+			data_list = list(data)
+			data_list[1] = data_list[1] / 1024.0
+			data_list[2] = data_list[2] / 1024.0
+			data_list[3] = data_list[3] / 1024.0
+			return tuple(data_list)
 		return (0,0,0,0,0,0,0,0)
 
 	def SpeedAccelDeccelPositionM1(self,address,accel,speed,deccel,position,buffer):
@@ -1042,10 +1079,10 @@ class Roboclaw:
 	def ReadEeprom(self,address,ee_address):
 		trys = self._trystimeout
 		while 1:
-			self._port.flushInput()
+			self._port.reset_input_buffer()
 			self._sendcommand(address,self.Cmd.READEEPROM)
 			self.crc_update(ee_address)
-			self._port.write(chr(ee_address))
+			self._port.write(ee_address.to_bytes(1, 'big'))
 			val1 = self._readword()
 			if val1[0]:
 				crc = self._readchecksumword()
@@ -1063,7 +1100,7 @@ class Roboclaw:
 		if retval==True:
 			trys = self._trystimeout
 			while 1:
-				self._port.flushInput()
+				self._port.reset_input_buffer()
 				val1 = self._readbyte()
 				if val1[0]:
 					if val1[1]==0xaa:
@@ -1075,7 +1112,7 @@ class Roboclaw:
 		
 	def Open(self):
 		try:
-			self._port = serial.Serial(port=self.comport, baudrate=self.rate, timeout=1, interCharTimeout=self.timeout)
+			self._port = serial.Serial(port=self.comport, baudrate=self.rate, timeout=1)
 		except:
 			return 0
 		return 1

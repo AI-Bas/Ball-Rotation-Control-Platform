@@ -5,11 +5,13 @@ Modular testing system for Ball Handler Test Platform
 
 This is the central controller that orchestrates all testing modules:
 1. Connectivity Tests (connectivity_test.py)
-2. RoboClaw Motor Testing (roboclaw_test_menu.py)
+2. RoboClaw Motor Testing (roboclaw_test.py)
 3. INA219 Power Sensor Testing (ina219_test_menu.py)
 4. Optical Flow Sensor Testing (optical_flow_test_menu.py)
 5. Maker Pi Experimental Module Testing (maker_pi_tests.py)
-6. Calibration and Characterization Tests (calibration_tests.py)
+6. Calibration and Characterization Tests (calibration_test.py)
+7. Performance Testing (performance_test.py)
+8. Code Integration Testing (code_integration_test.py)
 
 Each module is maintained through hardware abstraction layers and follows
 the system architecture defined in system_design_architecture.yaml
@@ -41,7 +43,7 @@ class SystemTestOrchestrator:
         self.test_results = {
             "timestamp": datetime.now().isoformat(),
             "development_mode": development_mode,
-            "orchestrator_version": "2.0",
+            "orchestrator_version": "3.0",
             "module_results": {},
             "system_status": "initialized",
             "errors": [],
@@ -162,235 +164,191 @@ class SystemTestOrchestrator:
 
     def run_roboclaw_tests(self) -> bool:
         """Run RoboClaw test module"""
-        # RoboClaw tests
-        print("\n🔧 Running RoboClaw Tests...")
-        try:
-            result = subprocess.run([
-                sys.executable, "roboclaw_test.py", 
-                "--dev" if self.development_mode else "",
-                "--save",
-                "--autopilot", "123456"
-            ], capture_output=True, text=True, cwd=os.path.dirname(__file__))
-            
-            if result.returncode == 0:
-                print("   ✅ RoboClaw tests completed successfully")
-                self.test_results["module_results"]["roboclaw"] = {"status": "success", "output": result.stdout}
-            else:
-                print(f"   ❌ RoboClaw tests failed: {result.stderr}")
-                self.test_results["module_results"]["roboclaw"] = {"status": "failed", "error": result.stderr}
-        except Exception as e:
-            print(f"   ❌ RoboClaw tests error: {e}")
-            self.test_results["module_results"]["roboclaw"] = {"status": "error", "error": str(e)}
-        return self.test_results["module_results"]["roboclaw"]["status"] == "success"
+        module_path = os.path.join(os.path.dirname(__file__), "roboclaw_test.py")
+        result = self.run_module_test("RoboClaw", module_path, "1")
+        self.test_results["module_results"]["roboclaw"] = result
+        return result["status"] == "success"
 
     def run_ina219_tests(self) -> bool:
         """Run INA219 test module"""
         module_path = os.path.join(os.path.dirname(__file__), "ina219_test_menu.py")
-        result = self.run_module_test("INA219", module_path, "1234")
+        result = self.run_module_test("INA219", module_path, "1")
         self.test_results["module_results"]["ina219"] = result
         return result["status"] == "success"
 
     def run_optical_flow_tests(self) -> bool:
         """Run optical flow test module"""
         module_path = os.path.join(os.path.dirname(__file__), "optical_flow_test_menu.py")
-        result = self.run_module_test("Optical Flow", module_path, "123")
+        result = self.run_module_test("Optical Flow", module_path, "1")
         self.test_results["module_results"]["optical_flow"] = result
         return result["status"] == "success"
 
     def run_maker_pi_tests(self) -> bool:
         """Run Maker Pi test module"""
         module_path = os.path.join(os.path.dirname(__file__), "maker_pi_tests.py")
-        result = self.run_module_test("Maker Pi", module_path, "123")
+        result = self.run_module_test("Maker Pi", module_path, "1")
         self.test_results["module_results"]["maker_pi"] = result
         return result["status"] == "success"
 
     def run_calibration_tests(self) -> bool:
         """Run calibration test module"""
-        module_path = os.path.join(os.path.dirname(__file__), "calibration_tests.py")
-        result = self.run_module_test("Calibration", module_path, "3")  # Run all tests
+        module_path = os.path.join(os.path.dirname(__file__), "calibration_test.py")
+        result = self.run_module_test("Calibration", module_path, "1")
         self.test_results["module_results"]["calibration"] = result
         return result["status"] == "success"
 
     def run_performance_tests(self) -> bool:
         """Run performance test module"""
-        # Performance tests
-        print("\n📊 Running Performance Tests...")
-        try:
-            result = subprocess.run([
-                sys.executable, "performance_test.py", 
-                "--dev" if self.development_mode else "",
-                "--save",
-                "--autopilot", "12345"
-            ], capture_output=True, text=True, cwd=os.path.dirname(__file__))
-            
-            if result.returncode == 0:
-                print("   ✅ Performance tests completed successfully")
-                self.test_results["module_results"]["performance"] = {"status": "success", "output": result.stdout}
-            else:
-                print(f"   ❌ Performance tests failed: {result.stderr}")
-                self.test_results["module_results"]["performance"] = {"status": "failed", "error": result.stderr}
-        except Exception as e:
-            print(f"   ❌ Performance tests error: {e}")
-            self.test_results["module_results"]["performance"] = {"status": "error", "error": str(e)}
-        return self.test_results["module_results"]["performance"]["status"] == "success"
+        module_path = os.path.join(os.path.dirname(__file__), "performance_test.py")
+        result = self.run_module_test("Performance", module_path, "1")
+        self.test_results["module_results"]["performance"] = result
+        return result["status"] == "success"
+
+    def run_code_integration_tests(self) -> bool:
+        """Run code integration test module"""
+        module_path = os.path.join(os.path.dirname(__file__), "code_integration_test.py")
+        result = self.run_module_test("Code Integration", module_path, "1")
+        self.test_results["module_results"]["code_integration"] = result
+        return result["status"] == "success"
 
     def run_all_tests_sequential(self) -> bool:
-        """Run all test modules in sequence"""
-        print("\n" + "="*80)
-        print("🔧 COMPREHENSIVE SYSTEM TEST SUITE")
-        print("="*80)
-        print(f"⏰ Timestamp: {datetime.now().isoformat()}")
-        print(f"🔧 Development Mode: {'ENABLED' if self.development_mode else 'DISABLED'}")
-        print(f"💻 Platform: {platform.system()} {platform.release()}")
-        print("="*80)
+        """Run all test modules in sequence following system architecture"""
+        print("\n🚀 RUNNING COMPLETE SYSTEM TEST SUITE")
+        print("=" * 60)
+        print("Following system architecture module by module...")
         
-        start_time = time.time()
-        total_modules = 6
-        successful_modules = 0
-        
-        # Define test modules and their execution order
         test_modules = [
-            ("Connectivity Tests", self.run_connectivity_tests),
-            ("RoboClaw Tests", self.run_roboclaw_tests),
-            ("INA219 Tests", self.run_ina219_tests),
-            ("Optical Flow Tests", self.run_optical_flow_tests),
-            ("Maker Pi Tests", self.run_maker_pi_tests),
-            ("Calibration Tests", self.run_calibration_tests),
-            ("Performance Tests", self.run_performance_tests)
+            ("Connectivity", self.run_connectivity_tests),
+            ("RoboClaw", self.run_roboclaw_tests),
+            ("INA219", self.run_ina219_tests),
+            ("Optical Flow", self.run_optical_flow_tests),
+            ("Maker Pi", self.run_maker_pi_tests),
+            ("Performance", self.run_performance_tests),
+            ("Code Integration", self.run_code_integration_tests),
+            ("Calibration", self.run_calibration_tests)
         ]
         
-        # Execute each module
+        successful_tests = 0
+        total_tests = len(test_modules)
+        
         for module_name, test_function in test_modules:
+            print(f"\n📋 Testing {module_name}...")
             try:
                 if test_function():
-                    successful_modules += 1
-                    print(f"   ✅ {module_name} completed successfully")
+                    successful_tests += 1
+                    print(f"   ✅ {module_name} test passed")
                 else:
-                    print(f"   ❌ {module_name} failed")
+                    print(f"   ❌ {module_name} test failed")
             except Exception as e:
-                print(f"   💥 {module_name} encountered an error: {e}")
-                self.log_error(module_name, str(e), "Module execution failed")
+                print(f"   💥 {module_name} test error: {e}")
+                self.log_error(module_name, str(e), "Test execution failed")
         
-        # Calculate execution summary
-        total_duration = time.time() - start_time
-        success_rate = (successful_modules / total_modules) * 100
-        
+        # Update system status
+        success_rate = (successful_tests / total_tests) * 100
+        self.test_results["system_status"] = f"completed_{successful_tests}_{total_tests}"
         self.test_results["execution_summary"] = {
-            "total_modules": total_modules,
-            "successful_modules": successful_modules,
-            "failed_modules": total_modules - successful_modules,
+            "total_tests": total_tests,
+            "successful_tests": successful_tests,
             "success_rate": success_rate,
-            "total_duration": total_duration,
             "completion_time": datetime.now().isoformat()
         }
         
-        # Display final summary
-        print("\n" + "="*80)
-        print("📊 EXECUTION SUMMARY")
-        print("="*80)
-        print(f"Total Modules: {total_modules}")
-        print(f"Successful: {successful_modules}")
-        print(f"Failed: {total_modules - successful_modules}")
-        print(f"Success Rate: {success_rate:.1f}%")
-        print(f"Total Duration: {total_duration:.1f} seconds")
-        print(f"Average per Module: {total_duration/total_modules:.1f} seconds")
+        print(f"\n📊 SYSTEM TEST SUMMARY")
+        print(f"   Total Tests: {total_tests}")
+        print(f"   Successful: {successful_tests}")
+        print(f"   Success Rate: {success_rate:.1f}%")
         
-        if self.test_results["errors"]:
-            print(f"\n⚠ ERRORS ENCOUNTERED ({len(self.test_results['errors'])}):")
-            for error in self.test_results["errors"]:
-                print(f"   {error['module']}: {error['error']}")
-        
-        # Save results
-        self.save_test_results()
-        
-        return successful_modules == total_modules
+        return successful_tests == total_tests
 
     def display_test_menu(self):
         """Display the main test menu"""
-        print("\n" + "="*60)
-        print("🔧 BALL ROTATION CONTROL PLATFORM - TEST SUITE")
-        print("="*60)
-        print("1. Run Connectivity Tests")
-        print("2. Run RoboClaw Motor Tests")
-        print("3. Run INA219 Power Sensor Tests")
-        print("4. Run Optical Flow Sensor Tests")
-        print("5. Run Maker Pi Experimental Tests")
-        print("6. Run Calibration & Characterization Tests")
-        print("7. Run Performance Tests")
-        print("8. Run All Tests Sequential")
-        print("9. Display System Status")
-        print("10. Exit")
-        print("="*60)
+        print("\n🔧 System Test Suite Menu")
+        print("=" * 50)
+        print("1. Connectivity Tests")
+        print("2. RoboClaw Motor Tests")
+        print("3. INA219 Power Sensor Tests")
+        print("4. Optical Flow Sensor Tests")
+        print("5. Maker Pi Experimental Tests")
+        print("6. Performance Tests")
+        print("7. Code Integration Tests")
+        print("8. Calibration Tests")
+        print("9. Run All Tests (Sequential)")
+        print("10. Display System Status")
+        print("11. Save Test Results")
+        print("12. Exit")
+        print("=" * 50)
 
     def display_system_status(self):
         """Display current system status"""
-        print("\n" + "="*60)
-        print("📊 SYSTEM STATUS")
-        print("="*60)
-        print(f"Platform: {platform.system()} {platform.release()}")
-        print(f"Python Version: {sys.version}")
-        print(f"Development Mode: {'ENABLED' if self.development_mode else 'DISABLED'}")
-        print(f"Configuration Loaded: {'✓' if self.platform_config else '✗'}")
-        print(f"Test Results: {len(self.test_results['module_results'])} modules")
-        print(f"Errors: {len(self.test_results['errors'])}")
+        print("\n📊 System Status")
+        print("=" * 30)
+        print(f"   Status: {self.test_results['system_status']}")
+        print(f"   Development Mode: {self.development_mode}")
+        print(f"   Orchestrator Version: {self.test_results['orchestrator_version']}")
+        print(f"   Errors: {len(self.test_results['errors'])}")
         
-        if self.test_results["module_results"]:
-            print("\n📋 MODULE STATUS:")
-            for module, result in self.test_results["module_results"].items():
-                status_icon = "✅" if result["status"] == "success" else "❌"
-                print(f"   {status_icon} {module}: {result['status']}")
+        if self.test_results['module_results']:
+            print("\n   Module Results:")
+            for module, result in self.test_results['module_results'].items():
+                status = result.get('status', 'unknown')
+                print(f"      {module}: {status}")
+        
+        if self.test_results['execution_summary']:
+            summary = self.test_results['execution_summary']
+            print(f"\n   Last Execution:")
+            print(f"      Success Rate: {summary.get('success_rate', 0):.1f}%")
+            print(f"      Tests: {summary.get('successful_tests', 0)}/{summary.get('total_tests', 0)}")
 
     def save_test_results(self) -> Optional[str]:
-        """Save comprehensive test results"""
+        """Save test results to file"""
         try:
-            # Ensure test_logs directory exists
-            os.makedirs("test_logs/system", exist_ok=True)
+            # Create test_logs directory if it doesn't exist
+            logs_dir = os.path.join(os.path.dirname(__file__), "test_logs", "system")
+            os.makedirs(logs_dir, exist_ok=True)
             
-            # Save results to file
+            # Generate filename with timestamp
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-            filename = f"system_test_orchestrator_results_{timestamp}_dev.json"
-            filepath = os.path.join("test_logs/system", filename)
+            filename = f"system_test_results_{timestamp}.json"
+            filepath = os.path.join(logs_dir, filename)
             
             # Save results
-            with open(filepath, "w") as f:
+            with open(filepath, 'w') as f:
                 json.dump(self.test_results, f, indent=2)
             
-            print(f"\n💾 Comprehensive results saved to {filepath}")
+            print(f"   ✅ Test results saved to: {filepath}")
             return filepath
             
         except Exception as e:
-            print(f"\n⚠ Could not save results: {e}")
+            print(f"   ❌ Failed to save test results: {e}")
             return None
 
     def get_autopilot_input(self, prompt: str = "Enter choice: ") -> str:
+        """Get input with autopilot support"""
         return get_autopilot_input(prompt)
 
 def main():
-    """Main function for standalone execution"""
-    import argparse
-    
-    parser = argparse.ArgumentParser(description="System Test Orchestrator")
+    """Main function"""
+    parser = argparse.ArgumentParser(description="System Test Suite Orchestrator")
     parser.add_argument("--dev", action="store_true", help="Enable development mode")
-    parser.add_argument("--autopilot", type=str, default="", help="Autopilot input string")
     parser.add_argument("--save", action="store_true", help="Save test results")
+    parser.add_argument("--autopilot", type=str, default="", help="Autopilot input string")
     
     args = parser.parse_args()
     
     # Initialize orchestrator
-    orchestrator = SystemTestOrchestrator(development_mode=args.dev, autopilot_input=args.autopilot)
+    orchestrator = SystemTestOrchestrator(
+        development_mode=args.dev,
+        autopilot_input=args.autopilot
+    )
     
-    # Handle autopilot mode
-    if args.autopilot:
-        print("🤖 AUTOPILOT MODE - Running all tests sequentially")
-        orchestrator.run_all_tests_sequential()
-        return
+    print("🔧 System Test Suite Orchestrator v3.0")
+    print("=" * 50)
     
-    # Interactive mode
-    while True:
-        orchestrator.display_test_menu()
-        
-        try:
-            choice = orchestrator.get_autopilot_input()
+    try:
+        while True:
+            orchestrator.display_test_menu()
+            
+            choice = orchestrator.get_autopilot_input("Enter choice (1-12): ")
             
             if choice == "1":
                 orchestrator.run_connectivity_tests()
@@ -403,26 +361,33 @@ def main():
             elif choice == "5":
                 orchestrator.run_maker_pi_tests()
             elif choice == "6":
-                orchestrator.run_calibration_tests()
-            elif choice == "7":
                 orchestrator.run_performance_tests()
+            elif choice == "7":
+                orchestrator.run_code_integration_tests()
             elif choice == "8":
-                orchestrator.run_all_tests_sequential()
+                orchestrator.run_calibration_tests()
             elif choice == "9":
-                orchestrator.display_system_status()
+                orchestrator.run_all_tests_sequential()
             elif choice == "10":
-                print("Exiting...")
+                orchestrator.display_system_status()
+            elif choice == "11":
+                orchestrator.save_test_results()
+            elif choice == "12":
+                print("\n👋 Exiting System Test Suite...")
                 break
             else:
-                print("Invalid choice. Please enter a number between 1-10.")
-                
-        except KeyboardInterrupt:
-            print("\nExiting...")
-            break
-        except Exception as e:
-            print(f"Error: {e}")
+                print("❌ Invalid choice. Please enter 1-12.")
+            
+            if args.save:
+                orchestrator.save_test_results()
     
-    return 0
+    except KeyboardInterrupt:
+        print("\n\n⚠️  Interrupt received. Exiting...")
+    
+    finally:
+        if args.save:
+            orchestrator.save_test_results()
 
 if __name__ == "__main__":
+    import argparse
     main()

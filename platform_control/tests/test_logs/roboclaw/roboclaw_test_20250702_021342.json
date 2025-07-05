@@ -1,0 +1,96 @@
+{
+  "motor_mapping_identification": {
+    "timestamp": "2025-07-02T02:13:06.332314",
+    "success": false
+  },
+  "motor_mapping_verification": {
+    "timestamp": "2025-07-02T02:13:06.332338",
+    "success": false
+  },
+  "motor_control_test": {
+    "timestamp": "2025-07-02T02:13:06.332468",
+    "results": {
+      "motor1": [
+        {
+          "velocity": 100,
+          "success": false,
+          "error": "Failed to set velocity"
+        },
+        {
+          "velocity": 200,
+          "success": false,
+          "error": "Failed to set velocity"
+        },
+        {
+          "velocity": 300,
+          "success": false,
+          "error": "Failed to set velocity"
+        }
+      ],
+      "motor2": [
+        {
+          "velocity": 100,
+          "success": false,
+          "error": "Failed to set velocity"
+        },
+        {
+          "velocity": 200,
+          "success": false,
+          "error": "Failed to set velocity"
+        },
+        {
+          "velocity": 300,
+          "success": false,
+          "error": "Failed to set velocity"
+        }
+      ],
+      "motor3": [
+        {
+          "velocity": 100,
+          "success": false,
+          "error": "Failed to set velocity"
+        },
+        {
+          "velocity": 200,
+          "success": false,
+          "error": "Failed to set velocity"
+        },
+        {
+          "velocity": 300,
+          "success": false,
+          "error": "Failed to set velocity"
+        }
+      ],
+      "motor4": [
+        {
+          "velocity": 100,
+          "success": false,
+          "error": "Failed to set velocity"
+        },
+        {
+          "velocity": 200,
+          "success": false,
+          "error": "Failed to set velocity"
+        },
+        {
+          "velocity": 300,
+          "success": false,
+          "error": "Failed to set velocity"
+        }
+      ]
+    }
+  },
+  "pin_config_fix": {
+    "timestamp": "2025-07-02T02:13:06.367202",
+    "results": {
+      "rc2": {
+        "success": true,
+        "result": {
+          "s3": 0,
+          "s4": 0,
+          "s5": 0
+        }
+      }
+    }
+  }
+}

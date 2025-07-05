@@ -1,15 +1,84 @@
-import board
-import busio
-from adafruit_ina219 import INA219
+#!/usr/bin/env python3
+"""
+Power Sensor Interface using INA219
+Simple INA219 implementation using smbus2 for Raspberry Pi compatibility
+"""
+
+import smbus2
 from typing import List, Optional, Dict
 import time
 
+class INA219:
+    """Simple INA219 implementation using smbus2"""
+    
+    # INA219 registers
+    REG_CONFIG = 0x00
+    REG_SHUNTVOLTAGE = 0x01
+    REG_BUSVOLTAGE = 0x02
+    REG_POWER = 0x03
+    REG_CURRENT = 0x04
+    REG_CALIBRATION = 0x05
+    
+    def __init__(self, address=0x40, bus=1):
+        self.address = address
+        self.bus = smbus2.SMBus(bus)
+        self.current_lsb = 0.0001  # 100uA per bit
+        self.power_lsb = 0.002     # 2mW per bit
+        self.calibration_value = 0
+        self._configure()
+    
+    def _configure(self):
+        """Configure INA219 for 16V, 320mA range"""
+        # Configuration: 16V range, 320mA range, 12-bit resolution
+        config = 0x399F  # 16V, 320mA, 12-bit
+        self.bus.write_word_data(self.address, self.REG_CONFIG, config)
+        
+        # Calibration for 320mA range
+        self.calibration_value = 4096
+        self.bus.write_word_data(self.address, self.REG_CALIBRATION, self.calibration_value)
+    
+    def voltage(self):
+        """Get bus voltage in volts"""
+        try:
+            raw = self.bus.read_word_data(self.address, self.REG_BUSVOLTAGE)
+            # Convert to voltage (4mV per bit)
+            return (raw >> 3) * 0.004
+        except:
+            return 0.0
+    
+    def current(self):
+        """Get current in amps"""
+        try:
+            raw = self.bus.read_word_data(self.address, self.REG_CURRENT)
+            # Convert to current
+            return raw * self.current_lsb
+        except:
+            return 0.0
+    
+    def power(self):
+        """Get power in watts"""
+        try:
+            raw = self.bus.read_word_data(self.address, self.REG_POWER)
+            # Convert to power
+            return raw * self.power_lsb
+        except:
+            return 0.0
+    
+    def shunt_voltage(self):
+        """Get shunt voltage in volts"""
+        try:
+            raw = self.bus.read_word_data(self.address, self.REG_SHUNTVOLTAGE)
+            # Convert to voltage (10uV per bit)
+            return raw * 0.00001
+        except:
+            return 0.0
+
 class PowerSensor:
-    """Class for interfacing with INA219 power monitoring IC using Adafruit CircuitPython library"""
+    """Class for interfacing with INA219 power monitoring IC using simple implementation"""
     
     def __init__(self, config: dict):
         """
-        Initialize the power sensor using Adafruit CircuitPython INA219 library
+        Initialize the power sensor using simple INA219 implementation
         Args:
             config: Dictionary containing sensor configuration
         """
@@ -17,12 +86,9 @@ class PowerSensor:
         self.address = int(config['address'], 16) if isinstance(config['address'], str) else config['address']
         self.channels = config.get('channels', [0, 1, 2, 3])
         
-        # Initialize INA219 sensor using Adafruit CircuitPython library
+        # Initialize INA219 sensor using simple implementation
         try:
-            # Initialize I2C bus
-            i2c = busio.I2C(board.SCL, board.SDA)
-            # Use shunt resistance of 0.1 ohm (typical for INA219)
-            self.sensor = INA219(i2c)
+            self.sensor = INA219(address=self.address, bus=self.i2c_bus)
             print(f"✓ INA219 sensor initialized at address 0x{self.address:02x}")
         except Exception as e:
             print(f"✗ Failed to initialize INA219 sensor: {e}")
@@ -33,7 +99,7 @@ class PowerSensor:
         if self.sensor is None:
             return 0.0
         try:
-            return self.sensor.shunt_voltage * 1000  # Convert to mV
+            return self.sensor.shunt_voltage() * 1000  # Convert to mV
         except Exception as e:
             print(f"Error reading shunt voltage: {e}")
             return 0.0
@@ -43,7 +109,7 @@ class PowerSensor:
         if self.sensor is None:
             return 0.0
         try:
-            return self.sensor.bus_voltage
+            return self.sensor.voltage()
         except Exception as e:
             print(f"Error reading bus voltage: {e}")
             return 0.0
@@ -53,7 +119,7 @@ class PowerSensor:
         if self.sensor is None:
             return 0.0
         try:
-            return self.sensor.current * 1000  # Convert to mA
+            return self.sensor.current() * 1000  # Convert to mA
         except Exception as e:
             print(f"Error reading current: {e}")
             return 0.0
@@ -63,7 +129,7 @@ class PowerSensor:
         if self.sensor is None:
             return 0.0
         try:
-            return self.sensor.power
+            return self.sensor.power()
         except Exception as e:
             print(f"Error reading power: {e}")
             return 0.0
@@ -105,5 +171,5 @@ class PowerSensor:
         
     def close(self):
         """Close I2C connection"""
-        # The Adafruit library handles connection cleanup automatically
-        pass 
+        if self.sensor:
+            self.sensor.bus.close() 

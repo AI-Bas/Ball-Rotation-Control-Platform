@@ -1,0 +1,59 @@
+{
+  "timestamp": "2025-07-02 03:10:32",
+  "tests": {
+    "roboclaw": {
+      "status": true,
+      "ports_detected": [],
+      "controllers_found": 1,
+      "details": {
+        "roboclaw": {
+          "status": "connected",
+          "controllers": "RC1"
+        }
+      }
+    },
+    "ina219": {
+      "status": false,
+      "sensors_found": 0,
+      "addresses": [],
+      "details": {
+        "0x40": {
+          "status": "failed",
+          "error": "no voltage reading"
+        },
+        "0x41": {
+          "status": "failed",
+          "error": "no voltage reading"
+        },
+        "0x42": {
+          "status": "failed",
+          "error": "no voltage reading"
+        },
+        "0x43": {
+          "status": "failed",
+          "error": "no voltage reading"
+        }
+      }
+    },
+    "optical_flow": {
+      "status": true,
+      "sensor_detected": true,
+      "details": {
+        "status": "connected",
+        "motion_x": 0.0,
+        "motion_y": 0.0
+      }
+    },
+    "maker_pi": {
+      "status": false,
+      "usb_detected": false,
+      "uart_detected": false,
+      "details": {}
+    }
+  },
+  "summary": {
+    "total_modules": 4,
+    "connected_modules": 2,
+    "success_rate": 0.5
+  }
+}

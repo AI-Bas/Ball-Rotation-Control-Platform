@@ -1,0 +1,38 @@
+{
+  "timestamp": "2025-07-02 17:23:45",
+  "tests": {
+    "voltage_range": {
+      "status": false,
+      "sensors_tested": 0,
+      "voltage_readings": {},
+      "details": {},
+      "error": "Failed to initialize sensors"
+    },
+    "current_monitoring": {
+      "status": false,
+      "channels_monitored": 0,
+      "current_readings": {},
+      "details": {},
+      "error": "Failed to initialize sensors"
+    },
+    "motor_mapping": {
+      "status": false,
+      "motors_mapped": 0,
+      "mapping": {},
+      "details": {},
+      "error": "Failed to initialize sensors"
+    },
+    "bandwidth": {
+      "status": false,
+      "max_safe_rate": 0,
+      "performance_metrics": {},
+      "details": {},
+      "error": "Failed to initialize sensors"
+    }
+  },
+  "summary": {
+    "total_tests": 4,
+    "passed_tests": 0,
+    "success_rate": 0.0
+  }
+}

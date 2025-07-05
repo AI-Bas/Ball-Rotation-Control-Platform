@@ -1,0 +1,78 @@
+{
+  "timestamp": "2025-07-02T17:18:43.915432",
+  "development_mode": false,
+  "orchestrator_version": "3.0",
+  "module_results": {
+    "connectivity": {
+      "module": "Connectivity",
+      "start_time": "2025-07-02T17:18:43.916484",
+      "status": "failed",
+      "exit_code": 1,
+      "output": "\ud83d\udd0c Running System Connectivity Tests...\n\ud83d\udd0c Connecting to RoboClaw controllers...\n   \ud83d\udd17 Connecting to rc1 on /dev/ttyACM2...\n   \u274c Failed to open rc1 on /dev/ttyACM2\n   \ud83d\udd17 Connecting to rc2 on /dev/ttyACM1...\n   \u274c Failed to open rc2 on /dev/ttyACM1\n\u2713 INA219 sensor initialized at address 0x40\n\u2713 INA219 sensor initialized at address 0x41\n\u2713 INA219 sensor initialized at address 0x42\n\u2713 INA219 sensor initialized at address 0x43\nNote: Core motion control sensors handled by Raspberry Pi 5\nMaker Pi RP2040 handles experimental sensors, displays, and IO modules\n\n=== CircuitPython Drive Detection (LINUX) ===\nDetecting CircuitPython drives on Linux...\n\u2713 Platform configuration updated with detected drives\n\n=== Connecting to Maker Pi on /dev/ttyACM0 ===\n\u2713 Serial connection opened on /dev/ttyACM0\n\u2713 Connected to Maker Pi via serial\n\u2717 Communication test failed\n\n============================================================\n\ud83d\udd0c CONNECTIVITY TEST RESULTS\n============================================================\n\u274c ROBOCLAW: False\n\u274c INA219: False\n\u274c OPTICAL_FLOW: False\n\u274c MAKER_PI: False\n\n------------------------------------------------------------\n\ud83d\udcca SUMMARY: 0/4 modules connected\n   Success Rate: 0.0%\n============================================================\n\ud83d\udcbe Results saved to: /home/bas/Desktop/REPO Ball Rotation Control Platform/Ball-Rotation-Control-Platform/platform_control/tests/test_logs/connectivity/connectivity_test_20250702_171845.json\n",
+      "error": "",
+      "duration": 1.5104446411132812
+    },
+    "roboclaw": {
+      "module": "RoboClaw",
+      "start_time": "2025-07-02T17:18:45.427271",
+      "status": "timeout",
+      "exit_code": -1,
+      "output": "",
+      "error": "Module execution timed out after 5 minutes",
+      "duration": 0
+    },
+    "ina219": {
+      "module": "INA219",
+      "start_time": "2025-07-02T17:23:45.430933",
+      "status": "failed",
+      "exit_code": 1,
+      "output": "\ud83d\udd0c INA219 Test Menu\n==================================================\n\u26a1 Running Voltage Range Test...\n\u2713 INA219 sensor initialized at address 0x40\n\u26a0\ufe0f No voltage reading from 0x40\n\u2713 INA219 sensor initialized at address 0x41\n\u26a0\ufe0f No voltage reading from 0x41\n\u2713 INA219 sensor initialized at address 0x42\n\u26a0\ufe0f No voltage reading from 0x42\n\u2713 INA219 sensor initialized at address 0x43\n\u26a0\ufe0f No voltage reading from 0x43\n\ud83d\udd0c Running Current Monitoring Test...\n\u2713 INA219 sensor initialized at address 0x40\n\u26a0\ufe0f No voltage reading from 0x40\n\u2713 INA219 sensor initialized at address 0x41\n\u26a0\ufe0f No voltage reading from 0x41\n\u2713 INA219 sensor initialized at address 0x42\n\u26a0\ufe0f No voltage reading from 0x42\n\u2713 INA219 sensor initialized at address 0x43\n\u26a0\ufe0f No voltage reading from 0x43\n\ud83c\udfaf Running Motor Current Mapping Test...\n\u2713 INA219 sensor initialized at address 0x40\n\u26a0\ufe0f No voltage reading from 0x40\n\u2713 INA219 sensor initialized at address 0x41\n\u26a0\ufe0f No voltage reading from 0x41\n\u2713 INA219 sensor initialized at address 0x42\n\u26a0\ufe0f No voltage reading from 0x42\n\u2713 INA219 sensor initialized at address 0x43\n\u26a0\ufe0f No voltage reading from 0x43\n\ud83d\udcca Running Bandwidth Test...\n\u2713 INA219 sensor initialized at address 0x40\n\u26a0\ufe0f No voltage reading from 0x40\n\u2713 INA219 sensor initialized at address 0x41\n\u26a0\ufe0f No voltage reading from 0x41\n\u2713 INA219 sensor initialized at address 0x42\n\u26a0\ufe0f No voltage reading from 0x42\n\u2713 INA219 sensor initialized at address 0x43\n\u26a0\ufe0f No voltage reading from 0x43\n\n============================================================\n\ud83d\udd0c INA219 TEST RESULTS\n============================================================\n\u274c VOLTAGE_RANGE: False\n\u274c CURRENT_MONITORING: False\n\u274c MOTOR_MAPPING: False\n\u274c BANDWIDTH: False\n\n------------------------------------------------------------\n\ud83d\udcca SUMMARY: 0/4 tests passed\n   Success Rate: 0.0%\n============================================================\n\ud83d\udcbe Results saved to: /home/bas/Desktop/REPO Ball Rotation Control Platform/Ball-Rotation-Control-Platform/platform_control/tests/test_logs/ina219/ina219_test_20250702_172345.json\n",
+      "error": "",
+      "duration": 0.1503605842590332
+    },
+    "optical_flow": {
+      "module": "Optical Flow",
+      "start_time": "2025-07-02T17:23:45.581549",
+      "status": "success",
+      "exit_code": 0,
+      "output": "\ud83d\udd0d PAA5100JE-Q Optical Flow Sensor Test Menu\n==================================================\n\ud83d\udca1 Run with --dev flag for development mode\n\ud83d\udd0d PAA5100JE-Q Optical Flow Sensor Test Menu\n==================================================\n\n\ud83d\udd0d PAA5100JE-Q Optical Flow Sensor Test Menu\n==================================================\n1. Connectivity Test (SPI + Sensor Init)\n2. Functionality Test (LED + Motion)\n3. Bandwidth Test (Performance)\n4. Run All Tests\n5. Save Results\n6. Exit\n--------------------------------------------------\n\n\ud83d\udd0c PAA5100JE-Q Connectivity Test\n----------------------------------------\n   Testing PAA5100JE-Q SPI bus access (via OpticalFlowSensor utility)...\n   \u274c PAA5100JE-Q connectivity test failed: Cannot determine SOC peripheral base address\n   \u274c SPI connectivity test failed\n\n\ud83d\udd0d PAA5100JE-Q Optical Flow Sensor Test Menu\n==================================================\n1. Connectivity Test (SPI + Sensor Init)\n2. Functionality Test (LED + Motion)\n3. Bandwidth Test (Performance)\n4. Run All Tests\n5. Save Results\n6. Exit\n--------------------------------------------------\n\n\ud83d\udd0c PAA5100JE-Q Connectivity Test\n----------------------------------------\n   Testing PAA5100JE-Q SPI bus access (via OpticalFlowSensor utility)...\n   \u274c PAA5100JE-Q connectivity test failed: Cannot determine SOC peripheral base address\n   \u274c SPI connectivity test failed\n\n\ud83d\udd0d PAA5100JE-Q Optical Flow Sensor Test Menu\n==================================================\n1. Connectivity Test (SPI + Sensor Init)\n2. Functionality Test (LED + Motion)\n3. Bandwidth Test (Performance)\n4. Run All Tests\n5. Save Results\n6. Exit\n--------------------------------------------------\n\n\u2699\ufe0f PAA5100JE-Q Functionality Test\n----------------------------------------\n   \u274c Sensor not initialized. Run connectivity test first.\n\n\ud83d\udd0d PAA5100JE-Q Optical Flow Sensor Test Menu\n==================================================\n1. Connectivity Test (SPI + Sensor Init)\n2. Functionality Test (LED + Motion)\n3. Bandwidth Test (Performance)\n4. Run All Tests\n5. Save Results\n6. Exit\n--------------------------------------------------\n\n\ud83d\udcca PAA5100JE-Q Bandwidth Test\n----------------------------------------\n   \ud83d\udcca Testing PAA5100JE-Q bandwidth...\n     Speed 1.0MHz: 50/50 successful (100.0%) - 6168094.1 cmd/s\n     Speed 2.0MHz: 50/50 successful (100.0%) - 11037642.1 cmd/s\n     Speed 4.0MHz: 50/50 successful (100.0%) - 11037642.1 cmd/s\n     Speed 8.0MHz: 50/50 successful (100.0%) - 11650844.4 cmd/s\n   \u2705 Bandwidth test completed. Max safe speed: 8.0MHz\n\n\ud83d\udd0d PAA5100JE-Q Optical Flow Sensor Test Menu\n==================================================\n1. Connectivity Test (SPI + Sensor Init)\n2. Functionality Test (LED + Motion)\n3. Bandwidth Test (Performance)\n4. Run All Tests\n5. Save Results\n6. Exit\n--------------------------------------------------\n\n\ud83d\ude80 Running All PAA5100JE-Q Tests\n==================================================\n\n\ud83d\udd0c PAA5100JE-Q Connectivity Test\n----------------------------------------\n   Testing PAA5100JE-Q SPI bus access (via OpticalFlowSensor utility)...\n   \u274c PAA5100JE-Q connectivity test failed: Cannot determine SOC peripheral base address\n   \u274c SPI connectivity test failed\n   \u274c Connectivity test failed. Stopping test suite.\n\n\ud83d\udd0d PAA5100JE-Q Optical Flow Sensor Test Menu\n==================================================\n1. Connectivity Test (SPI + Sensor Init)\n2. Functionality Test (LED + Motion)\n3. Bandwidth Test (Performance)\n4. Run All Tests\n5. Save Results\n6. Exit\n--------------------------------------------------\n   \ud83d\udcbe Test results saved: test_logs/optical_flow/optical_flow_test_20250702_172345.json\n\n\ud83d\udd0d PAA5100JE-Q Optical Flow Sensor Test Menu\n==================================================\n1. Connectivity Test (SPI + Sensor Init)\n2. Functionality Test (LED + Motion)\n3. Bandwidth Test (Performance)\n4. Run All Tests\n5. Save Results\n6. Exit\n--------------------------------------------------\n   \ud83d\udc4b Exiting optical flow test menu\n   \ud83d\udcbe Test results saved: test_logs/optical_flow/optical_flow_test_20250702_172345.json\n\nOptical flow test menu completed.\n",
+      "error": "",
+      "duration": 0.15530014038085938
+    },
+    "maker_pi": {
+      "module": "Maker Pi",
+      "start_time": "2025-07-02T17:23:45.737141",
+      "status": "success",
+      "exit_code": 0,
+      "output": "\ud83d\udd27 Maker Pi RP2040 Test Suite\n==================================================\nNote: Core motion control sensors handled by Raspberry Pi 5\nMaker Pi RP2040 handles experimental sensors, displays, and IO modules\nMaker Pi RP2040 Identification Module\n======================================\nThis module will:\n1. Detect CircuitPython drives\n2. Backup code.py files\n3. Test serial connections\n4. Configure experimental module placeholders\n5. Update platform configuration\n6. Offer experimental module testing\n\n\n=== CircuitPython Drive Detection (LINUX) ===\n\n=== CircuitPython Drive Detection (LINUX) ===\nDetecting CircuitPython drives on Linux...\n\u2713 Platform configuration updated with detected drives\n\u2717 No CircuitPython drives detected\n\u2717 No CircuitPython drives detected\n   \u274c Some Maker Pi tests failed\n",
+      "error": "",
+      "duration": 0.13399553298950195
+    },
+    "performance": {
+      "module": "Performance",
+      "start_time": "2025-07-02T17:23:45.871426",
+      "status": "timeout",
+      "exit_code": -1,
+      "output": "",
+      "error": "Module execution timed out after 5 minutes",
+      "duration": 0
+    }
+  },
+  "system_status": "initialized",
+  "errors": [
+    {
+      "module": "RoboClaw",
+      "error": "Execution timeout",
+      "context": "Module took too long to complete",
+      "timestamp": "2025-07-02T17:23:45.430688"
+    },
+    {
+      "module": "Performance",
+      "error": "Execution timeout",
+      "context": "Module took too long to complete",
+      "timestamp": "2025-07-02T17:28:45.878384"
+    }
+  ],
+  "performance_metrics": {},
+  "execution_summary": {}
+}

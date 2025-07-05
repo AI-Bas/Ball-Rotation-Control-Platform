@@ -191,6 +191,40 @@
 
 ## 📚 DOCUMENTATION & WORKFLOW
 
+### [2025-07-02] - Demo System Development
+- **✅ Created**: `demo_test.py` - Comprehensive motor testing with user-guided mapping
+- **✅ Created**: `demo.py` - Enhanced motion demo with positive/negative direction cycling
+- **✅ Created**: `demo_motion.py` - Sinusoidal motion profile generator (on-hold)
+- **✅ Created**: `demo_config.json` - Motor configuration saving and loading
+- **✅ Implemented**: Sequential command execution to prevent controller overload
+- **✅ Added**: User-guided motor mapping with prompts for motor identification
+- **✅ Fixed**: Motor mapping logic to stop all motors before testing each one
+- **✅ Added**: Motor monitoring during mapping to verify only one motor spins
+- **✅ Added**: Verification that user input matches actual motor behavior
+- **✅ Increased**: Mapping speed from 100 to 200 for better motor detection
+- **✅ Added**: Warnings for multiple motors running during mapping (indicates wiring issues)
+- **✅ Updated**: Step response timing to 2s on, 1s off, 3 cycles default
+- **✅ Removed**: Autopilot mode to simplify operation
+- **✅ Fixed**: Duplicate demo parameters in initialization
+- **✅ Verified**: Step response demo works with new timing and proper motor mapping
+- **✅ Added**: Continuous mode with configurable duration (default 30s)
+- **✅ Enhanced**: Motor stopping with verification and increased delays (1.0s stop delay)
+- **✅ Fixed**: Timing issues with motor stop commands and controller overload
+- **✅ Added**: Motor stop status verification after stop commands
+- **✅ Increased**: Command delays to prevent controller overload (0.2s command delay)
+- **✅ Added**: Real-time progress display for continuous mode
+- **⚠️ Identified**: Hardware wiring issue on RC2 where both motors respond to RC2_M1 commands
+- **✅ Workaround**: Motor mapping works correctly despite hardware issue
+- **✅ Fixed**: Negative speed/current detection in motor testing
+- **✅ Updated**: Motor configuration for user's hardware (Motor 1: RC1, Motor 2&3: RC2)
+- **✅ Enhanced**: Demo system with new motion pattern (5s positive, 2s stop, 5s negative, 2s stop)
+- **✅ Added**: Configuration loading from demo_config.json for persistent motor mapping
+- **✅ Enhanced**: Motor mapping with PID value reading and logging
+- **✅ Added**: Backup configuration saving during mapping process
+- **✅ Fixed**: Mapping logic to track remaining motors properly
+- **✅ Added**: Autopilot mode for development with --autopilot and --inputs flags
+- **✅ Fixed**: Connectivity test integration from demo.py menu
+
 ### [2025-01-29] - Documentation Restructuring
 - **Created**: `to-do.md` - Structured task tracking with hardware/software grouping
 - **Created**: `to-verify.md` - Completed tasks for validation with minimal context

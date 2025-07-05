@@ -1,0 +1,68 @@
+{
+  "timestamp": "2025-07-05 04:32:27",
+  "motor_mapping": {
+    "motor1": {
+      "controller": "RC1",
+      "channel": "M1",
+      "port": "/dev/ttyACM2",
+      "working": true,
+      "method": "speed",
+      "max_speed": -287218,
+      "avg_current": -0.602,
+      "pid_values": {
+        "p": 67.44140625,
+        "i": 1.4892578125,
+        "d": 446.7822265625,
+        "qpps": 3746,
+        "max_i": 1500,
+        "deadzone": 0,
+        "min_pos": 0,
+        "max_pos": 0
+      }
+    },
+    "motor2": {
+      "controller": "RC2",
+      "channel": "M1",
+      "port": "/dev/ttyACM1",
+      "working": true,
+      "method": "speed",
+      "max_speed": 0,
+      "avg_current": 0,
+      "pid_values": {
+        "p": 96.9130859375,
+        "i": 2.2451171875,
+        "d": 674.3330078125,
+        "qpps": 3757,
+        "max_i": 1500,
+        "deadzone": 0,
+        "min_pos": 0,
+        "max_pos": 0
+      }
+    },
+    "motor3": {
+      "controller": "RC2",
+      "channel": "M2",
+      "port": "/dev/ttyACM1",
+      "working": true,
+      "method": "speed",
+      "max_speed": 299163,
+      "avg_current": -0.028000000000000004,
+      "pid_values": {
+        "p": 101.1455078125,
+        "i": 2.259765625,
+        "d": 678.4638671875,
+        "qpps": 3742,
+        "max_i": 1500,
+        "deadzone": 0,
+        "min_pos": 0,
+        "max_pos": 0
+      }
+    }
+  },
+  "controller_config": {
+    "rc1_port": "/dev/ttyACM2",
+    "rc2_port": "/dev/ttyACM1",
+    "address": 128,
+    "baudrate": 460800
+  }
+}

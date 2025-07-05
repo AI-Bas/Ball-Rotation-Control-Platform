@@ -77,11 +77,14 @@ class ConnectivityTest:
         return [p for p in ports if p]
     
     def test_roboclaw_connectivity(self) -> Dict[str, Any]:
-        """Test RoboClaw connectivity."""
+        """Test RoboClaw connectivity with comprehensive functionality."""
         result = {
             "status": False,
             "ports_detected": [],
             "controllers_found": 0,
+            "motor_mapping": {},
+            "estop_status": {},
+            "error_states": {},
             "details": {}
         }
         
@@ -89,15 +92,77 @@ class ConnectivityTest:
             ports = self.detect_roboclaw_ports()
             result["ports_detected"] = ports
             
-            # Use RoboClawInterface with proper initialization
-            roboclaw = RoboClawInterface(use_dual_controllers=False, autopilot_mode=self.autopilot_mode)
+            # Use RoboClawInterface with dual controller support
+            roboclaw = RoboClawInterface(use_dual_controllers=True, autopilot_mode=self.autopilot_mode)
+            
             if roboclaw.connect():
-                result["controllers_found"] = 1
+                result["controllers_found"] = len([c for c in roboclaw.controller_info.values() if c['connected']])
                 result["status"] = True
                 result["details"]["roboclaw"] = {
                     "status": "connected",
-                    "controllers": "RC1"
+                    "controllers": list(roboclaw.controller_info.keys())
                 }
+                
+                # Enhanced functionality: Motor mapping identification
+                if self.development_mode or self.autopilot_mode:
+                    print("🔍 Testing motor mapping identification...")
+                    if roboclaw.identify_motor_mapping():
+                        result["motor_mapping"] = roboclaw.roboclaw_config.get('motor_mapping', {})
+                        print("✅ Motor mapping identification successful")
+                    else:
+                        print("❌ Motor mapping identification failed")
+                
+                # Enhanced functionality: E-Stop testing
+                if self.development_mode or self.autopilot_mode:
+                    print("🛑 Testing E-Stop functionality...")
+                    for controller_name in ['rc1', 'rc2']:
+                        if controller_name in roboclaw.controller_info and roboclaw.controller_info[controller_name]['connected']:
+                            if roboclaw.test_estop_functionality(controller_name):
+                                result["estop_status"][controller_name] = "passed"
+                                print(f"✅ E-Stop test passed for {controller_name}")
+                            else:
+                                result["estop_status"][controller_name] = "failed"
+                                print(f"❌ E-Stop test failed for {controller_name}")
+                
+                # Enhanced functionality: Error state checking
+                print("🔍 Checking error states...")
+                for controller_name in ['rc1', 'rc2']:
+                    if controller_name in roboclaw.controller_info and roboclaw.controller_info[controller_name]['connected']:
+                        error_state = roboclaw.read_error_state(controller_name)
+                        if error_state and error_state['error_info']['is_error']:
+                            result["error_states"][controller_name] = {
+                                "has_errors": True,
+                                "error_code": f"0x{error_state['error_code']:08X}",
+                                "active_errors": error_state['error_info']['active_errors']
+                            }
+                            print(f"⚠️ Errors detected on {controller_name}: {error_state['error_info']['active_errors']}")
+                        else:
+                            result["error_states"][controller_name] = {
+                                "has_errors": False,
+                                "error_code": "0x00000000",
+                                "active_errors": []
+                            }
+                            print(f"✅ No errors detected on {controller_name}")
+                
+                # Enhanced functionality: Motor data verification
+                print("🔍 Verifying motor data...")
+                for motor_id in range(1, 5):
+                    motor_data = roboclaw.get_motor_data(motor_id)
+                    if motor_data:
+                        result["details"][f"motor_{motor_id}"] = {
+                            "controller": motor_data['controller'],
+                            "channel": motor_data['channel'],
+                            "encoder": motor_data.get('encoder_position', 'N/A'),
+                            "current": motor_data.get('current', 'N/A'),
+                            "voltage": motor_data.get('voltage', 'N/A')
+                        }
+                        print(f"   Motor {motor_id}: Connected to {motor_data['controller']}, channel {motor_data['channel']}")
+                    else:
+                        result["details"][f"motor_{motor_id}"] = {
+                            "status": "not_available"
+                        }
+                        print(f"   Motor {motor_id}: Not available")
+                
             else:
                 result["details"]["roboclaw"] = {
                     "status": "failed",

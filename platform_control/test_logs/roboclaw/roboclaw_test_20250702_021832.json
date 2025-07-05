@@ -1,0 +1,193 @@
+{
+  "estop_test": {
+    "timestamp": "2025-07-02T02:15:40.692655",
+    "results": {
+      "rc2": true
+    }
+  },
+  "motor_mapping_identification": {
+    "timestamp": "2025-07-02T02:17:05.767399",
+    "success": true
+  },
+  "motor_mapping_verification": {
+    "timestamp": "2025-07-02T02:17:17.935227",
+    "success": true
+  },
+  "motor_control_test": {
+    "timestamp": "2025-07-02T02:15:46.010694",
+    "results": {
+      "motor1": [
+        {
+          "velocity": 100,
+          "success": false,
+          "error": "Failed to set velocity"
+        },
+        {
+          "velocity": 200,
+          "success": false,
+          "error": "Failed to set velocity"
+        },
+        {
+          "velocity": 300,
+          "success": false,
+          "error": "Failed to set velocity"
+        }
+      ],
+      "motor2": [
+        {
+          "velocity": 100,
+          "success": false,
+          "error": "Failed to set velocity"
+        },
+        {
+          "velocity": 200,
+          "success": false,
+          "error": "Failed to set velocity"
+        },
+        {
+          "velocity": 300,
+          "success": false,
+          "error": "Failed to set velocity"
+        }
+      ],
+      "motor3": [
+        {
+          "velocity": 100,
+          "success": true,
+          "motor_data": {
+            "motor_id": 3,
+            "controller": "rc2",
+            "channel": "A",
+            "timestamp": 1751415341.198618,
+            "encoder_position": 43126,
+            "encoder_velocity": 128,
+            "speed": 75,
+            "speed_status": 0,
+            "current": 94,
+            "voltage": 11.4
+          }
+        },
+        {
+          "velocity": 200,
+          "success": true,
+          "motor_data": {
+            "motor_id": 3,
+            "controller": "rc2",
+            "channel": "A",
+            "timestamp": 1751415341.718548,
+            "encoder_position": 43126,
+            "encoder_velocity": 128,
+            "speed": 0,
+            "speed_status": 0,
+            "current": 2,
+            "voltage": 11.5
+          }
+        },
+        {
+          "velocity": 300,
+          "success": true,
+          "motor_data": {
+            "motor_id": 3,
+            "controller": "rc2",
+            "channel": "A",
+            "timestamp": 1751415342.2688498,
+            "encoder_position": 43126,
+            "encoder_velocity": 128,
+            "speed": 0,
+            "speed_status": 0,
+            "current": 4,
+            "voltage": 11.5
+          }
+        }
+      ],
+      "motor4": [
+        {
+          "velocity": 100,
+          "success": true,
+          "motor_data": {
+            "motor_id": 4,
+            "controller": "rc2",
+            "channel": "B",
+            "timestamp": 1751415343.931742,
+            "encoder_position": 828169,
+            "encoder_velocity": 128,
+            "speed": 101579,
+            "speed_status": 0,
+            "current": 138,
+            "voltage": 11.4
+          }
+        },
+        {
+          "velocity": 200,
+          "success": true,
+          "motor_data": {
+            "motor_id": 4,
+            "controller": "rc2",
+            "channel": "B",
+            "timestamp": 1751415344.4517806,
+            "encoder_position": 846906,
+            "encoder_velocity": 130,
+            "speed": 54117,
+            "speed_status": 1,
+            "current": 46,
+            "voltage": 11.4
+          }
+        },
+        {
+          "velocity": 300,
+          "success": true,
+          "motor_data": {
+            "motor_id": 4,
+            "controller": "rc2",
+            "channel": "B",
+            "timestamp": 1751415345.9967399,
+            "encoder_position": 835682,
+            "encoder_velocity": 128,
+            "speed": -58289,
+            "speed_status": 0,
+            "current": 50,
+            "voltage": 11.4
+          }
+        }
+      ]
+    }
+  },
+  "pin_config_fix": {
+    "timestamp": "2025-07-02T02:18:21.628797",
+    "results": {
+      "rc2": {
+        "success": true,
+        "result": {
+          "s3": 0,
+          "s4": 0,
+          "s5": 0
+        }
+      }
+    }
+  },
+  "connectivity_test": {
+    "timestamp": "2025-07-02T02:18:15.715716",
+    "success": true
+  },
+  "error_diagnostics": {
+    "timestamp": "2025-07-02T02:17:48.396106",
+    "results": {
+      "rc2": {
+        "timestamp": "2025-07-02T02:17:48.392043",
+        "controller": "rc2",
+        "error_state": 3221225472,
+        "pin_functions": {
+          "s3": 0,
+          "s4": 0,
+          "s5": 0
+        },
+        "status": true,
+        "error_messages": [],
+        "estop_active": false,
+        "s3_inverted": false,
+        "s4_inverted": false,
+        "s5_inverted": false
+      }
+    }
+  }
+}
