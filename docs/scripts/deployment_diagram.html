@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Deployment Diagram</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({ startOnLoad: true });
+    </script>
+</head>
+<body>
+    <h1>Deployment Diagram</h1>
+    <div class="mermaid">
+graph TB
+
+    subgraph RPi5["Raspberry Pi 5"]
+        subgraph RPi5_Software["Software Components"]
+            PC[Platform Control]
+            KI[Kinematic Conversion]
+            SG[Setpoint Generator]
+            RI[RoboClaw Interface]
+            OFI[Optical Flow Interface]
+            PSI[Power Sensor Interface]
+            DL[Data Logger]
+            AM[Autopilot Manager]
+        end
+
+        subgraph RPi5_Testing["Testing Components"]
+            ST[System Test]
+            CT[Connectivity Test]
+            RT[RoboClaw Test]
+            CLT[Calibration Test]
+            PT[Performance Test]
+        end
+    end
+
+    subgraph MP2040["Maker Pi RP2040"]
+        subgraph MP2040_Software["Experimental Software"]
+            MPI[Maker Pi Interface]
+            ES[Experimental Sensors]
+            DM[Display Modules]
+            IOM[IO Modules]
+        end
+    end
+
+    subgraph Hardware["Hardware Components"]
+        RC1[RoboClaw Controller 1]
+        RC2[RoboClaw Controller 2]
+        OF[Optical Flow Sensor]
+        PS[Power Sensor]
+        M1[Motor 1]
+        M2[Motor 2]
+        M3[Motor 3]
+    end
+
+    subgraph Storage["Storage"]
+        Config[Configuration Files]
+        Logs[Test Logs]
+        Backup[Settings Backup]
+    end
+
+    %% Raspberry Pi to Hardware
+    RI -.-> RC1 : USB/RS232
+    RI -.-> RC2 : USB/RS232
+    OFI -.-> OF : SPI
+    PSI -.-> PS : I2C
+
+    %% Hardware to Motors
+    RC1 -.-> M1 : Motor Control
+    RC1 -.-> M2 : Motor Control
+    RC2 -.-> M3 : Motor Control
+
+    %% Raspberry Pi to Maker Pi
+    PC -.-> MPI : USB/UART
+
+    %% Storage connections
+    PC -.-> Config : File I/O
+    DL -.-> Logs : File I/O
+    RT -.-> Backup : File I/O
+    </div>
+</body>
+</html>

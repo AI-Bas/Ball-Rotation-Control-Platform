@@ -1,0 +1,46 @@
+sequenceDiagram
+    participant User as User
+    participant PC as Platform Control
+    participant KI as Kinematic Conversion
+    participant SG as Setpoint Generator
+    participant RC as RoboClaw Interface
+    participant OF as Optical Flow Sensor
+    participant PS as Power Sensor
+    participant M1 as Motor 1
+    participant M2 as Motor 2
+    participant M3 as Motor 3
+
+    %% System Initialization
+    User->>PC: Start System
+    PC->>RC: Initialize RoboClaw
+    PC->>OF: Initialize Optical Flow
+    PC->>PS: Initialize Power Sensor
+    RC-->>PC: Connection Status
+    OF-->>PC: Sensor Ready
+    PS-->>PC: Sensor Ready
+
+    %% Control Loop
+    loop Control Loop
+        OF->>PC: Ball Position/Velocity
+        PS->>PC: Current/Voltage Data
+        RC->>PC: Encoder Feedback
+        PC->>KI: Calculate Kinematics
+        KI-->>PC: Wheel Velocities
+        PC->>SG: Generate Setpoints
+        SG-->>PC: Motor Commands
+        PC->>RC: Set Motor Velocities
+        RC->>M1: Set Velocity
+        RC->>M2: Set Velocity
+        RC->>M3: Set Velocity
+        M1-->>RC: Encoder Feedback
+        M2-->>RC: Encoder Feedback
+        M3-->>RC: Encoder Feedback
+    end
+
+    %% System Shutdown
+    User->>PC: Stop System
+    PC->>RC: Stop All Motors
+    RC->>M1: Stop
+    RC->>M2: Stop
+    RC->>M3: Stop
+    PC-->>User: System Stopped

@@ -54,7 +54,7 @@ physics:
       angle_between_wheels: 120.0  # degrees, default
       reference: "platform_config.json:system_parameters.beta"
   
-  motion_control:
+  roboclaw_control:
     kinematic_transformation:
       description: "Inverse/forward kinematics for ball-wheel mapping"
       functions: ["jacobian_calculation", "translation_to_rotation", "wheel_velocity_mapping", "feedback_processing"]
@@ -208,149 +208,155 @@ hardware:
 # =====================================================================
 
 software:
-  description: "Software modules, dependencies, and implementation details"
+  description: "Software modules and their relationships"
   
-  operational:
-    description: "Final integrated system modules"
+  core_modules:
     platform_control:
-      file: "test_platform_control/platform_control.py"
-      purpose: "Primary control interface for ball balancing platform"
-      responsibilities: ["PID control loops for motor control", "Real-time data logging and visualization", "System safety and error handling", "Main control loop execution"]
-      features: ["1kHz control loop frequency", "Sub-millimeter position accuracy", "Smooth motion with minimal overshoot", "Fast response to setpoint changes"]
-      dependencies: ["roboclaw_interface", "kinematic_conversion", "pid_controller", "optical_flow_sensor", "power_sensor"]
-      tags: ["operational", "core", "control", "main_interface"]
+      file: "platform_control/platform_control.py"
+      description: "Main platform control process integrating all modules"
+      dependencies: ["roboclaw_interface", "roboclaw_control", "power_sensor", "optical_flow_sensor"]
+      features: ["Continuous operation", "Modular integration", "Hardware abstraction"]
+      tags: ["core", "integration", "main_process"]
+    
+    roboclaw_interface:
+      file: "platform_control/utils/roboclaw_interface.py"
+      description: "RoboClaw-specific motor controller interface"
+      dependencies: ["roboclaw_3.py", "platform_config.json"]
+      features: ["Dual controller support", "USB/RS232 communication", "Settings management", "Motor data reading"]
+      key_methods: ["connect()", "set_velocity()", "get_motor_data()", "read_and_save_settings()"]
+      interdependencies: ["Motor data reading depends on connection", "Settings require valid addresses", "Error state depends on pin configuration"]
+      tags: ["hardware", "roboclaw", "motor_control"]
+    
+    roboclaw_control:
+      file: "platform_control/utils/roboclaw_control.py"
+      description: "RoboClaw-specific motion control and motor interface"
+      dependencies: ["roboclaw_interface"]
+      features: ["RoboClawMotorInterface", "CalibrationUtilities"]
+      key_methods: ["set_velocity()", "get_motor_status()", "stop_motor()"]
+      tags: ["roboclaw_control", "roboclaw", "utilities"]
+    
+    setpoint_generator:
+      file: "platform_control/utils/setpoint_generator.py"
+      description: "RoboClaw-specific setpoint generation and motion profiles"
+      dependencies: ["numpy"]
+      features: ["Velocity setpoints", "Position setpoints", "Motion profiles (trapezoidal, smooth)"]
+      key_methods: ["generate_velocity_setpoint()", "generate_position_setpoint()", "generate_calibration_setpoints()"]
+      tags: ["setpoints", "motion_profiles", "utilities"]
+    
+    kinematic_conversion:
+      file: "platform_control/utils/kinematic_conversion.py"
+      description: "Kinematic transformations for ball-wheel mapping"
+      dependencies: ["numpy"]
+      features: ["Jacobian calculation", "Inverse kinematics", "Forward kinematics"]
+      key_methods: ["jacobian()"]
+      tags: ["kinematics", "mathematics", "utilities"]
   
-  testing:
-    description: "Test scripts grouped by hardware or function, split if >1000 lines"
+  sensor_modules:
+    power_sensor:
+      file: "platform_control/utils/power_sensor.py"
+      description: "INA219 power sensor interface"
+      dependencies: ["ina219 pip package"]
+      features: ["Multi-channel current monitoring", "Voltage monitoring", "I2C communication"]
+      tags: ["sensor", "power", "ina219"]
+    
+    optical_flow_sensor:
+      file: "platform_control/utils/optical_flow_sensor.py"
+      description: "PAA5100JE-Q optical flow sensor interface"
+      dependencies: ["pmw3901 pip package"]
+      features: ["Motion detection", "SPI communication", "LED control"]
+      tags: ["sensor", "optical_flow", "paa5100"]
+  
+  utility_modules:
+    data_logger:
+      file: "platform_control/utils/data_logger.py"
+      description: "Data logging and analysis utilities"
+      features: ["Real-time data logging", "Performance analysis", "Data visualization"]
+      tags: ["utilities", "logging", "analysis"]
+    
+    autopilot_manager:
+      file: "platform_control/utils/autopilot_manager.py"
+      description: "Autonomous test execution management"
+      features: ["Input queue management", "Test automation", "Menu navigation"]
+      tags: ["utilities", "testing", "automation"]
+    
+    roboclaw_test_utils:
+      file: "platform_control/utils/roboclaw_test_utils.py"
+      description: "RoboClaw testing and troubleshooting utilities"
+      dependencies: ["roboclaw_interface"]
+      features: ["Error state diagnostics", "Pin function management", "Settings backup/restore"]
+      tags: ["utilities", "testing", "roboclaw"]
+  
+  test_modules:
+    connectivity_test:
+      file: "platform_control/tests/connectivity_test.py"
+      description: "System-wide connectivity tests for all hardware modules"
+      features: ["Hardware detection", "Communication validation", "Error handling"]
+      tags: ["testing", "connectivity", "system_wide"]
+    
+    roboclaw_test:
+      file: "platform_control/tests/roboclaw_test.py"
+      description: "RoboClaw error state and pin diagnostic tests"
+      dependencies: ["roboclaw_interface", "roboclaw_test_utils"]
+      features: ["Error state reading", "Pin function management", "Settings diagnostics"]
+      tags: ["testing", "roboclaw", "diagnostics"]
+    
+    calibration_test:
+      file: "platform_control/tests/calibration_test.py"
+      description: "Comprehensive RoboClaw motor calibration and testing"
+      dependencies: ["roboclaw_interface", "roboclaw_control", "setpoint_generator"]
+      features: ["Motor mapping validation", "Velocity calibration", "Motion confirmation"]
+      tags: ["testing", "calibration", "roboclaw"]
+    
+    motor_control_test:
+      file: "platform_control/tests/motor_control_test.py"
+      description: "RoboClaw motor control and current monitoring tests"
+      dependencies: ["roboclaw_interface", "roboclaw_control", "power_sensor"]
+      features: ["Velocity control", "Current monitoring", "Motor status validation"]
+      tags: ["testing", "motor_control", "roboclaw"]
+    
     system_test:
-      file: "test_platform_control/tests/system_test.py"
-      description: "Central testing controller that orchestrates all test modules"
-      dependencies: ["roboclaw_motor_identification", "roboclaw_settings_manager", "calibration_tests", "system_characterization_tests", "maker_pi_tests"]
-      methods: ["run_external_test_script", "run_unified_connectivity_test", "run_roboclaw_settings_management", "run_calibration_tests", "run_system_characterization_tests", "run_all_tests_sequential", "_test_connectivity_with_timeout", "_test_bandwidth_limits", "_test_roboclaw_configuration", "_automated_motor_mapping", "log_error", "attempt_recovery", "add_troubleshooting_hint"]
-      features: ["Development mode with enhanced troubleshooting", "Automatic error recovery and fallback mechanisms", "Bandwidth testing with performance metrics", "Timeout handling with automatic recovery", "Dynamic port detection for Linux/Windows", "Comprehensive error logging and troubleshooting hints", "Automated motor mapping with encoder monitoring", "RoboClaw configuration cycling and error status monitoring"]
-      performance_metrics:
-        communication_speed: "326.8 commands/sec with 100% success rate"
-        bandwidth_limit: "Max safe rate 1000 commands/sec"
-        timeout_handling: "5-10 second timeouts with automatic recovery"
-        error_recovery: "Automatic fallback mechanisms for all modules"
-      tags: ["testing", "central_controller", "test_orchestration", "modular_testing", "enhanced_capabilities"]
-    
-    test_modules:
-      connectivity_test:
-        file: "test_platform_control/tests/connectivity_test.py"
-        description: "System-wide connectivity tests for all hardware modules"
-        features: ["System-wide connectivity scan", "Hardware detection and validation", "Autonomous execution support", "Result logging and saving"]
-        tags: ["testing", "connectivity", "system_wide"]
-      
-      roboclaw_test_menu:
-        file: "test_platform_control/tests/roboclaw_test_menu.py"
-        description: "RoboClaw connectivity, bandwidth, motor mapping, and e-stop cycling tests"
-        features: ["Connectivity test with performance metrics", "Bandwidth testing with incremental increase", "E-stop cycling with S3 pin toggling", "Motor mapping with encoder monitoring", "Settings management and backup"]
-        tags: ["testing", "roboclaw", "hardware_specific"]
-      
-      ina219_test_menu:
-        file: "test_platform_control/tests/ina219_test_menu.py"
-        description: "INA219 voltage range, current monitoring, motor mapping, and bandwidth tests"
-        features: ["Voltage range testing (10-26V)", "Current monitoring per channel", "Motor mapping with current correlation", "Bandwidth testing with performance metrics"]
-        tags: ["testing", "ina219", "power_sensor", "hardware_specific"]
-      
-      optical_flow_test_menu:
-        file: "test_platform_control/tests/optical_flow_test_menu.py"
-        description: "PAA5100JE-Q connectivity, LED blinking, motion detection, and bandwidth tests"
-        features: ["Connectivity test with SPI communication", "LED control and blinking test", "Motion detection with manual confirmation", "Bandwidth testing with performance metrics"]
-        tags: ["testing", "optical_flow", "paa5100je-q", "hardware_specific"]
-      
-      maker_pi_tests:
-        file: "test_platform_control/tests/maker_pi_tests.py"
-        description: "Maker Pi RP2040 experimental module testing"
-        features: ["USB drive detection", "UART communication", "Experimental sensor testing", "Display and IO module testing"]
-        tags: ["testing", "experimental_modules", "circuitpython", "cross_platform"]
-      
-      calibration_tests:
-        file: "test_platform_control/tests/calibration_tests.py"
-        description: "Motor characterization and system calibration tests"
-        features: ["Motor constant calibration", "Tachometer validation", "System calibration", "Configuration updates"]
-        tags: ["testing", "calibration", "motor_characterization", "velocity_conversion"]
-      
-      characterization_tests:
-        file: "test_platform_control/tests/characterization_tests.py"
-        description: "System performance characterization and analysis tests"
-        features: ["Transfer function analysis", "Step response analysis", "Performance metrics computation", "System optimization"]
-        tags: ["testing", "system_characterization", "performance_analysis"]
+      file: "platform_control/tests/system_test.py"
+      description: "System-wide test orchestration"
+      dependencies: ["All test modules"]
+      features: ["Test coordination", "Result aggregation", "System validation"]
+      tags: ["testing", "orchestration", "system_wide"]
   
-  utilities:
-    description: "Centralized tools/utilities for each hardware and functional categories"
+  experimental_modules:
+    maker_pi_interface:
+      file: "platform_control/utils/maker_pi_interface.py"
+      description: "Maker Pi RP2040 experimental module interface"
+      features: ["UART communication", "CircuitPython integration", "Experimental sensors"]
+      tags: ["experimental", "maker_pi", "rp2040"]
+  
+  dependencies:
+    external_libraries:
+      roboclaw_3:
+        file: "platform_control/utils/roboclaw_3.py"
+        description: "Core RoboClaw library with all command implementations"
+        features: ["All RoboClaw commands", "Serial communication", "CRC checking"]
+        tags: ["library", "roboclaw", "core"]
+      
+      numpy:
+        package: "pip"
+        description: "Numerical computing for kinematics and setpoints"
+        tags: ["library", "mathematics", "external"]
+      
+      pmw3901:
+        package: "pip"
+        description: "Optical flow sensor library"
+        tags: ["library", "sensor", "external"]
+      
+      ina219:
+        package: "pip"
+        description: "Power sensor library"
+        tags: ["library", "sensor", "external"]
     
-    hardware_utilities:
-      roboclaw_interface:
-        file: "test_platform_control/utils/roboclaw_interface.py"
-        purpose: "Primary RoboClaw controller communication"
-        responsibilities: ["USB/RS232 connection management", "Settings reading, saving, and comparison", "Motor data access (encoder, current, voltage, temperature)", "Configuration management", "Error handling and troubleshooting"]
-        features: ["Comprehensive settings backup and comparison system", "Support for all four motors in velocity PID, position PID, and status monitoring", "Automatic timestamp updates and configuration validation", "10ms delays between commands to prevent controller overflow", "Progress feedback and real-time status messages"]
-        dependencies: ["roboclaw_3", "platform_config.json"]
-        classes: ["RoboClawInterface", "RoboclawSettings"]
-        tags: ["utilities", "motor_control", "communication", "interface", "hardware_specific"]
-      
-      power_sensor:
-        file: "test_platform_control/utils/power_sensor.py"
-        purpose: "INA219 power monitoring interface"
-        library: "pip package: ina219 (migrated from local implementation)"
-        features: ["I2C communication with power monitoring IC", "Multi-channel current/voltage monitoring", "Sensor calibration and scaling", "Configurable measurement ranges", "Automatic error handling and fallback"]
-        dependencies: ["ina219"]
-        tags: ["utilities", "power", "i2c", "pip_package", "hardware_specific"]
-      
-      optical_flow_sensor:
-        file: "test_platform_control/utils/optical_flow_sensor.py"
-        purpose: "PAA5100JE-Q optical flow sensor interface"
-        library: "pip package: pmw3901 (PAA5100 class for PAA5100JE-Q sensor)"
-        features: ["SPI communication with PAA5100JE-Q optical flow sensor", "Motion detection and processing", "Sensor reset and initialization", "LED control for visual feedback", "PAA5100 specific functionality"]
-        dependencies: ["pmw3901", "gpiod", "gpiodevice"]
-        sensor_class: "from pmw3901 import PAA5100"
-        tags: ["utilities", "optical_flow", "spi", "pip_package", "PAA5100JE-Q", "hardware_specific"]
-      
-      maker_pi_interface:
-        file: "test_platform_control/utils/maker_pi_interface.py"
-        purpose: "Maker Pi RP2040 experimental module interface"
-        features: ["CircuitPython drive access", "Serial communication", "Experimental sensor placeholders", "Display and IO module placeholders"]
-        classes: ["MakerPiInterface", "MakerPiTestUtils"]
-        tags: ["utilities", "experimental", "maker_pi", "interface", "hardware_specific"]
-    
-    functional_utilities:
-      kinematic_conversion:
-        file: "test_platform_control/utils/kinematic_conversion.py"
-        purpose: "Kinematic transformation calculations"
-        functions: ["jacobian", "translation_to_rotation", "rotation_to_wheel_velocities", "wheel_velocities_to_rotation"]
-        dependencies: ["numpy"]
-        tags: ["utilities", "kinematics", "transformation", "mathematics", "functional"]
-      
-      setpoint_generator:
-        file: "test_platform_control/utils/setpoint_generator.py"
-        purpose: "Motor driver agnostic setpoint generation for motion control"
-        features: ["Position-based motion control with motion profiles", "Velocity-based motion control with acceleration limits", "Direct acceleration control for precise motion", "Sequential motion patterns for multiple motors", "User confirmation system for motor motion safety"]
-        tags: ["utilities", "motion_control", "setpoint_generation", "functional"]
-      
-      data_logger:
-        file: "test_platform_control/utils/data_logger.py"
-        purpose: "Logging and plotting functionality"
-        features: ["Real-time data logging", "Plot functionality for visualization", "CSV data export", "Performance monitoring"]
-        tags: ["utilities", "logging", "plotting", "data_processing", "functional"]
-      
-      performance_analysis:
-        file: "test_platform_control/utils/performance_analysis.py"
-        purpose: "Performance analysis for motion control"
-        features: ["Conversion between time and frequency domain", "System identification and modeling", "Performance metrics calculation", "Optimization algorithms"]
-        tags: ["utilities", "performance", "analysis", "optimization", "functional"]
-      
-      pid_controller:
-        file: "test_platform_control/utils/pid_controller.py"
-        purpose: "PID control implementation"
-        features: ["Standard PID control algorithm", "Configurable P, I, D gains", "Anti-windup protection", "Controller state reset"]
-        tags: ["utilities", "control", "pid", "algorithm", "functional"]
-      
-      detect_ports:
-        file: "test_platform_control/detect_ports.py"
-        purpose: "USB port detection and RoboClaw identification"
-        tags: ["utilities", "detection", "ports", "functional"]
+    configuration:
+      platform_config:
+        file: "platform_control/config/platform_config.json"
+        description: "Central configuration for all system parameters"
+        features: ["Hardware settings", "Motor mappings", "System parameters"]
+        tags: ["configuration", "central", "json"]
 
 # =====================================================================
 # DATA FLOW ARCHITECTURE

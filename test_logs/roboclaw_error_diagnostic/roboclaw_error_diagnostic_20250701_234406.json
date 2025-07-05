@@ -1,0 +1,38 @@
+{
+  "comprehensive_diagnostic": {
+    "timestamp": "2025-07-01T23:44:06.258301",
+    "test_type": "comprehensive_error_diagnostic",
+    "controllers": {
+      "rc1": {
+        "error_state": {
+          "timestamp": "2025-07-01T23:44:06.258371",
+          "test_type": "error_state_check",
+          "controller": "rc1",
+          "error_state": null,
+          "pin_functions": null,
+          "status": false,
+          "error": "Failed to read error state"
+        }
+      },
+      "rc2": {
+        "error_state": {
+          "timestamp": "2025-07-01T23:44:06.259416",
+          "test_type": "error_state_check",
+          "controller": "rc2",
+          "error_state": 1,
+          "pin_functions": {
+            "s3": 0,
+            "s4": 0,
+            "s5": 0
+          },
+          "status": true,
+          "estop_active": false,
+          "s3_inverted": false,
+          "s4_inverted": false,
+          "s5_inverted": false
+        }
+      }
+    },
+    "status": false
+  }
+}

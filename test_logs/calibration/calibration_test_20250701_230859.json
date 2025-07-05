@@ -1,0 +1,34 @@
+{
+  "comprehensive_calibration": {
+    "timestamp": "2025-07-01T23:08:59.362540",
+    "test_type": "comprehensive_calibration",
+    "subtests": {
+      "motor_mapping": {
+        "timestamp": "2025-07-01T23:08:59.362694",
+        "test_type": "motor_mapping_test",
+        "mapping_tests": {
+          "1": {
+            "success": false,
+            "error": "Failed to set velocity"
+          },
+          "2": {
+            "success": false,
+            "error": "Failed to set velocity"
+          },
+          "3": {
+            "success": false,
+            "error": "Failed to set velocity"
+          },
+          "4": {
+            "success": false,
+            "error": "Failed to set velocity"
+          }
+        },
+        "status": false,
+        "mapping_stale": true
+      }
+    },
+    "status": false,
+    "mapping_stale": true
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "timestamp": "2025-07-02T00:30:52.429391",
+  "test_suite": "comprehensive_calibration",
+  "tests": {
+    "motor_mapping": {
+      "timestamp": "2025-07-02T00:30:52.429432",
+      "test_type": "motor_mapping",
+      "motors": {
+        "motor1": {
+          "status": "failed",
+          "error": "baseline_read_failed"
+        },
+        "motor2": {
+          "status": "failed",
+          "error": "baseline_read_failed"
+        },
+        "motor3": {
+          "status": "failed",
+          "error": "no_motion_detected",
+          "encoder_change": 0,
+          "velocity_change": 0,
+          "current_change": 0
+        },
+        "motor4": {
+          "status": "failed",
+          "error": "baseline_read_failed"
+        }
+      },
+      "status": false,
+      "motion_validation": false
+    }
+  },
+  "overall_status": false
+}

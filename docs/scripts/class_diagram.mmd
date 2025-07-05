@@ -1,0 +1,109 @@
+classDiagram
+
+    %% Core Modules
+    class platform_control {
+        <<Core Module>>
+        +description: Main platform control process integrating all modules
+        +features: Continuous operation, Modular integration, Hardware abstraction
+    }
+
+    class roboclaw_interface {
+        <<Core Module>>
+        +description: RoboClaw-specific motor controller interface
+        +features: Dual controller support, USB/RS232 communication, Settings management
+        +connect()()
+        +set_velocity()()
+        +get_motor_data()()
+    }
+
+    class roboclaw_control {
+        <<Core Module>>
+        +description: RoboClaw-specific motion control and motor interface
+        +features: RoboClawMotorInterface, CalibrationUtilities
+        +set_velocity()()
+        +get_motor_status()()
+        +stop_motor()()
+    }
+
+    class setpoint_generator {
+        <<Core Module>>
+        +description: RoboClaw-specific setpoint generation and motion profiles
+        +features: Velocity setpoints, Position setpoints, Motion profiles (trapezoidal, smooth)
+        +generate_velocity_setpoint()()
+        +generate_position_setpoint()()
+        +generate_calibration_setpoints()()
+    }
+
+    class kinematic_conversion {
+        <<Core Module>>
+        +description: Kinematic transformations for ball-wheel mapping
+        +features: Jacobian calculation, Inverse kinematics, Forward kinematics
+        +jacobian()()
+    }
+
+    %% Sensor Modules
+    class power_sensor {
+        <<Sensor Module>>
+        +description: INA219 power sensor interface
+        +features: Multi-channel current monitoring, Voltage monitoring, I2C communication
+    }
+
+    class optical_flow_sensor {
+        <<Sensor Module>>
+        +description: PAA5100JE-Q optical flow sensor interface
+        +features: Motion detection, SPI communication, LED control
+    }
+
+    %% Test Modules
+    class connectivity_test {
+        <<Test Module>>
+        +description: System-wide connectivity tests for all hardware modules
+        +features: Hardware detection, Communication validation, Error handling
+    }
+
+    class roboclaw_test {
+        <<Test Module>>
+        +description: RoboClaw error state and pin diagnostic tests
+        +features: Error state reading, Pin function management, Settings diagnostics
+    }
+
+    class calibration_test {
+        <<Test Module>>
+        +description: Comprehensive RoboClaw motor calibration and testing
+        +features: Motor mapping validation, Velocity calibration, Motion confirmation
+    }
+
+    class motor_control_test {
+        <<Test Module>>
+        +description: RoboClaw motor control and current monitoring tests
+        +features: Velocity control, Current monitoring, Motor status validation
+    }
+
+    class system_test {
+        <<Test Module>>
+        +description: System-wide test orchestration
+        +features: Test coordination, Result aggregation, System validation
+    }
+
+    %% Hardware Components
+    class rc1 {
+        <<Hardware>>
+        +port: COM5
+        +address: 0x80
+    }
+
+    class rc2 {
+        <<Hardware>>
+        +port: COM4
+        +address: 0x80
+    }
+
+    %% Relationships
+    platform_control --> roboclaw_interface : depends on
+    platform_control --> roboclaw_control : depends on
+    platform_control --> power_sensor : depends on
+    platform_control --> optical_flow_sensor : depends on
+    roboclaw_control --> roboclaw_interface : depends on
+    raspberry_pi_5 --> roboclaw_interface : controls
+    raspberry_pi_5 --> optical_flow_sensor : senses
+    raspberry_pi_5 --> power_sensor : monitors

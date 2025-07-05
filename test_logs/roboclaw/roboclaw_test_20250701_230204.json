@@ -1,0 +1,49 @@
+{
+  "connectivity_detailed": {
+    "timestamp": "2025-07-01T23:01:47.529836",
+    "test_type": "connectivity_detailed",
+    "controllers": {
+      "rc1": {
+        "connected": true,
+        "port": "/dev/ttyACM0",
+        "address": 128,
+        "version": "unknown"
+      },
+      "rc2": {
+        "connected": true,
+        "port": "/dev/ttyACM1",
+        "address": 128,
+        "version": "USB Roboclaw 2x30a v4.2.8\n"
+      }
+    },
+    "overall_status": true
+  },
+  "bandwidth_rc1": {
+    "timestamp": "2025-07-01T23:01:50.535950",
+    "test_type": "bandwidth_incremental",
+    "controller": "rc1",
+    "max_safe_speed": 500000,
+    "status": true
+  },
+  "bandwidth_rc2": {
+    "timestamp": "2025-07-01T23:01:51.369319",
+    "test_type": "bandwidth_incremental",
+    "controller": "rc2",
+    "max_safe_speed": 500000,
+    "status": true
+  },
+  "e_stop_rc1": {
+    "timestamp": "2025-07-01T23:01:54.677836",
+    "test_type": "e_stop_cycling",
+    "controller": "rc1",
+    "cycles": 5,
+    "status": true
+  },
+  "e_stop_rc2": {
+    "timestamp": "2025-07-01T23:01:59.689353",
+    "test_type": "e_stop_cycling",
+    "controller": "rc2",
+    "cycles": 4,
+    "status": true
+  }
+}

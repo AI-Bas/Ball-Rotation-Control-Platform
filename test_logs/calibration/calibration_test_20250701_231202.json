@@ -1,0 +1,64 @@
+{
+  "comprehensive_calibration": {
+    "timestamp": "2025-07-01T23:10:49.459082",
+    "test_type": "comprehensive_calibration",
+    "subtests": {
+      "motor_mapping": {
+        "timestamp": "2025-07-01T23:10:49.459254",
+        "test_type": "motor_mapping_test",
+        "mapping_tests": {
+          "1": {
+            "logical_id": 1,
+            "physical_id": 1,
+            "test_velocity": 50,
+            "status": {
+              "logical_id": 1,
+              "physical_id": 1,
+              "velocity": null,
+              "current": null,
+              "voltage": null,
+              "timestamp": 1751404285.836561
+            },
+            "success": true
+          },
+          "2": {
+            "logical_id": 2,
+            "physical_id": 2,
+            "test_velocity": 50,
+            "status": {
+              "logical_id": 2,
+              "physical_id": 2,
+              "velocity": null,
+              "current": null,
+              "voltage": null,
+              "timestamp": 1751404322.2506576
+            },
+            "success": true
+          },
+          "3": {
+            "logical_id": 3,
+            "physical_id": 3,
+            "test_velocity": 50,
+            "status": {
+              "logical_id": 3,
+              "physical_id": 3,
+              "velocity": null,
+              "current": 0.0,
+              "voltage": 11.5,
+              "timestamp": 1751404322.6147757
+            },
+            "success": true
+          },
+          "4": {
+            "success": false,
+            "error": "Failed to set velocity"
+          }
+        },
+        "status": false,
+        "mapping_stale": true
+      }
+    },
+    "status": false,
+    "mapping_stale": true
+  }
+}

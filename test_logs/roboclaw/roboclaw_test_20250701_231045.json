@@ -1,0 +1,96 @@
+{
+  "motor_mapping": {
+    "timestamp": "2025-07-01T23:10:32.229805",
+    "test_type": "motor_mapping",
+    "motors": {
+      "motor1": {
+        "controller": "rc1",
+        "channel": "A",
+        "position": "Auto-detected motor1",
+        "description": "Automatically detected motor1",
+        "encoder_change": 1099,
+        "detection_time": 3.2809224128723145
+      },
+      "motor2": {
+        "controller": "rc1",
+        "channel": "B",
+        "position": "120\u00b0 from X-axis",
+        "description": "Secondary wheel at 120\u00b0",
+        "encoder_change": 0,
+        "detection_time": 0
+      },
+      "motor3": {
+        "controller": "rc2",
+        "channel": "A",
+        "position": "Auto-detected motor3",
+        "description": "Automatically detected motor3",
+        "encoder_change": 1361,
+        "detection_time": 0.31107330322265625
+      },
+      "motor4": {
+        "controller": "rc2",
+        "channel": "B",
+        "position": "Linear stage (future)",
+        "description": "Future linear stage drive",
+        "encoder_change": 0,
+        "detection_time": 0
+      }
+    },
+    "status": true
+  },
+  "connectivity_detailed": {
+    "timestamp": "2025-07-01T23:10:16.151570",
+    "test_type": "connectivity_detailed",
+    "controllers": {
+      "rc1": {
+        "connected": true,
+        "port": "/dev/ttyACM0",
+        "address": 128,
+        "version": "unknown"
+      },
+      "rc2": {
+        "connected": true,
+        "port": "/dev/ttyACM1",
+        "address": 128,
+        "version": "USB Roboclaw 2x30a v4.2.8\n"
+      }
+    },
+    "overall_status": true
+  },
+  "bandwidth_rc1": {
+    "timestamp": "2025-07-01T23:10:18.166251",
+    "test_type": "bandwidth_incremental",
+    "controller": "rc1",
+    "max_safe_speed": 500000,
+    "status": true
+  },
+  "bandwidth_rc2": {
+    "timestamp": "2025-07-01T23:10:18.995605",
+    "test_type": "bandwidth_incremental",
+    "controller": "rc2",
+    "max_safe_speed": 500000,
+    "status": true
+  },
+  "e_stop_rc1": {
+    "timestamp": "2025-07-01T23:10:22.116224",
+    "test_type": "e_stop_cycling",
+    "controller": "rc1",
+    "cycles": 5,
+    "status": true
+  },
+  "e_stop_rc2": {
+    "timestamp": "2025-07-01T23:10:27.149778",
+    "test_type": "e_stop_cycling",
+    "controller": "rc2",
+    "cycles": 4,
+    "status": true
+  },
+  "settings_manager": {
+    "timestamp": "2025-07-01T23:10:32.229950",
+    "test_type": "settings_manager",
+    "settings_read": true,
+    "settings_saved": true,
+    "comparison": true,
+    "status": true
+  }
+}

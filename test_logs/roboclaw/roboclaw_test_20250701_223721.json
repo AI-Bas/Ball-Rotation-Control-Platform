@@ -1,0 +1,30 @@
+{
+  "bandwidth_rc1": {
+    "timestamp": "2025-07-01T22:37:07.519226",
+    "test_type": "bandwidth_incremental",
+    "controller": "rc1",
+    "max_safe_speed": 500000,
+    "status": true
+  },
+  "bandwidth_rc2": {
+    "timestamp": "2025-07-01T22:37:08.374215",
+    "test_type": "bandwidth_incremental",
+    "controller": "rc2",
+    "max_safe_speed": 500000,
+    "status": true
+  },
+  "e_stop_rc1": {
+    "timestamp": "2025-07-01T22:37:10.434953",
+    "test_type": "e_stop_cycling",
+    "controller": "rc1",
+    "cycles": 5,
+    "status": true
+  },
+  "e_stop_rc2": {
+    "timestamp": "2025-07-01T22:37:15.455489",
+    "test_type": "e_stop_cycling",
+    "controller": "rc2",
+    "cycles": 5,
+    "status": true
+  }
+}

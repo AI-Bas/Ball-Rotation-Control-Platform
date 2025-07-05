@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Component Diagram</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({ startOnLoad: true });
+    </script>
+</head>
+<body>
+    <h1>Component Diagram</h1>
+    <div class="mermaid">
+graph TB
+
+    subgraph System["Ball Rotation Control Platform"]
+
+        subgraph Hardware["Hardware Layer"]
+            RC1[RoboClaw Controller 1]
+            RC2[RoboClaw Controller 2]
+            OF[Optical Flow Sensor]
+            PS[Power Sensor]
+            M1[Motor 1]
+            M2[Motor 2]
+            M3[Motor 3]
+            MP[Maker Pi RP2040]
+        end
+
+        subgraph Software["Software Layer"]
+            PC[Platform Control]
+            KI[Kinematic Conversion]
+            SG[Setpoint Generator]
+            RI[RoboClaw Interface]
+            OFI[Optical Flow Interface]
+            PSI[Power Sensor Interface]
+            DL[Data Logger]
+            AM[Autopilot Manager]
+        end
+
+        subgraph Testing["Testing Layer"]
+            ST[System Test]
+            CT[Connectivity Test]
+            RT[RoboClaw Test]
+            CLT[Calibration Test]
+            PT[Performance Test]
+        end
+
+        subgraph External["External Interfaces"]
+            Config[Configuration Files]
+            Logs[Test Logs]
+            Backup[Settings Backup]
+        end
+    end
+
+    %% Hardware connections
+    RC1 --> M1
+    RC1 --> M2
+    RC2 --> M3
+
+    %% Software to hardware
+    RI --> RC1
+    RI --> RC2
+    OFI --> OF
+    PSI --> PS
+
+    %% Software internal
+    PC --> RI
+    PC --> KI
+    PC --> SG
+    PC --> OFI
+    PC --> PSI
+    PC --> DL
+    PC --> AM
+
+    %% Testing connections
+    ST --> CT
+    ST --> RT
+    ST --> CLT
+    ST --> PT
+
+    %% External connections
+    PC --> Config
+    DL --> Logs
+    RT --> Backup
+    </div>
+</body>
+</html>

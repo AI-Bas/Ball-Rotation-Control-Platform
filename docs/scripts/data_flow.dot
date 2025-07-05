@@ -1,0 +1,61 @@
+digraph DataFlow {
+  rankdir=TB;
+  node [shape=box, style=filled, fontname="Arial", fontsize=9];
+  edge [fontname="Arial", fontsize=8];
+
+  subgraph cluster_sources {
+    label="Data Sources";
+    style=filled;
+    color=lightgreen;
+    optical_flow [label="Optical Flow\nPAA5100JE-Q", fillcolor=green];
+    power_sensor [label="Power Sensor\nINA219", fillcolor=green];
+    encoders [label="Motor Encoders\nRoboClaw", fillcolor=green];
+  }
+
+  subgraph cluster_processing {
+    label="Data Processing";
+    style=filled;
+    color=lightblue;
+    kinematic_conversion [label="Kinematic\nConversion", fillcolor=blue];
+    setpoint_generator [label="Setpoint\nGenerator", fillcolor=blue];
+    data_logger [label="Data\nLogger", fillcolor=blue];
+  }
+
+  subgraph cluster_control {
+    label="Control System";
+    style=filled;
+    color=lightcoral;
+    roboclaw_interface [label="RoboClaw\nInterface", fillcolor=coral];
+    roboclaw_control [label="RoboClaw\nControl", fillcolor=coral];
+    platform_control [label="Platform\nControl", fillcolor=coral];
+  }
+
+  subgraph cluster_outputs {
+    label="Outputs";
+    style=filled;
+    color=lightyellow;
+    motor1 [label="Motor 1\nX-axis", fillcolor=yellow];
+    motor2 [label="Motor 2\n120°", fillcolor=yellow];
+    motor3 [label="Motor 3\n240°", fillcolor=yellow];
+  }
+
+  // Sensor to processing
+  optical_flow -> kinematic_conversion [label="ball motion"];
+  power_sensor -> data_logger [label="current/voltage"];
+  encoders -> roboclaw_interface [label="encoder data"];
+
+  // Processing to control
+  kinematic_conversion -> setpoint_generator [label="kinematics"];
+  setpoint_generator -> roboclaw_control [label="setpoints"];
+  roboclaw_control -> roboclaw_interface [label="commands"];
+
+  // Control to outputs
+  roboclaw_interface -> motor1 [label="velocity"];
+  roboclaw_interface -> motor2 [label="velocity"];
+  roboclaw_interface -> motor3 [label="velocity"];
+
+  // Feedback loops
+  motor1 -> encoders [label="feedback", style=dashed];
+  motor2 -> encoders [label="feedback", style=dashed];
+  motor3 -> encoders [label="feedback", style=dashed];
+}

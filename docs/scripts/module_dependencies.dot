@@ -1,0 +1,37 @@
+digraph ModuleDependencies {
+  rankdir=LR;
+  node [shape=box, style=filled, fontname="Arial", fontsize=9];
+  edge [fontname="Arial", fontsize=8];
+
+  platform_control [label="platform_control\nMain platform control pro...", fillcolor=lightcoral];
+  roboclaw_interface [label="roboclaw_interface\nRoboClaw-specific motor c...", fillcolor=lightgray];
+  roboclaw_control [label="roboclaw_control\nRoboClaw-specific motion ...", fillcolor=lightgray];
+  setpoint_generator [label="setpoint_generator\nRoboClaw-specific setpoin...", fillcolor=lightgray];
+  kinematic_conversion [label="kinematic_conversion\nKinematic transformations...", fillcolor=lightgray];
+  power_sensor [label="power_sensor\nINA219 power sensor inter...", fillcolor=lightgreen];
+  optical_flow_sensor [label="optical_flow_sensor\nPAA5100JE-Q optical flow ...", fillcolor=lightgreen];
+  data_logger [label="data_logger\nData logging and analysis...", fillcolor=lightgray];
+  autopilot_manager [label="autopilot_manager\nAutonomous test execution...", fillcolor=lightgray];
+  roboclaw_test_utils [label="roboclaw_test_utils\nRoboClaw testing and trou...", fillcolor=lightgray];
+  connectivity_test [label="connectivity_test\nSystem-wide connectivity ...", fillcolor=lightgray];
+  roboclaw_test [label="roboclaw_test\nRoboClaw error state and ...", fillcolor=lightgray];
+  calibration_test [label="calibration_test\nComprehensive RoboClaw mo...", fillcolor=lightgray];
+  motor_control_test [label="motor_control_test\nRoboClaw motor control an...", fillcolor=lightgray];
+  system_test [label="system_test\nSystem-wide test orchestr...", fillcolor=lightgray];
+  maker_pi_interface [label="maker_pi_interface\nMaker Pi RP2040 experimen...", fillcolor=lightpink];
+
+  platform_control -> roboclaw_interface [color=blue, label="depends"];
+  platform_control -> roboclaw_control [color=blue, label="depends"];
+  platform_control -> power_sensor [color=blue, label="depends"];
+  platform_control -> optical_flow_sensor [color=blue, label="depends"];
+  roboclaw_control -> roboclaw_interface [color=blue, label="depends"];
+  roboclaw_test_utils -> roboclaw_interface [color=blue, label="depends"];
+  roboclaw_test -> roboclaw_interface [color=blue, label="depends"];
+  roboclaw_test -> roboclaw_test_utils [color=blue, label="depends"];
+  calibration_test -> roboclaw_interface [color=blue, label="depends"];
+  calibration_test -> roboclaw_control [color=blue, label="depends"];
+  calibration_test -> setpoint_generator [color=blue, label="depends"];
+  motor_control_test -> roboclaw_interface [color=blue, label="depends"];
+  motor_control_test -> roboclaw_control [color=blue, label="depends"];
+  motor_control_test -> power_sensor [color=blue, label="depends"];
+}
