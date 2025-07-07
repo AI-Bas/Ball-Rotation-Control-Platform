@@ -1,68 +1,62 @@
 {
-  "timestamp": "2025-07-05 04:32:27",
-  "motor_mapping": {
-    "motor1": {
-      "controller": "RC1",
-      "channel": "M1",
-      "port": "/dev/ttyACM2",
-      "working": true,
-      "method": "speed",
-      "max_speed": -287218,
-      "avg_current": -0.602,
-      "pid_values": {
-        "p": 67.44140625,
-        "i": 1.4892578125,
-        "d": 446.7822265625,
-        "qpps": 3746,
-        "max_i": 1500,
-        "deadzone": 0,
-        "min_pos": 0,
-        "max_pos": 0
-      }
-    },
-    "motor2": {
-      "controller": "RC2",
-      "channel": "M1",
-      "port": "/dev/ttyACM1",
-      "working": true,
-      "method": "speed",
-      "max_speed": 0,
-      "avg_current": 0,
-      "pid_values": {
-        "p": 96.9130859375,
-        "i": 2.2451171875,
-        "d": 674.3330078125,
-        "qpps": 3757,
-        "max_i": 1500,
-        "deadzone": 0,
-        "min_pos": 0,
-        "max_pos": 0
-      }
-    },
-    "motor3": {
-      "controller": "RC2",
-      "channel": "M2",
-      "port": "/dev/ttyACM1",
-      "working": true,
-      "method": "speed",
-      "max_speed": 299163,
-      "avg_current": -0.028000000000000004,
-      "pid_values": {
-        "p": 101.1455078125,
-        "i": 2.259765625,
-        "d": 678.4638671875,
-        "qpps": 3742,
-        "max_i": 1500,
-        "deadzone": 0,
-        "min_pos": 0,
-        "max_pos": 0
-      }
-    }
+  // demo_config.json
+  // =================
+  //
+  // Persistent configuration and calibration data for Ball Rotation Control Platform demos.
+  //
+  // Sections:
+  // - platform_constants: Physical and control parameters (SI units)
+  // - controller_config: RoboClaw port and address settings
+  // - wheel_mapping: Mapping of wheel names to controller channels
+  // - demo_parameters: Default demo and calibration parameters
+  // - calibration_data: Appended by calibration demo, contains measured factors per wheel
+  //
+  // This file is read and updated by demo_control.py and related scripts.
+
+  "timestamp": "2025-07-06 19:30:00",
+  "platform_constants": {
+    "wheel_diameter": 0.1,
+    "wheel_radius": 0.05,
+    "ball_radius": 0.111,
+    "transmission_ratio": 4.333333333333333,
+    "encoder_pulses_per_rev": 512,
+    "control_loop_frequency": 5.0,
+    "control_loop_period": 0.2,
+    "wheel_spacing_angle": 120.0,
+    "wheel_z_offset": -0.073,
+    "wheel_x_offset": 0.085
   },
   "controller_config": {
-    "rc1_port": "/dev/ttyACM2",
+    "rc1_port": "/dev/ttyACM0",
     "rc2_port": "/dev/ttyACM1",
     "address": 128,
     "baudrate": 460800
+  },
+  "wheel_mapping": {
+    "W1": {
+      "controller": "RC1",
+      "channel": "M1",
+      "port": "/dev/ttyACM0",
+      "working": true
+    },
+    "W2": {
+      "controller": "RC2",
+      "channel": "M2",
+      "port": "/dev/ttyACM1",
+      "working": true
+    },
+    "W3": {
+      "controller": "RC2",
+      "channel": "M1",
+      "port": "/dev/ttyACM1",
+      "working": true
+    }
+  },
+  "demo_parameters": {
+    "default_speed_rad_s": 2.0,
+    "default_duration": 10.0,
+    "default_rolling_velocity": [0.0, 1.0],
+    "calibration_duration": 30.0,
+    "calibration_velocities": [1.0, 2.0, 3.0]
   }
 }
