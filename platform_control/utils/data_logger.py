@@ -4,6 +4,8 @@ Data Logger Utility for Ball Rotation Control Platform
 This module provides comprehensive logging capabilities for all operational variables
 from all sensors and RoboClaw feedback. It includes dynamic buffering, continuous
 operation, and test duration logging with accurate timestamps.
+
+Enhanced for streamlined demo integration with real-time plotting and flexible logging.
 """
 
 import time
@@ -16,6 +18,18 @@ from typing import Dict, List, Any, Optional, Callable
 from dataclasses import dataclass, asdict
 import queue
 import numpy as np
+
+# Optional matplotlib import for plotting
+try:
+    import matplotlib.pyplot as plt
+    import matplotlib.animation as animation
+    from matplotlib.figure import Figure
+    from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+    import tkinter as tk
+    PLOTTING_AVAILABLE = True
+except ImportError:
+    PLOTTING_AVAILABLE = False
+    print("⚠️ Matplotlib not available - plotting disabled")
 
 
 @dataclass
@@ -42,6 +56,229 @@ class SafetyEvent:
     description: str
 
 
+class RealTimePlotter:
+    """Real-time plotting with configurable refresh rate and multiple subplots"""
+    
+    def __init__(self, title: str, refresh_rate: float = 1.0):
+        """
+        Initialize real-time plotter
+        
+        Args:
+            title: Plot window title
+            refresh_rate: Refresh rate in Hz (default 1 FPS)
+        """
+        if not PLOTTING_AVAILABLE:
+            print("⚠️ Plotting not available - matplotlib not installed")
+            return
+        
+        self.title = title
+        self.refresh_rate = refresh_rate
+        self.refresh_interval = 1.0 / refresh_rate
+        
+        # Data storage
+        self.data = {}
+        self.timestamps = []
+        self.max_points = 1000  # Maximum points to display
+        
+        # Plotting setup
+        self.fig = None
+        self.canvas = None
+        self.axes = {}
+        self.lines = {}
+        
+        # Threading
+        self.plotting_active = False
+        self.plotting_thread = None
+        self.lock = threading.Lock()
+        
+        self._setup_plot()
+    
+    def _setup_plot(self):
+        """Setup the plot window and subplots"""
+        if not PLOTTING_AVAILABLE:
+            return
+        
+        # Create main window
+        self.root = tk.Tk()
+        self.root.title(self.title)
+        self.root.geometry("1200x800")
+        
+        # Create figure with subplots
+        self.fig = Figure(figsize=(12, 8))
+        
+        # Create subplots for different data types
+        self.axes['wheel_velocities'] = self.fig.add_subplot(2, 2, 1)
+        self.axes['wheel_velocities'].set_title('Wheel Angular Velocities (rad/s)')
+        self.axes['wheel_velocities'].set_ylabel('Velocity (rad/s)')
+        self.axes['wheel_velocities'].grid(True)
+        
+        self.axes['wheel_errors'] = self.fig.add_subplot(2, 2, 2)
+        self.axes['wheel_errors'].set_title('Wheel Velocity Errors (rad/s)')
+        self.axes['wheel_errors'].set_ylabel('Error (rad/s)')
+        self.axes['wheel_errors'].grid(True)
+        
+        self.axes['ball_rotation'] = self.fig.add_subplot(2, 2, 3)
+        self.axes['ball_rotation'].set_title('Ball Rotation Velocities (rad/s)')
+        self.axes['ball_rotation'].set_ylabel('Velocity (rad/s)')
+        self.axes['ball_rotation'].grid(True)
+        
+        self.axes['currents_voltages'] = self.fig.add_subplot(2, 2, 4)
+        self.axes['currents_voltages'].set_title('Currents and Voltages')
+        self.axes['currents_voltages'].set_ylabel('Current (A) / Voltage (V)')
+        self.axes['currents_voltages'].grid(True)
+        
+        # Create canvas
+        self.canvas = FigureCanvasTkAgg(self.fig, self.root)
+        self.canvas.draw()
+        self.canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
+        
+        # Initialize lines
+        self._initialize_lines()
+    
+    def _initialize_lines(self):
+        """Initialize plot lines for different data series"""
+        if not PLOTTING_AVAILABLE:
+            return
+        
+        # Wheel velocity lines
+        wheel_colors = ['red', 'green', 'blue']
+        for i, wheel in enumerate(['W1', 'W2', 'W3']):
+            line, = self.axes['wheel_velocities'].plot([], [], 
+                                                     color=wheel_colors[i], 
+                                                     label=f'{wheel} (rad/s)',
+                                                     linewidth=2)
+            self.lines[f'wheel_velocity_{wheel}'] = line
+        
+        # Wheel error lines
+        for i, wheel in enumerate(['W1', 'W2', 'W3']):
+            line, = self.axes['wheel_errors'].plot([], [], 
+                                                 color=wheel_colors[i], 
+                                                 label=f'{wheel} Error',
+                                                 linewidth=2)
+            self.lines[f'wheel_error_{wheel}'] = line
+        
+        # Ball rotation lines
+        ball_colors = ['purple', 'orange', 'brown']
+        for i, axis in enumerate(['wX', 'wY', 'wZ']):
+            line, = self.axes['ball_rotation'].plot([], [], 
+                                                  color=ball_colors[i], 
+                                                  label=f'{axis} (rad/s)',
+                                                  linewidth=2)
+            self.lines[f'ball_rotation_{axis}'] = line
+        
+        # Current and voltage lines
+        self.lines['current_avg'], = self.axes['currents_voltages'].plot([], [], 
+                                                                       color='red', 
+                                                                       label='Avg Current (A)',
+                                                                       linewidth=2)
+        self.lines['voltage_avg'], = self.axes['currents_voltages'].plot([], [], 
+                                                                       color='blue', 
+                                                                       label='Avg Voltage (V)',
+                                                                       linewidth=2)
+        
+        # Add legends
+        for ax in self.axes.values():
+            ax.legend()
+    
+    def start_plotting(self):
+        """Start the plotting thread"""
+        if not PLOTTING_AVAILABLE:
+            return
+        
+        self.plotting_active = True
+        self.plotting_thread = threading.Thread(target=self._plotting_loop)
+        self.plotting_thread.daemon = True
+        self.plotting_thread.start()
+        
+        # Start Tkinter main loop in separate thread
+        tk_thread = threading.Thread(target=self.root.mainloop)
+        tk_thread.daemon = True
+        tk_thread.start()
+    
+    def stop_plotting(self):
+        """Stop the plotting thread"""
+        self.plotting_active = False
+        if hasattr(self, 'root') and self.root:
+            self.root.quit()
+    
+    def _plotting_loop(self):
+        """Main plotting loop"""
+        while self.plotting_active:
+            try:
+                self._update_plots()
+                time.sleep(self.refresh_interval)
+            except Exception as e:
+                print(f"❌ Plotting error: {e}")
+                time.sleep(1.0)
+    
+    def _update_plots(self):
+        """Update all plots with current data"""
+        if not PLOTTING_AVAILABLE:
+            return
+        
+        with self.lock:
+            if not self.timestamps:
+                return
+            
+            # Update wheel velocities
+            for wheel in ['W1', 'W2', 'W3']:
+                key = f'wheel_velocity_{wheel}'
+                if key in self.data and key in self.lines:
+                    line = self.lines[key]
+                    line.set_data(self.timestamps, self.data[key])
+            
+            # Update wheel errors
+            for wheel in ['W1', 'W2', 'W3']:
+                key = f'wheel_error_{wheel}'
+                if key in self.data and key in self.lines:
+                    line = self.lines[key]
+                    line.set_data(self.timestamps, self.data[key])
+            
+            # Update ball rotation
+            for axis in ['wX', 'wY', 'wZ']:
+                key = f'ball_rotation_{axis}'
+                if key in self.data and key in self.lines:
+                    line = self.lines[key]
+                    line.set_data(self.timestamps, self.data[key])
+            
+            # Update currents and voltages
+            if 'current_avg' in self.data and 'current_avg' in self.lines:
+                self.lines['current_avg'].set_data(self.timestamps, self.data['current_avg'])
+            if 'voltage_avg' in self.data and 'voltage_avg' in self.lines:
+                self.lines['voltage_avg'].set_data(self.timestamps, self.data['voltage_avg'])
+            
+            # Update axis limits
+            for ax in self.axes.values():
+                ax.relim()
+                ax.autoscale_view()
+            
+            # Redraw canvas
+            if self.canvas:
+                self.canvas.draw()
+    
+    def add_data_point(self, timestamp: float, data_dict: Dict[str, float]):
+        """Add a data point to the plot"""
+        if not PLOTTING_AVAILABLE:
+            return
+        
+        with self.lock:
+            # Add timestamp
+            self.timestamps.append(timestamp)
+            
+            # Add data points
+            for key, value in data_dict.items():
+                if key not in self.data:
+                    self.data[key] = []
+                self.data[key].append(value)
+            
+            # Limit data points
+            if len(self.timestamps) > self.max_points:
+                self.timestamps.pop(0)
+                for key in self.data:
+                    if len(self.data[key]) > self.max_points:
+                        self.data[key].pop(0)
+
+
 class DataLogger:
     """
     Comprehensive data logger for all operational variables
@@ -54,12 +291,15 @@ class DataLogger:
     - Safety monitoring with over-current/voltage detection
     - Exception handling and filtering
     - CSV export with accurate timestamps
+    - Real-time plotting with configurable refresh rate
     """
     
     def __init__(self, 
                  buffer_size: int = 1000,
                  log_interval: float = 0.01,  # 100Hz logging
                  enable_safety_monitoring: bool = True,
+                 enable_plotting: bool = True,
+                 plot_refresh_rate: float = 1.0,  # 1 FPS
                  safety_thresholds: Optional[Dict[str, float]] = None):
         """
         Initialize the data logger
@@ -68,11 +308,14 @@ class DataLogger:
             buffer_size: Maximum number of entries in memory buffer
             log_interval: Time between log entries in seconds
             enable_safety_monitoring: Enable safety event monitoring
+            enable_plotting: Enable real-time plotting
+            plot_refresh_rate: Plot refresh rate in Hz
             safety_thresholds: Dictionary of safety thresholds
         """
         self.buffer_size = buffer_size
         self.log_interval = log_interval
         self.enable_safety_monitoring = enable_safety_monitoring
+        self.enable_plotting = enable_plotting and PLOTTING_AVAILABLE
         
         # Default safety thresholds
         self.safety_thresholds = safety_thresholds or {
@@ -104,6 +347,15 @@ class DataLogger:
         
         # Module-specific data sources
         self.data_sources = {}
+        
+        # Real-time plotter
+        self.plotter = None
+        if self.enable_plotting:
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            self.plotter = RealTimePlotter(
+                title=f"Ball Rotation Control - {timestamp}",
+                refresh_rate=plot_refresh_rate
+            )
         
         # Create logs directory
         self.logs_dir = "test_logs/data_logs"
@@ -138,6 +390,11 @@ class DataLogger:
         print(f"   Buffer size: {self.buffer_size}")
         print(f"   Log interval: {self.log_interval:.3f}s ({1/self.log_interval:.1f}Hz)")
         print(f"   Safety monitoring: {'enabled' if self.enable_safety_monitoring else 'disabled'}")
+        print(f"   Real-time plotting: {'enabled' if self.enable_plotting else 'disabled'}")
+        
+        # Start plotting if enabled
+        if self.enable_plotting and self.plotter:
+            self.plotter.start_plotting()
         
         # Start logging thread
         self.logging_thread = threading.Thread(target=self._logging_loop, args=(mode,))
@@ -152,6 +409,10 @@ class DataLogger:
         self.logging_active = False
         if self.logging_thread:
             self.logging_thread.join(timeout=5.0)
+        
+        # Stop plotting
+        if self.plotter:
+            self.plotter.stop_plotting()
         
         print("📊 Data logging stopped")
         print(f"   Total entries: {self.stats['total_entries']}")
@@ -203,6 +464,8 @@ class DataLogger:
     
     def _log_module_data(self, module: str, data: Dict[str, Any], timestamp: float):
         """Log data for a specific module"""
+        plot_data = {}
+        
         for variable, value_info in data.items():
             try:
                 if isinstance(value_info, dict):
@@ -237,8 +500,16 @@ class DataLogger:
                     except:
                         pass
                 
+                # Add to plot data if numeric
+                if isinstance(value, (int, float)):
+                    plot_data[f"{module}_{variable}"] = value
+                
             except Exception as e:
                 self._log_error(module, f"variable_log_error_{variable}", str(e))
+        
+        # Update plotter with collected data
+        if self.plotter and plot_data:
+            self.plotter.add_data_point(timestamp, plot_data)
     
     def _calculate_errors(self, timestamp: float):
         """Calculate errors between setpoint and measured values"""
@@ -544,7 +815,7 @@ def create_paa5100_data_source(paa5100_interface):
 
 if __name__ == "__main__":
     # Example usage
-    logger = DataLogger(buffer_size=1000, log_interval=0.01)
+    logger = DataLogger(buffer_size=1000, log_interval=0.01, enable_plotting=True)
     
     # Add data sources (these would be your actual interfaces)
     # logger.add_data_source("roboclaw", create_roboclaw_data_source(roboclaw_interface))
